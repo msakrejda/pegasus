@@ -8,10 +8,10 @@ package org.postgresql.febe
     {
         public var message:IMessage;
 
-        public function MessageEvent(type:String, msg:IMessage, bubbles:Boolean=false, cancelable:Boolean=false)
+        public function MessageEvent(message:IMessage, bubbles:Boolean=false, cancelable:Boolean=false)
         {
-            super(type, bubbles, cancelable);
-            message = msg;
+            super(message.type, bubbles, cancelable);
+            this.message = message;
         }
         
     }

@@ -2,7 +2,7 @@ package org.postgresql
 {
     public class ErrorCodes
     {
-        public var errors {
+        public static const errors {
             // Class 00 — Successful Completion
             00000 : "SUCCESSFUL COMPLETION",
             // Class 01 — Warning
@@ -242,240 +242,240 @@ package org.postgresql
         };
 
         // Class 00 — Successful Completion
-        public var SUCCESSFUL_COMPLETION:String = "00000";
+        public static const SUCCESSFUL_COMPLETION:String = "00000";
         // Class 01 — Warning
-        public var WARNING:String = "01000";
-        public var DYNAMIC_RESULT_SETS_RETURNED:String = "0100C";
-        public var IMPLICIT_ZERO_BIT_PADDING:String = "01008";
-        public var NULL_VALUE_ELIMINATED_IN_SET_FUNCTION:String = "01003";
-        public var PRIVILEGE_NOT_GRANTED:String = "01007";
-        public var PRIVILEGE_NOT_REVOKED:String = "01006";
-        public var STRING_DATA_RIGHT_TRUNCATION:String = "01004";
-        public var DEPRECATED_FEATURE:String = "01P01";
+        public static const WARNING:String = "01000";
+        public static const DYNAMIC_RESULT_SETS_RETURNED:String = "0100C";
+        public static const IMPLICIT_ZERO_BIT_PADDING:String = "01008";
+        public static const NULL_VALUE_ELIMINATED_IN_SET_FUNCTION:String = "01003";
+        public static const PRIVILEGE_NOT_GRANTED:String = "01007";
+        public static const PRIVILEGE_NOT_REVOKED:String = "01006";
+        public static const STRING_DATA_RIGHT_TRUNCATION:String = "01004";
+        public static const DEPRECATED_FEATURE:String = "01P01";
         // Class 02 — No Data (this is also a warning class per the SQL standard)
-        public var NO_DATA:String = "02000";
-        public var NO_ADDITIONAL_DYNAMIC_RESULT_SETS_RETURNED:String = "02001";
+        public static const NO_DATA:String = "02000";
+        public static const NO_ADDITIONAL_DYNAMIC_RESULT_SETS_RETURNED:String = "02001";
         // Class 03 — SQL_Statement Not Yet Complete
-        public var SQL_STATEMENT_NOT_YET_COMPLETE:String = "03000";
+        public static const SQL_STATEMENT_NOT_YET_COMPLETE:String = "03000";
         // Class 08 — Connection Exception
-        public var CONNECTION_EXCEPTION:String = "08000";
-        public var CONNECTION_DOES_NOT_EXIST:String = "08003";
-        public var CONNECTION_FAILURE:String = "08006";
-        public var SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION:String = "08001";
-        public var SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION:String = "08004";
-        public var TRANSACTION_RESOLUTION_UNKNOWN:String = "08007";
-        public var PROTOCOL_VIOLATION:String = "08P01";
+        public static const CONNECTION_EXCEPTION:String = "08000";
+        public static const CONNECTION_DOES_NOT_EXIST:String = "08003";
+        public static const CONNECTION_FAILURE:String = "08006";
+        public static const SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION:String = "08001";
+        public static const SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION:String = "08004";
+        public static const TRANSACTION_RESOLUTION_UNKNOWN:String = "08007";
+        public static const PROTOCOL_VIOLATION:String = "08P01";
         // Class 09 — Triggered Action Exception
-        public var TRIGGERED_ACTION_EXCEPTION:String = "09000";
+        public static const TRIGGERED_ACTION_EXCEPTION:String = "09000";
         // Class 0A — Feature Not Supported
-        public var FEATURE_NOT_SUPPORTED:String = "0A000";
+        public static const FEATURE_NOT_SUPPORTED:String = "0A000";
         // Class 0B — Invalid Transaction Initiation
-        public var INVALID_TRANSACTION_INITIATION:String = "0B000";
+        public static const INVALID_TRANSACTION_INITIATION:String = "0B000";
         // Class 0F — Locator Exception
-        public var LOCATOR_EXCEPTION:String = "0F000";
-        public var INVALID_LOCATOR_SPECIFICATION:String = "0F001";
+        public static const LOCATOR_EXCEPTION:String = "0F000";
+        public static const INVALID_LOCATOR_SPECIFICATION:String = "0F001";
         // Class 0L — Invalid Grantor
-        public var INVALID_GRANTOR:String = "0L000";
-        public var INVALID_GRANT_OPERATION:String = "0LP01";
+        public static const INVALID_GRANTOR:String = "0L000";
+        public static const INVALID_GRANT_OPERATION:String = "0LP01";
         // Class 0P — Invalid Role Specification
-        public var INVALID_ROLE_SPECIFICATION:String = "0P000";
+        public static const INVALID_ROLE_SPECIFICATION:String = "0P000";
         // Class 20 — Case Not Found
-        public var CASE_NOT_FOUND:String = "20000";
+        public static const CASE_NOT_FOUND:String = "20000";
         // Class 21 — Cardinality Violation
-        public var CARDINALITY_VIOLATION:String = "21000";
+        public static const CARDINALITY_VIOLATION:String = "21000";
         // Class 22 — Data Exception
-        public var DATA_EXCEPTION:String = "22000";
-        public var ARRAY_SUBSCRIPT_ERROR:String = "2202E";
-        public var CHARACTER_NOT_IN_REPERTOIRE:String = "22021";
-        public var DATETIME_FIELD_OVERFLOW:String = "22008";
-        public var DIVISION_BY_ZERO:String = "22012";
-        public var ERROR_IN_ASSIGNMENT:String = "22005";
-        public var ESCAPE_CHARACTER_CONFLICT:String = "2200B";
-        public var INDICATOR_OVERFLOW:String = "22022";
-        public var INTERVAL_FIELD_OVERFLOW:String = "22015";
-        public var INVALID_ARGUMENT_FOR_LOGARITHM:String = "2201E";
-        public var INVALID_ARGUMENT_FOR_NTILE_FUNCTION:String = "22014";
-        public var INVALID_ARGUMENT_FOR_NTH:String = "22016";
-        public var INVALID_ARGUMENT_FOR_POWER_FUNCTION:String = "2201F";
-        public var INVALID_ARGUMENT_FOR_WIDTH_BUCKET_FUNCTION:String = "2201G";
-        public var INVALID_CHARACTER_VALUE_FOR_CAST:String = "22018";
-        public var INVALID_DATETIME_FORMAT:String = "22007";
-        public var INVALID_ESCAPE_CHARACTER:String = "22019";
-        public var INVALID_ESCAPE_OCTET:String = "2200D";
-        public var INVALID_ESCAPE_SEQUENCE:String = "22025";
-        public var NONSTANDARD_USE_OF_ESCAPE_CHARACTER:String = "22P06";
-        public var INVALID_INDICATOR_PARAMETER_VALUE:String = "22010";
-        public var INVALID_PARAMETER_VALUE:String = "22023";
-        public var INVALID_REGULAR_EXPRESSION:String = "2201B";
-        public var INVALID_ROW_COUNT_IN_LIMIT_CLAUSE:String = "2201W";
-        public var INVALID_ROW_COUNT_IN_RESULT_OFFSET_CLAUSE:String = "2201X";
-        public var INVALID_TIME_ZONE_DISPLACEMENT_VALUE:String = "22009";
-        public var INVALID_USE_OF_ESCAPE_CHARACTER:String = "2200C";
-        public var MOST_SPECIFIC_TYPE_MISMATCH:String = "2200G";
-        public var NULL_VALUE_NOT_ALLOWED:String = "22004";
-        public var NULL_VALUE_NO_INDICATOR_PARAMETER:String = "22002";
-        public var NUMERIC_VALUE_OUT_OF_RANGE:String = "22003";
-        public var STRING_DATA_LENGTH_MISMATCH:String = "22026";
-        public var STRING_DATA_RIGHT_TRUNCATION:String = "22001";
-        public var SUBSTRING_ERROR:String = "22011";
-        public var TRIM_ERROR:String = "22027";
-        public var UNTERMINATED_C_STRING:String = "22024";
-        public var ZERO_LENGTH_CHARACTER_STRING:String = "2200F";
-        public var FLOATING_POINT_EXCEPTION:String = "22P01";
-        public var INVALID_TEXT_REPRESENTATION:String = "22P02";
-        public var INVALID_BINARY_REPRESENTATION:String = "22P03";
-        public var BAD_COPY_FILE_FORMAT:String = "22P04";
-        public var UNTRANSLATABLE_CHARACTER:String = "22P05";
-        public var NOT_AN_XML_DOCUMENT:String = "2200L";
-        public var INVALID_XML_DOCUMENT:String = "2200M";
-        public var INVALID_XML_CONTENT:String = "2200N";
-        public var INVALID_XML_COMMENT:String = "2200S";
-        public var INVALID_XML_PROCESSING_INSTRUCTION:String = "2200T";
+        public static const DATA_EXCEPTION:String = "22000";
+        public static const ARRAY_SUBSCRIPT_ERROR:String = "2202E";
+        public static const CHARACTER_NOT_IN_REPERTOIRE:String = "22021";
+        public static const DATETIME_FIELD_OVERFLOW:String = "22008";
+        public static const DIVISION_BY_ZERO:String = "22012";
+        public static const ERROR_IN_ASSIGNMENT:String = "22005";
+        public static const ESCAPE_CHARACTER_CONFLICT:String = "2200B";
+        public static const INDICATOR_OVERFLOW:String = "22022";
+        public static const INTERVAL_FIELD_OVERFLOW:String = "22015";
+        public static const INVALID_ARGUMENT_FOR_LOGARITHM:String = "2201E";
+        public static const INVALID_ARGUMENT_FOR_NTILE_FUNCTION:String = "22014";
+        public static const INVALID_ARGUMENT_FOR_NTH:String = "22016";
+        public static const INVALID_ARGUMENT_FOR_POWER_FUNCTION:String = "2201F";
+        public static const INVALID_ARGUMENT_FOR_WIDTH_BUCKET_FUNCTION:String = "2201G";
+        public static const INVALID_CHARACTER_VALUE_FOR_CAST:String = "22018";
+        public static const INVALID_DATETIME_FORMAT:String = "22007";
+        public static const INVALID_ESCAPE_CHARACTER:String = "22019";
+        public static const INVALID_ESCAPE_OCTET:String = "2200D";
+        public static const INVALID_ESCAPE_SEQUENCE:String = "22025";
+        public static const NONSTANDARD_USE_OF_ESCAPE_CHARACTER:String = "22P06";
+        public static const INVALID_INDICATOR_PARAMETER_VALUE:String = "22010";
+        public static const INVALID_PARAMETER_VALUE:String = "22023";
+        public static const INVALID_REGULAR_EXPRESSION:String = "2201B";
+        public static const INVALID_ROW_COUNT_IN_LIMIT_CLAUSE:String = "2201W";
+        public static const INVALID_ROW_COUNT_IN_RESULT_OFFSET_CLAUSE:String = "2201X";
+        public static const INVALID_TIME_ZONE_DISPLACEMENT_VALUE:String = "22009";
+        public static const INVALID_USE_OF_ESCAPE_CHARACTER:String = "2200C";
+        public static const MOST_SPECIFIC_TYPE_MISMATCH:String = "2200G";
+        public static const NULL_VALUE_NOT_ALLOWED:String = "22004";
+        public static const NULL_VALUE_NO_INDICATOR_PARAMETER:String = "22002";
+        public static const NUMERIC_VALUE_OUT_OF_RANGE:String = "22003";
+        public static const STRING_DATA_LENGTH_MISMATCH:String = "22026";
+        public static const STRING_DATA_RIGHT_TRUNCATION:String = "22001";
+        public static const SUBSTRING_ERROR:String = "22011";
+        public static const TRIM_ERROR:String = "22027";
+        public static const UNTERMINATED_C_STRING:String = "22024";
+        public static const ZERO_LENGTH_CHARACTER_STRING:String = "2200F";
+        public static const FLOATING_POINT_EXCEPTION:String = "22P01";
+        public static const INVALID_TEXT_REPRESENTATION:String = "22P02";
+        public static const INVALID_BINARY_REPRESENTATION:String = "22P03";
+        public static const BAD_COPY_FILE_FORMAT:String = "22P04";
+        public static const UNTRANSLATABLE_CHARACTER:String = "22P05";
+        public static const NOT_AN_XML_DOCUMENT:String = "2200L";
+        public static const INVALID_XML_DOCUMENT:String = "2200M";
+        public static const INVALID_XML_CONTENT:String = "2200N";
+        public static const INVALID_XML_COMMENT:String = "2200S";
+        public static const INVALID_XML_PROCESSING_INSTRUCTION:String = "2200T";
         // Class 23 — Integrity Constraint Violation
-        public var INTEGRITY_CONSTRAINT_VIOLATION:String = "23000";
-        public var RESTRICT_VIOLATION:String = "23001";
-        public var NOT_NULL_VIOLATION:String = "23502";
-        public var FOREIGN_KEY_VIOLATION:String = "23503";
-        public var UNIQUE_VIOLATION:String = "23505";
-        public var CHECK_VIOLATION:String = "23514";
+        public static const INTEGRITY_CONSTRAINT_VIOLATION:String = "23000";
+        public static const RESTRICT_VIOLATION:String = "23001";
+        public static const NOT_NULL_VIOLATION:String = "23502";
+        public static const FOREIGN_KEY_VIOLATION:String = "23503";
+        public static const UNIQUE_VIOLATION:String = "23505";
+        public static const CHECK_VIOLATION:String = "23514";
         // Class 24 — Invalid Cursor State
-        public var INVALID_CURSOR_STATE:String = "24000";
+        public static const INVALID_CURSOR_STATE:String = "24000";
         // Class 25 — Invalid Transaction State
-        public var INVALID_TRANSACTION_STATE:String = "25000";
-        public var ACTIVE_SQL_TRANSACTION:String = "25001";
-        public var BRANCH_TRANSACTION_ALREADY_ACTIVE:String = "25002";
-        public var HELD_CURSOR_REQUIRES_SAME_ISOLATION_LEVEL:String = "25008";
-        public var INAPPROPRIATE_ACCESS_MODE_FOR_BRANCH_TRANSACTION:String = "25003";
-        public var INAPPROPRIATE_ISOLATION_LEVEL_FOR_BRANCH_TRANSACTION:String = "25004";
-        public var NO_ACTIVE_SQL_TRANSACTION_FOR_BRANCH_TRANSACTION:String = "25005";
-        public var READ_ONLY_SQL_TRANSACTION:String = "25006";
-        public var SCHEMA_AND_DATA_STATEMENT_MIXING_NOT_SUPPORTED:String = "25007";
-        public var NO_ACTIVE_SQL_TRANSACTION:String = "25P01";
-        public var IN_FAILED_SQL_TRANSACTION:String = "25P02";
+        public static const INVALID_TRANSACTION_STATE:String = "25000";
+        public static const ACTIVE_SQL_TRANSACTION:String = "25001";
+        public static const BRANCH_TRANSACTION_ALREADY_ACTIVE:String = "25002";
+        public static const HELD_CURSOR_REQUIRES_SAME_ISOLATION_LEVEL:String = "25008";
+        public static const INAPPROPRIATE_ACCESS_MODE_FOR_BRANCH_TRANSACTION:String = "25003";
+        public static const INAPPROPRIATE_ISOLATION_LEVEL_FOR_BRANCH_TRANSACTION:String = "25004";
+        public static const NO_ACTIVE_SQL_TRANSACTION_FOR_BRANCH_TRANSACTION:String = "25005";
+        public static const READ_ONLY_SQL_TRANSACTION:String = "25006";
+        public static const SCHEMA_AND_DATA_STATEMENT_MIXING_NOT_SUPPORTED:String = "25007";
+        public static const NO_ACTIVE_SQL_TRANSACTION:String = "25P01";
+        public static const IN_FAILED_SQL_TRANSACTION:String = "25P02";
         // Class 26 — Invalid SQL_Statement Name
-        public var INVALID_SQL_STATEMENT_NAME:String = "26000";
+        public static const INVALID_SQL_STATEMENT_NAME:String = "26000";
         // Class 27 — Triggered Data Change Violation
-        public var TRIGGERED_DATA_CHANGE_VIOLATION:String = "27000";
+        public static const TRIGGERED_DATA_CHANGE_VIOLATION:String = "27000";
         // Class 28 — Invalid Authorization Specification
-        public var INVALID_AUTHORIZATION_SPECIFICATION:String = "28000";
+        public static const INVALID_AUTHORIZATION_SPECIFICATION:String = "28000";
         // Class 2B — Dependent Privilege Descriptors Still Exist
-        public var DEPENDENT_PRIVILEGE_DESCRIPTORS_STILL_EXIST:String = "2B000";
-        public var DEPENDENT_OBJECTS_STILL_EXIST:String = "2BP01";
+        public static const DEPENDENT_PRIVILEGE_DESCRIPTORS_STILL_EXIST:String = "2B000";
+        public static const DEPENDENT_OBJECTS_STILL_EXIST:String = "2BP01";
         // Class 2D — Invalid Transaction Termination
-        public var INVALID_TRANSACTION_TERMINATION:String = "2D000";
+        public static const INVALID_TRANSACTION_TERMINATION:String = "2D000";
         // Class 2F — SQL_Routine Exception
-        public var SQL_ROUTINE_EXCEPTION:String = "2F000";
-        public var FUNCTION_EXECUTED_NO_RETURN_STATEMENT:String = "2F005";
-        public var MODIFYING_SQL_DATA_NOT_PERMITTED:String = "2F002";
-        public var PROHIBITED_SQL_STATEMENT_ATTEMPTED:String = "2F003";
-        public var READING_SQL_DATA_NOT_PERMITTED:String = "2F004";
+        public static const SQL_ROUTINE_EXCEPTION:String = "2F000";
+        public static const FUNCTION_EXECUTED_NO_RETURN_STATEMENT:String = "2F005";
+        public static const MODIFYING_SQL_DATA_NOT_PERMITTED:String = "2F002";
+        public static const PROHIBITED_SQL_STATEMENT_ATTEMPTED:String = "2F003";
+        public static const READING_SQL_DATA_NOT_PERMITTED:String = "2F004";
         // Class 34 — Invalid Cursor Name
-        public var INVALID_CURSOR_NAME:String = "34000";
+        public static const INVALID_CURSOR_NAME:String = "34000";
         // Class 38 — External Routine Exception
-        public var EXTERNAL_ROUTINE_EXCEPTION:String = "38000";
-        public var CONTAINING_SQL_NOT_PERMITTED:String = "38001";
-        public var MODIFYING_SQL_DATA_NOT_PERMITTED:String = "38002";
-        public var PROHIBITED_SQL_STATEMENT_ATTEMPTED:String = "38003";
-        public var READING_SQL_DATA_NOT_PERMITTED:String = "38004";
+        public static const EXTERNAL_ROUTINE_EXCEPTION:String = "38000";
+        public static const CONTAINING_SQL_NOT_PERMITTED:String = "38001";
+        public static const MODIFYING_SQL_DATA_NOT_PERMITTED:String = "38002";
+        public static const PROHIBITED_SQL_STATEMENT_ATTEMPTED:String = "38003";
+        public static const READING_SQL_DATA_NOT_PERMITTED:String = "38004";
         // Class 39 — External Routine Invocation Exception
-        public var EXTERNAL_ROUTINE_INVOCATION_EXCEPTION:String = "39000";
-        public var INVALID_SQLSTATE_RETURNED:String = "39001";
-        public var NULL_VALUE_NOT_ALLOWED:String = "39004";
-        public var TRIGGER_PROTOCOL_VIOLATED:String = "39P01";
-        public var SRF_PROTOCOL_VIOLATED:String = "39P02";
+        public static const EXTERNAL_ROUTINE_INVOCATION_EXCEPTION:String = "39000";
+        public static const INVALID_SQLSTATE_RETURNED:String = "39001";
+        public static const NULL_VALUE_NOT_ALLOWED:String = "39004";
+        public static const TRIGGER_PROTOCOL_VIOLATED:String = "39P01";
+        public static const SRF_PROTOCOL_VIOLATED:String = "39P02";
         // Class 3B — Savepoint Exception
-        public var SAVEPOINT_EXCEPTION:String = "3B000";
-        public var INVALID_SAVEPOINT_SPECIFICATION:String = "3B001";
+        public static const SAVEPOINT_EXCEPTION:String = "3B000";
+        public static const INVALID_SAVEPOINT_SPECIFICATION:String = "3B001";
         // Class 3D — Invalid Catalog Name
-        public var INVALID_CATALOG_NAME:String = "3D000";
+        public static const INVALID_CATALOG_NAME:String = "3D000";
         // Class 3F — Invalid Schema Name
-        public var INVALID_SCHEMA_NAME:String = "3F000";
+        public static const INVALID_SCHEMA_NAME:String = "3F000";
         // Class 40 — Transaction Rollback
-        public var TRANSACTION_ROLLBACK:String = "40000";
-        public var TRANSACTION_INTEGRITY_CONSTRAINT_VIOLATION:String = "40002";
-        public var SERIALIZATION_FAILURE:String = "40001";
-        public var STATEMENT_COMPLETION_UNKNOWN:String = "40003";
-        public var DEADLOCK_DETECTED:String = "40P01";
+        public static const TRANSACTION_ROLLBACK:String = "40000";
+        public static const TRANSACTION_INTEGRITY_CONSTRAINT_VIOLATION:String = "40002";
+        public static const SERIALIZATION_FAILURE:String = "40001";
+        public static const STATEMENT_COMPLETION_UNKNOWN:String = "40003";
+        public static const DEADLOCK_DETECTED:String = "40P01";
         // Class 42 — Syntax Error or Access Rule Violation
-        public var SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:String = "42000";
-        public var SYNTAX_ERROR:String = "42601";
-        public var INSUFFICIENT_PRIVILEGE:String = "42501";
-        public var CANNOT_COERCE:String = "42846";
-        public var GROUPING_ERROR:String = "42803";
-        public var WINDOWING_ERROR:String = "42P20";
-        public var INVALID_RECURSION:String = "42P19";
-        public var INVALID_FOREIGN_KEY:String = "42830";
-        public var INVALID_NAME:String = "42602";
-        public var NAME_TOO_LONG:String = "42622";
-        public var RESERVED_NAME:String = "42939";
-        public var DATATYPE_MISMATCH:String = "42804";
-        public var INDETERMINATE_DATATYPE:String = "42P18";
-        public var WRONG_OBJECT_TYPE:String = "42809";
-        public var UNDEFINED_COLUMN:String = "42703";
-        public var UNDEFINED_FUNCTION:String = "42883";
-        public var UNDEFINED_TABLE:String = "42P01";
-        public var UNDEFINED_PARAMETER:String = "42P02";
-        public var UNDEFINED_OBJECT:String = "42704";
-        public var DUPLICATE_COLUMN:String = "42701";
-        public var DUPLICATE_CURSOR:String = "42P03";
-        public var DUPLICATE_DATABASE:String = "42P04";
-        public var DUPLICATE_FUNCTION:String = "42723";
-        public var DUPLICATE_PREPARED_STATEMENT:String = "42P05";
-        public var DUPLICATE_SCHEMA:String = "42P06";
-        public var DUPLICATE_TABLE:String = "42P07";
-        public var DUPLICATE_ALIAS:String = "42712";
-        public var DUPLICATE_OBJECT:String = "42710";
-        public var AMBIGUOUS_COLUMN:String = "42702";
-        public var AMBIGUOUS_FUNCTION:String = "42725";
-        public var AMBIGUOUS_PARAMETER:String = "42P08";
-        public var AMBIGUOUS_ALIAS:String = "42P09";
-        public var INVALID_COLUMN_REFERENCE:String = "42P10";
-        public var INVALID_COLUMN_DEFINITION:String = "42611";
-        public var INVALID_CURSOR_DEFINITION:String = "42P11";
-        public var INVALID_DATABASE_DEFINITION:String = "42P12";
-        public var INVALID_FUNCTION_DEFINITION:String = "42P13";
-        public var INVALID_PREPARED_STATEMENT_DEFINITION:String = "42P14";
-        public var INVALID_SCHEMA_DEFINITION:String = "42P15";
-        public var INVALID_TABLE_DEFINITION:String = "42P16";
-        public var INVALID_OBJECT_DEFINITION:String = "42P17";
+        public static const SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:String = "42000";
+        public static const SYNTAX_ERROR:String = "42601";
+        public static const INSUFFICIENT_PRIVILEGE:String = "42501";
+        public static const CANNOT_COERCE:String = "42846";
+        public static const GROUPING_ERROR:String = "42803";
+        public static const WINDOWING_ERROR:String = "42P20";
+        public static const INVALID_RECURSION:String = "42P19";
+        public static const INVALID_FOREIGN_KEY:String = "42830";
+        public static const INVALID_NAME:String = "42602";
+        public static const NAME_TOO_LONG:String = "42622";
+        public static const RESERVED_NAME:String = "42939";
+        public static const DATATYPE_MISMATCH:String = "42804";
+        public static const INDETERMINATE_DATATYPE:String = "42P18";
+        public static const WRONG_OBJECT_TYPE:String = "42809";
+        public static const UNDEFINED_COLUMN:String = "42703";
+        public static const UNDEFINED_FUNCTION:String = "42883";
+        public static const UNDEFINED_TABLE:String = "42P01";
+        public static const UNDEFINED_PARAMETER:String = "42P02";
+        public static const UNDEFINED_OBJECT:String = "42704";
+        public static const DUPLICATE_COLUMN:String = "42701";
+        public static const DUPLICATE_CURSOR:String = "42P03";
+        public static const DUPLICATE_DATABASE:String = "42P04";
+        public static const DUPLICATE_FUNCTION:String = "42723";
+        public static const DUPLICATE_PREPARED_STATEMENT:String = "42P05";
+        public static const DUPLICATE_SCHEMA:String = "42P06";
+        public static const DUPLICATE_TABLE:String = "42P07";
+        public static const DUPLICATE_ALIAS:String = "42712";
+        public static const DUPLICATE_OBJECT:String = "42710";
+        public static const AMBIGUOUS_COLUMN:String = "42702";
+        public static const AMBIGUOUS_FUNCTION:String = "42725";
+        public static const AMBIGUOUS_PARAMETER:String = "42P08";
+        public static const AMBIGUOUS_ALIAS:String = "42P09";
+        public static const INVALID_COLUMN_REFERENCE:String = "42P10";
+        public static const INVALID_COLUMN_DEFINITION:String = "42611";
+        public static const INVALID_CURSOR_DEFINITION:String = "42P11";
+        public static const INVALID_DATABASE_DEFINITION:String = "42P12";
+        public static const INVALID_FUNCTION_DEFINITION:String = "42P13";
+        public static const INVALID_PREPARED_STATEMENT_DEFINITION:String = "42P14";
+        public static const INVALID_SCHEMA_DEFINITION:String = "42P15";
+        public static const INVALID_TABLE_DEFINITION:String = "42P16";
+        public static const INVALID_OBJECT_DEFINITION:String = "42P17";
         // Class 44 — WITH_CHECK_OPTION_Violation
-        public var WITH_CHECK_OPTION_VIOLATION:String = "44000";
+        public static const WITH_CHECK_OPTION_VIOLATION:String = "44000";
         // Class 53 — Insufficient Resources
-        public var INSUFFICIENT_RESOURCES:String = "53000";
-        public var DISK_FULL:String = "53100";
-        public var OUT_OF_MEMORY:String = "53200";
-        public var TOO_MANY_CONNECTIONS:String = "53300";
+        public static const INSUFFICIENT_RESOURCES:String = "53000";
+        public static const DISK_FULL:String = "53100";
+        public static const OUT_OF_MEMORY:String = "53200";
+        public static const TOO_MANY_CONNECTIONS:String = "53300";
         // Class 54 — Program Limit Exceeded
-        public var PROGRAM_LIMIT_EXCEEDED:String = "54000";
-        public var STATEMENT_TOO_COMPLEX:String = "54001";
-        public var TOO_MANY_COLUMNS:String = "54011";
-        public var TOO_MANY_ARGUMENTS:String = "54023";
+        public static const PROGRAM_LIMIT_EXCEEDED:String = "54000";
+        public static const STATEMENT_TOO_COMPLEX:String = "54001";
+        public static const TOO_MANY_COLUMNS:String = "54011";
+        public static const TOO_MANY_ARGUMENTS:String = "54023";
         // Class 55 — Object Not In Prerequisite State
-        public var OBJECT_NOT_IN_PREREQUISITE_STATE:String = "55000";
-        public var OBJECT_IN_USE:String = "55006";
-        public var CANT_CHANGE_RUNTIME_PARAM:String = "55P02";
-        public var LOCK_NOT_AVAILABLE:String = "55P03";
+        public static const OBJECT_NOT_IN_PREREQUISITE_STATE:String = "55000";
+        public static const OBJECT_IN_USE:String = "55006";
+        public static const CANT_CHANGE_RUNTIME_PARAM:String = "55P02";
+        public static const LOCK_NOT_AVAILABLE:String = "55P03";
         // Class 57 — Operator Intervention
-        public var OPERATOR_INTERVENTION:String = "57000";
-        public var QUERY_CANCELED:String = "57014";
-        public var ADMIN_SHUTDOWN:String = "57P01";
-        public var CRASH_SHUTDOWN:String = "57P02";
-        public var CANNOT_CONNECT_NOW:String = "57P03";
+        public static const OPERATOR_INTERVENTION:String = "57000";
+        public static const QUERY_CANCELED:String = "57014";
+        public static const ADMIN_SHUTDOWN:String = "57P01";
+        public static const CRASH_SHUTDOWN:String = "57P02";
+        public static const CANNOT_CONNECT_NOW:String = "57P03";
         // Class 58 — System Error (errors external to PostgreSQL itself)
-        public var IO_ERROR:String = "58030";
-        public var UNDEFINED_FILE:String = "58P01";
-        public var DUPLICATE_FILE:String = "58P02";
+        public static const IO_ERROR:String = "58030";
+        public static const UNDEFINED_FILE:String = "58P01";
+        public static const DUPLICATE_FILE:String = "58P02";
         // Class F0 — Configuration File Error
-        public var CONFIG_FILE_ERROR:String = "F0000";
-        public var LOCK_FILE_EXISTS:String = "F0001";
+        public static const CONFIG_FILE_ERROR:String = "F0000";
+        public static const LOCK_FILE_EXISTS:String = "F0001";
         // Class P0 — PL/pgSQL_Error
-        public var PLPGSQL_ERROR:String = "P0000";
-        public var RAISE_EXCEPTION:String = "P0001";
-        public var NO_DATA_FOUND:String = "P0002";
-        public var TOO_MANY_ROWS:String = "P0003";
+        public static const PLPGSQL_ERROR:String = "P0000";
+        public static const RAISE_EXCEPTION:String = "P0001";
+        public static const NO_DATA_FOUND:String = "P0002";
+        public static const TOO_MANY_ROWS:String = "P0003";
         // Class XX — Internal Error
-        public var INTERNAL_ERROR:String = "XX000";
-        public var DATA_CORRUPTED:String = "XX001";
-        public var INDEX_CORRUPTED:String = "XX002";
+        public static const INTERNAL_ERROR:String = "XX000";
+        public static const DATA_CORRUPTED:String = "XX001";
+        public static const INDEX_CORRUPTED:String = "XX002";
     }
 }
