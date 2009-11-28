@@ -1,7 +1,11 @@
-package org.postgresql.febe.message
-{
-    public /* abstract */ class AbstractInfoMessage extends AbstractMessage implements IBEMessage
-    {
+package org.postgresql.febe.message {
+
+    import org.postgresql.febe.message.AbstractMessage;
+    import org.postgresql.febe.message.IBEMessage;
+    import org.postgresql.io.ICDataInput;
+
+    public /* abstract */ class AbstractInfoMessage extends AbstractMessage implements IBEMessage {
+
         public static const fieldDescriptions:Object = {
             S : 'SEVERITY',
             C : 'CODE',
@@ -36,15 +40,14 @@ package org.postgresql.febe.message
             return fieldDescriptions[String.fromCharCode(code)];
         }
         
-        public function read(input:IDataInput):void
-        {
+        public function read(input:ICDataInput):void {
             fields = {};
             var nextByte:int;
             while ((nextByte = input.readByte()) != 0) {
                 var fieldType:String = fromCode(nextByte);
                 // Ignore unknown field types
                 if (fieldType) {
-                    fields[fieldType] = readCString(input);
+                    fields[fieldType] = input.readCString();
                 }
             }
         }

@@ -1,16 +1,18 @@
-package org.postgresql.febe.message
-{
-    import flash.utils.IDataOutput;
+package org.postgresql.febe.message {
 
-    public class StartupMessage extends AbstractMessage implements IFEMessage
-    {
+    import org.postgresql.febe.message.AbstractMessage;
+    import org.postgresql.febe.message.IFEMessage;
+    import org.postgresql.febe.message.MessageError;
+    import org.postgresql.io.ICDataOutput;
+
+    public class StartupMessage extends AbstractMessage implements IFEMessage {
+
         private static const PROTOCOL_VERSION:int = 196608;
         private var _parameters:Object;
         private var _paramLen:int;
 
-        public function StartupMessage(parameters:Object)
-        {
-            if (!(user in parameters)) {
+        public function StartupMessage(parameters:Object) {
+            if (!('user' in parameters)) {
                 throw new MessageError("StartupMessage must include user", this);
             }
             _parameters = parameters;
@@ -24,14 +26,13 @@ package org.postgresql.febe.message
             }
         }
 
-        public function write(out:IDataOutput):void
-        {
+        public function write(out:ICDataOutput):void {
             var len:int = 4 + 4 + _paramLen + 1;
             out.writeInt(len);
             out.writeInt(PROTOCOL_VERSION);
             for (var parameter:String in _parameters) {
-                writeCString(out, parameter);
-                writeCString(out, _parameters[parameter]);
+                out.writeCString(parameter);
+                out.writeCString(_parameters[parameter]);
             }
             out.writeByte(0x00); 
         }

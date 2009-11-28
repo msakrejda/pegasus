@@ -1,9 +1,12 @@
-package org.postgresql.febe.message
-{
-    import flash.utils.IDataInput;
+package org.postgresql.febe.message {
+
+    import org.postgresql.febe.message.AbstractMessage;
+    import org.postgresql.febe.message.IBEMessage;
+    import org.postgresql.febe.message.MessageError;
+    import org.postgresql.io.ICDataInput;
     
-    public class CommandComplete extends AbstractMessage implements IBEMessage
-    {
+    public class CommandComplete extends AbstractMessage implements IBEMessage {
+
         public var commandTag:String;
         public var command:String;
         public var oid:int;
@@ -13,10 +16,13 @@ package org.postgresql.febe.message
         private static const COPY_CMD:RegExp = /COPY (\d+)?/;
         private static const OTHER_CMD:RegExp = /(DELETE|UPDATE|MOVE|FETCH) (\d+)/;
 
-        public function read(input:IDataInput):void
-        {
-            var len:int = input.bytesAvailable;
-            commandTag = input.readUTFBytes(len);
+        public function CommandComplete() {
+            oid = -1;
+            affectedRows = 0;
+        }
+
+        public function read(input:ICDataInput):void {
+            commandTag = input.readCString();
             var match:Array;
             if (INSERT_CMD.test(commandTag)) {
                 match = commandTag.match(INSERT_CMD);
@@ -46,7 +52,7 @@ package org.postgresql.febe.message
         }
         
         private function badTag(tag:String):void {
-            throw new MessageError("Unexpected command tag: " + tag);
+            throw new MessageError("Unexpected command tag: " + tag, this);
         }
         
     }

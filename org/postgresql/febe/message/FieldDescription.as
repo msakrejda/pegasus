@@ -1,7 +1,7 @@
-package org.postgresql.febe.message
-{
-    public class FieldDescription
-    {
+package org.postgresql.febe.message {
+
+    public class FieldDescription {
+
         public var name:String;
         public var tableOid:int;
         public var attributeNum:int;
@@ -9,5 +9,6 @@ package org.postgresql.febe.message
         public var typeModifier:int;
         public var size:int;
         public var format:int;
+
     }
 }
