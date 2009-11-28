@@ -1,9 +1,6 @@
 package org.postgresql.febe.message {
 
-    import flash.utils.ByteArray;
-    
-    import org.postgresql.febe.message.AbstractMessage;
-    import org.postgresql.febe.message.IBEMessage;
+    import org.postgresql.io.ByteDataStream;
     import org.postgresql.io.ICDataInput;
 
     public class DataRow extends AbstractMessage implements IBEMessage {
@@ -19,9 +16,9 @@ package org.postgresql.febe.message {
             var colCount:int = input.readShort();
             for (var i:int = 0; i < colCount; i++) {
                 var fieldByteCount:int = input.readInt();
-                var fieldBytes:ByteArray; 
+                var fieldBytes:ByteDataStream;
                 if (fieldByteCount >= 0) {
-                    fieldBytes = new ByteArray();
+                    fieldBytes = new ByteDataStream();
                     if (fieldByteCount > 0) {
                         input.readBytes(fieldBytes, 0, fieldByteCount);
                     }
