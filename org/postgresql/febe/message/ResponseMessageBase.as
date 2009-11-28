@@ -4,7 +4,7 @@ package org.postgresql.febe.message {
     import org.postgresql.febe.message.IBEMessage;
     import org.postgresql.io.ICDataInput;
 
-    public /* abstract */ class AbstractInfoMessage extends AbstractMessage implements IBEMessage {
+    public class ResponseMessageBase extends AbstractMessage implements IBEMessage {
 
         public static const fieldDescriptions:Object = {
             S : 'SEVERITY',
@@ -20,7 +20,7 @@ package org.postgresql.febe.message {
             L : 'LINE',
             R : 'ROUTINE'
         };
-        
+
         public static const SEVERITY:String = 'S';
         public static const CODE:String = 'C';
         public static const MESSAGE:String = 'M';
@@ -39,7 +39,7 @@ package org.postgresql.febe.message {
         protected function fromCode(code:int):String {
             return fieldDescriptions[String.fromCharCode(code)];
         }
-        
+
         public function read(input:ICDataInput):void {
             fields = {};
             var nextByte:int;
@@ -51,6 +51,6 @@ package org.postgresql.febe.message {
                 }
             }
         }
-        
+
     }
 }

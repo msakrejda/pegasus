@@ -1,7 +1,5 @@
 package org.postgresql.febe.message {
 
-    import org.postgresql.febe.message.AbstractMessage;
-    import org.postgresql.febe.message.IBEMessage;
     import org.postgresql.io.ICDataInput;
     
     public class ReadyForQuery extends AbstractMessage implements IBEMessage {
@@ -14,6 +12,11 @@ package org.postgresql.febe.message {
         
         public function read(input:ICDataInput):void {
             status = String.fromCharCode(input.readByte());
+            if (status != IDLE &&
+                status != IN_TRANSACTION_BLOCK &&
+                status != IN_TRANSACTION_ERROR) {
+                throw new MessageError("Invalid status in ReadyForQuery", this);
+            }
         }
 
     }
