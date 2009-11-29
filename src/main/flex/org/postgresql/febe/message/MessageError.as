@@ -5,7 +5,7 @@ package org.postgresql.febe.message {
     public class MessageError extends Error {
 
         public function MessageError(message:String, febeMsg:IMessage, id:int=0) {
-            super(StringUtil.substitute("Invalid FEBE message {0}: {1}", febeMsg.type, message), id);
+            super(StringUtil.substitute("Invalid FEBE {0} message: {1}", febeMsg.type, message), id);
         }
 
     }
