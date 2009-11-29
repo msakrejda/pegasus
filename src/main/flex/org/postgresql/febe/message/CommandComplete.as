@@ -12,6 +12,7 @@ package org.postgresql.febe.message {
         public var oid:int;
         public var affectedRows:int;
 
+        private static const SELECT_CMD:RegExp = /SELECT/;
         private static const INSERT_CMD:RegExp = /INSERT (\d+) (\d+)/;
         private static const COPY_CMD:RegExp = /COPY (\d+)?/;
         private static const OTHER_CMD:RegExp = /(DELETE|UPDATE|MOVE|FETCH) (\d+)/;
@@ -24,7 +25,9 @@ package org.postgresql.febe.message {
         public function read(input:ICDataInput):void {
             commandTag = input.readCString();
             var match:Array;
-            if (INSERT_CMD.test(commandTag)) {
+            if (SELECT_CMD.test(commandTag)) {
+                // nothing to do here
+            } else if (INSERT_CMD.test(commandTag)) {
                 match = commandTag.match(INSERT_CMD);
                 if (match.length != 3) {
                      badTag(commandTag);
