@@ -45,15 +45,15 @@ package org.postgresql.febe {
             'R': AuthenticationRequest,
             'K': BackendKeyData,
             'B': Bind,
-            '': CommandComplete,
-            '': DataRow,
-            '': EmptyQueryResponse,
+            'C': CommandComplete,
+            'D': DataRow,
+            'I': EmptyQueryResponse,
             'E': ErrorResponse,
-            '': NoData,
+            'n': NoData,
             'N': NoticeResponse,
             'S': ParameterStatus,
             'Z': ReadyForQuery,
-            '': RowDescription
+            'T': RowDescription
         }
 
         private var _dataStream:IDataStream;
@@ -112,12 +112,12 @@ package org.postgresql.febe {
         }
 
         public function send(message:IFEMessage):void {
-            LOGGER.debug('Sending {0}', message);
+            LOGGER.debug('=> {0}', message);
             message.write(_dataStream);
         }
 
         private function dispatch(message:IBEMessage):void {
-            LOGGER.debug('Received {0}', message);
+            LOGGER.debug('<= {0}', message);
             dispatchEvent(new MessageEvent(message));
         }
 
