@@ -3,6 +3,9 @@ package org.postgresql.febe {
     import flash.events.EventDispatcher;
     import flash.events.ProgressEvent;
 
+    import mx.logging.ILogger;
+    import mx.logging.Log;
+
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.Bind;
@@ -30,6 +33,8 @@ package org.postgresql.febe {
     import org.postgresql.io.SocketDataStream;
 
     public class MessageBroker extends EventDispatcher {
+
+        private static const LOGGER:ILogger = Log.getLogger("org.postgresql.febe.MessageBroker");
 
         public static const backendMessageTypes:Object = {
             /*
@@ -107,12 +112,12 @@ package org.postgresql.febe {
         }
 
         public function send(message:IFEMessage):void {
-            trace('Sending', message.type);
+            LOGGER.debug('Sending {0}', message);
             message.write(_dataStream);
         }
 
         private function dispatch(message:IBEMessage):void {
-            trace('Received', message.type);
+            LOGGER.debug('Received {0}', message);
             dispatchEvent(new MessageEvent(message));
         }
 

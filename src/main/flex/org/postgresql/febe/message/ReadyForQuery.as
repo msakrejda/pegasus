@@ -19,5 +19,8 @@ package org.postgresql.febe.message {
             }
         }
 
+        public override function toString():String {
+            return type + " {" + status + "}";
+        }
     }
 }
