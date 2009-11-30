@@ -4,7 +4,7 @@ package org.postgresql.febe.message {
     import org.postgresql.febe.message.IBEMessage;
     import org.postgresql.io.ICDataInput;
 
-    public class ResponseMessageBase extends AbstractMessage implements IBEMessage {
+    public /* abstract */ class ResponseMessageBase extends AbstractMessage implements IBEMessage {
 
         public static const fieldDescriptions:Object = {
             S : 'SEVERITY',

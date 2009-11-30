@@ -32,7 +32,7 @@ package org.postgresql.febe {
     import org.postgresql.io.IDataStream;
     import org.postgresql.io.SocketDataStream;
 
-    public class MessageBroker extends EventDispatcher {
+    public class MessageBroker {
 
         private static const LOGGER:ILogger = Log.getLogger("org.postgresql.febe.MessageBroker");
 
@@ -61,6 +61,8 @@ package org.postgresql.febe {
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
 
+        private var _dispatcher:EventDispatcher;
+
         // Dummy references to ensure these are compiled in; we should be able to remove
         // these once Pegasus exposes functionality that actually uses all these
         private static const FEMessages:Array = [
@@ -73,6 +75,8 @@ package org.postgresql.febe {
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
+
+            _dispatcher = new EventDispatcher();
         }
 
         private function handleSocketData(e:ProgressEvent):void {
@@ -118,7 +122,15 @@ package org.postgresql.febe {
 
         private function dispatch(message:IBEMessage):void {
             LOGGER.debug('<= {0}', message);
-            dispatchEvent(new MessageEvent(message));
+            _dispatcher.dispatchEvent(new MessageEvent(message));
+        }
+
+        public function addMessageListener(type:Class, handler:Function):void {
+            _dispatcher.addEventListener(String(type), handler);
+        }
+
+        public function removeMessageListener(type:Class, handler:Function):void {
+            _dispatcher.removeEventListener(String(type), handler);
         }
 
     }

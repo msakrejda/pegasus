@@ -16,7 +16,7 @@ package org.postgresql.febe {
         public var message:IBEMessage;
 
         public function MessageEvent(message:IBEMessage, bubbles:Boolean=false, cancelable:Boolean=false) {
-            super(message.type, bubbles, cancelable);
+            super(Object(message).constructor, bubbles, cancelable);
             this.message = message;
         }
 
