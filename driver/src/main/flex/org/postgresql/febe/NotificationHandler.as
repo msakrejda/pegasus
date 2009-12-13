@@ -1,11 +1,6 @@
-package org.postgresql.febe
-{
-	public class NotificationHandler extends AbstractFEBEMessageHandler
-	{
-		public function NotificationHandler()
-		{
-			super();
-		}
-		
-	}
+package org.postgresql.febe {
+
+	import flash.events.IEventDispatcher;
+	
+
 }

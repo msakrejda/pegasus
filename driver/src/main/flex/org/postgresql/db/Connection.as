@@ -17,8 +17,11 @@ package org.postgresql.db {
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
+        // TODO: for now, this will always be one query
         private var _pendingResult:Array;
 
+        // needs to know about authenticated, rfq, notice/error, notification
+        // pass itself as nested dispatcher to various handlers on FEBEConnection?
         public function Connection(baseConn:FEBEConnection, codecs:TypeCodecFactory) {
             _baseConn = baseConn;
             _codecs = codecs;

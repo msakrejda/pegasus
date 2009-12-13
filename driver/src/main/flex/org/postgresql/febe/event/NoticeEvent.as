@@ -1,11 +1,11 @@
-package org.postgresql.db {
+package org.postgresql.febe.event {
 
     import flash.events.Event;
 
     public class NoticeEvent extends Event {
 
-        public static const NOTICE:String = 'NoticeEventNotice';
-        public static const ERROR:String = 'NoticeEventError';
+        public static const NOTICE:String = 'noticeNoticeEvent';
+        public static const ERROR:String = 'errorNoticeEvent';
 
         public var fields:Object;
 
