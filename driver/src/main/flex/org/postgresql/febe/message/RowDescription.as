@@ -1,5 +1,6 @@
 package org.postgresql.febe.message {
 
+    import org.postgresql.febe.FieldDescription;
     import org.postgresql.io.ICDataInput;
 
     public class RowDescription extends AbstractMessage implements IBEMessage {

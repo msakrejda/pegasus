@@ -1,22 +1,18 @@
 package org.postgresql.febe {
 
     import flash.events.Event;
-
-    import org.postgresql.febe.message.IBEMessage;
+    
+    import org.postgresql.febe.message.IMessage;
 
     public class MessageEvent extends Event {
 
-        // TODO: this duplicates 'types' laid out in the mesage hierarchy itself,
-        // but we need to be able to add listeners to specific event types. Perhaps
-        // we can add / dispatch on the String representation of the message class types.
-        public static const AUTHENTICATION_OK:String = 'AuthenticationOk';
-        public static const ERROR_RESPONSE:String = 'ErrorResponse';
-        public static const PARAMETER_STATUS:String = 'ParameterStatus';
+        public static const RECEIVED:String = "receivedMessageEvent";
+        public static const SENT:String = "sentMessageEvent";
 
-        public var message:IBEMessage;
+        public var message:IMessage;
 
-        public function MessageEvent(message:IBEMessage, bubbles:Boolean=false, cancelable:Boolean=false) {
-            super(Object(message).constructor, bubbles, cancelable);
+        public function MessageEvent(type:String, message:IMessage) {
+            super(type, false, false);
             this.message = message;
         }
 

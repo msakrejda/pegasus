@@ -315,7 +315,7 @@ package org.postgresql {
         public static const NULL_VALUE_NO_INDICATOR_PARAMETER:String = "22002";
         public static const NUMERIC_VALUE_OUT_OF_RANGE:String = "22003";
         public static const STRING_DATA_LENGTH_MISMATCH:String = "22026";
-//        public static const STRING_DATA_RIGHT_TRUNCATION:String = "22001";
+        public static const DATA_STRING_DATA_RIGHT_TRUNCATION:String = "22001";
         public static const SUBSTRING_ERROR:String = "22011";
         public static const TRIM_ERROR:String = "22027";
         public static const UNTERMINATED_C_STRING:String = "22024";

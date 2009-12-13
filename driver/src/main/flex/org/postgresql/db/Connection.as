@@ -2,111 +2,45 @@ package org.postgresql.db {
 
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
-
-    import mx.logging.ILogger;
-    import mx.logging.Log;
-
+    
     import org.postgresql.codec.TypeCodecFactory;
+    import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.MessageBroker;
-    import org.postgresql.febe.MessageEvent;
-    import org.postgresql.febe.ProtocolError;
-    import org.postgresql.febe.message.AuthenticationRequest;
-    import org.postgresql.febe.message.BackendKeyData;
-    import org.postgresql.febe.message.ParameterStatus;
-    import org.postgresql.febe.message.Query;
-    import org.postgresql.febe.message.ReadyForQuery;
-    import org.postgresql.febe.message.StartupMessage;
-    import org.postgresql.febe.message.Terminate;
 
     public class Connection extends EventDispatcher {
 
-        private static const LOGGER:ILogger = Log.getLogger("org.postgresql.db.Connection");
-
         private var _codecs:TypeCodecFactory;
+        private var _baseConn:FEBEConnection;
+
         private var _params:Object;
         private var _broker:MessageBroker;
-
-        private var _rfq:Boolean;
-        private var _transactionStatus:String;
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
         private var _pendingResult:Array;
 
-        private var _connected:Boolean;
-        private var _serverParams:Object;
-
-        private var _backendPid:int;
-        private var _backendKey:int;
-
-        public function Connection(params:Object, broker:MessageBroker, codecs:TypeCodecFactory) {
-            _params = params;
-            _broker = broker;
+        public function Connection(baseConn:FEBEConnection, codecs:TypeCodecFactory) {
+            _baseConn = baseConn;
             _codecs = codecs;
 
             // add listeners to the broker for rfq, auth handling, paramStatus, backendKeyData,
             // rowDescription, dataRow, commandComplete
 
-            // split different chunks of functionality? authenticator, {simple,extended}QueryExecutor,
-            // copy, function call, cancel, terminate
+            // authenticator, {simple,extended}QueryExecutor, copy, function call, cancel, terminate
 
-            _connected = false;
-            _rfq = false;
-            _serverParams = {};
-            // the first rfq will update this
-            _transactionStatus = 'invalid';
+            // Authentication
+
+            // Notification
+
+            // Notice / Error
+
+            // Query
+
+            // Copy
 
             _active = new Dictionary();
             _pendingExecution = [];
             _pendingResult = [];
-
-            _broker.addMessageListener(AuthenticationRequest, handleAuthenticationRequest);
-            _broker.addMessageListener(BackendKeyData, handleBackendKeyData);
-            _broker.addMessageListener(ParameterStatus, handleServerParameter);
-            _broker.addMessageListener(ReadyForQuery, handleReadyForQuery);
-            _broker.send(new StartupMessage(_params));
-        }
-
-        public function close():void {
-            if (!_connected) {
-                throw new Error("Already disconnected");
-            }
-            _broker.send(new Terminate());
-        }
-
-        private function handleReadyForQuery(e:MessageEvent):void {
-            _transactionStatus = ReadyForQuery(e.message).status;
-            _rfq = true;
-            if (!_connected) {
-                _connected = true;
-                dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
-            }
-        }
-
-        private function handleBackendKeyData(e:MessageEvent):void {
-            var msg:BackendKeyData = BackendKeyData(e.message);
-            _backendKey = msg.key;
-            _backendPid = msg.pid;
-            _broker.removeMessageListener(BackendKeyData, handleBackendKeyData);
-        }
-
-        private function handleServerParameter(e:MessageEvent):void {
-            var msg:ParameterStatus = ParameterStatus(e.message);
-            if (msg.name in _serverParams) {
-                LOGGER.debug("Udating server parameter " + msg.name + " from " +
-                    _serverParams[msg.name] + " to " + msg.value);
-            }
-            _serverParams[msg.name] = msg.value;
-        }
-
-        private function handleAuthenticationRequest(e:MessageEvent):void {
-            var authMsg:AuthenticationRequest = AuthenticationRequest(e.message);
-            if (authMsg.subtype == AuthenticationRequest.OK) {
-                _broker.removeMessageListener(AuthenticationRequest, handleAuthenticationRequest);
-                // We don't dispatch the CONNECTED event unitl the first RFQ
-            } else {
-                throw new ProtocolError("Unsupported authentication type requested");
-            }
         }
 
         public function createStatement():IStatement {
@@ -120,9 +54,10 @@ package org.postgresql.db {
                 throw new ArgumentError("Attempting to execute unregistered statement: " + statement);
             }
 
-            if (_rfq) {
-                _rfq = false;
-                _broker.send(new Query(sql));
+            if (_baseConn.rfq) {
+            	// TODO: what is the proper API here? should _baseConn track the
+            	// statement, or Connection?
+                //_baseConn.execute(sql, statement);
                 _pendingResult.push({ statement: statement, sql: sql });
             } else {
                 _pendingExecution.push({ statement: statement, sql: sql });
@@ -133,10 +68,41 @@ package org.postgresql.db {
             if (!(statement in _active)) {
                 throw new ArgumentError("Attempting to close unregistered statement: " + statement);
             }
-
+            // Send close for portal / statement
             delete _active[statement];
         }
 
 
+    }
+}
+
+import org.postgresql.febe.IQueryHandler;
+import org.postgresql.codec.TypeCodecFactory;
+import org.postgresql.db.IStatement;
+
+class DefaultQueryHandler implements IQueryHandler {
+
+	private var _codecFactory:TypeCodecFactory;
+	private var _stmt:IStatement;
+	private var _fields:Array;
+
+	public function DefaultQueryHandler(codecs:TypeCodecFactory, stmt:IStatement) {
+		_stmt = stmt;
+		_codecFactory = codecs;
+	}
+
+    public function handleMetadata(fields:Array):void {
+    	_fields = fields;
+    }
+
+    public function handleData(rows:Array):void {
+    	//if (!_stmt.isStreaming) {
+    		//_stmt.addRows(process(rows));
+    	//}
+    	//_stmt.dispatchEvent('data event');
+    }
+
+    public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
+    	//_stmt.dispatchEvent('complete');
     }
 }

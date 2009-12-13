@@ -14,7 +14,7 @@ package org.postgresql.febe.message {
 
         public function write(out:ICDataOutput):void {
             out.writeByte(code('Q'));
-            var len:int = query.length + 1 + 4;
+            var len:int = 4 + query.length + 1;
             out.writeInt(len);
             out.writeCString(query);
         }

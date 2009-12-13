@@ -1,11 +1,8 @@
-package org.postgresql.febe.message {
+package org.postgresql.febe {
 
     import org.postgresql.io.ICDataInput;
 
     public class FieldDescription {
-
-        public static const FORMAT_TEXT:int = 0x00;
-        public static const FORMAT_BINARY:int = 0x01;
 
         public var name:String;
         public var tableOid:int;
@@ -23,10 +20,7 @@ package org.postgresql.febe.message {
             typeSize = input.readShort();
             typeModifier = input.readInt();
             format = input.readShort();
-            if (format != FORMAT_TEXT &&
-                format != FORMAT_BINARY) {
-                throw new ArgumentError("Unrecognized data encoding: " + format);
-            }
+            EncodingFormat.validate(format);
         }
 
     }

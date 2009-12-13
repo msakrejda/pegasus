@@ -1,6 +1,6 @@
 package org.postgresql.febe {
-    public class Oid {
 
+    public class Oid {
         public static const UNSPECIFIED:int = 0;
         public static const INT2:int = 21;
         public static const INT4:int = 23;

@@ -9,46 +9,52 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.Bind;
-    import org.postgresql.febe.message.CancelRequest;
+    import org.postgresql.febe.message.CloseComplete;
     import org.postgresql.febe.message.CommandComplete;
     import org.postgresql.febe.message.DataRow;
-    import org.postgresql.febe.message.Describe;
     import org.postgresql.febe.message.EmptyQueryResponse;
     import org.postgresql.febe.message.ErrorResponse;
-    import org.postgresql.febe.message.Flush;
     import org.postgresql.febe.message.IBEMessage;
     import org.postgresql.febe.message.IFEMessage;
     import org.postgresql.febe.message.NoData;
     import org.postgresql.febe.message.NoticeResponse;
+    import org.postgresql.febe.message.ParameterDescription;
     import org.postgresql.febe.message.ParameterStatus;
     import org.postgresql.febe.message.ParseComplete;
-    import org.postgresql.febe.message.PasswordMessage;
-    import org.postgresql.febe.message.Query;
+    import org.postgresql.febe.message.PortalSuspended;
     import org.postgresql.febe.message.ReadyForQuery;
     import org.postgresql.febe.message.RowDescription;
-    import org.postgresql.febe.message.StartupMessage;
-    import org.postgresql.febe.message.Sync;
-    import org.postgresql.febe.message.Terminate;
     import org.postgresql.io.ByteDataStream;
     import org.postgresql.io.IDataStream;
     import org.postgresql.io.SocketDataStream;
 
-    public class MessageBroker {
+    public class MessageBroker extends EventDispatcher {
 
         private static const LOGGER:ILogger = Log.getLogger("org.postgresql.febe.MessageBroker");
 
+        // Commented-out messages are part of the protocol but unimplemented. COPY
+        // will probably be implemented at some point; the function call subprotocol
+        // probably will not be
         public static const backendMessageTypes:Object = {
             'R': AuthenticationRequest,
             'K': BackendKeyData,
             'B': Bind,
             'C': CommandComplete,
+          /*'d': CopyData,
+            'c': CopyDone,
+            'G': CopyInResponse,
+            'H': CopyOutResponse */
+            '3': CloseComplete,
             'D': DataRow,
             'I': EmptyQueryResponse,
             'E': ErrorResponse,
+          /*'V': FunctionCallResponse */ 
             'n': NoData,
             'N': NoticeResponse,
+            't': ParameterDescription,
             'S': ParameterStatus,
             '1': ParseComplete,
+            's': PortalSuspended,
             'Z': ReadyForQuery,
             'T': RowDescription
         }
@@ -58,16 +64,12 @@ package org.postgresql.febe {
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
 
-        private var _dispatcher:EventDispatcher;
-
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(SocketDataStream.DATA_AVAILABLE, handleSocketData);
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
-
-            _dispatcher = new EventDispatcher();
         }
 
         private function handleSocketData(e:Event):void {
@@ -96,21 +98,15 @@ package org.postgresql.febe {
         }
 
         public function send(message:IFEMessage):void {
+        	// TODO: move the logging out to remove Flex dependencies here
             LOGGER.debug('=> {0}', message);
             message.write(_dataStream);
+            dispatchEvent(new MessageEvent(MessageEvent.SENT, message));
         }
 
         private function dispatch(message:IBEMessage):void {
             LOGGER.debug('<= {0}', message);
-            _dispatcher.dispatchEvent(new MessageEvent(message));
-        }
-
-        public function addMessageListener(type:Class, handler:Function):void {
-            _dispatcher.addEventListener(String(type), handler);
-        }
-
-        public function removeMessageListener(type:Class, handler:Function):void {
-            _dispatcher.removeEventListener(String(type), handler);
+            dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, message));
         }
 
     }
