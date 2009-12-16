@@ -39,7 +39,6 @@ package org.postgresql.febe {
 
             _connected = false;
             _connecting = false;
-            _handlers = [];
 
             _broker.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
 		}
@@ -56,17 +55,18 @@ package org.postgresql.febe {
             _msgDispatcher = dispatcher;
             var authHandler:IFEBEMessageHandler = new AuthenticationHandler(dispatcher);
             authHandler.addEventListener(AuthenticationHandler.AUTHENTICATED, handleAuth);
-            _handlers.push(authHandler);
+            _handlers = [ authHandler ];
             _broker.send(new StartupMessage(_params));
         }
 
         private function handleAuth(e:Event):void {
         	_connecting = false;
         	_connected = true;
-        	//_queryHandler = new QueryMessageHandler(_msgDispatcher);
-        	_handlers = [ /* query, rfq (?), notice/error, notification */ ];
-        	// rfq probably does not need to be its own handler with its own state--we
-        	// can directly add an event handler to the broker.
+        	_queryHandler = new QueryMessageHandler(_msgDispatcher);
+        	_rfqHandler = new ReadyForQueryHandler(_msgDispatcher);
+        	var noticeHandler:NoticeHandler = new NoticeHandler(_msgDispatcher);
+        	var notifHandler:NotificationHandler = new NotificationHandler(_msgDispatcher);
+        	_handlers = [ _queryHandler, noticeHandler, notifHandler, _rfqHandler  ];
         }
 		
 
@@ -87,6 +87,7 @@ package org.postgresql.febe {
         // query-data-available and statement-complete messages. We should also batch
         // the data-available messages--dispatching an event per-DataRow would be silly.
         internal function executeSimpleQuery(sql:String, handler:IQueryHandler):void {
+        	_queryHandler.handler = handler;
             _broker.send(new Query(sql));
         }
 
@@ -241,6 +242,7 @@ class QueryMessageHandler extends AbstractFEBEMessageHandler {
     }
 
     public override function getCallback(msg:IBEMessage):Function {
+    	// If there is no current statement, there is nothing to handle
     	return _stmt ? super.getCallback(msg) : null;
     }
 
@@ -276,6 +278,10 @@ import org.postgresql.febe.message.NotificationResponse;
 import org.postgresql.febe.ProtocolError;
 import flash.events.Event;
 import org.postgresql.febe.TransactionStatus;
+import org.postgresql.febe.message.NoticeResponse;
+import org.postgresql.febe.message.ErrorResponse;
+import org.postgresql.febe.event.NoticeEvent;
+import org.postgresql.febe.message.ResponseMessageBase;
 
 class NotificationHandler extends AbstractFEBEMessageHandler {
 
@@ -286,5 +292,18 @@ class NotificationHandler extends AbstractFEBEMessageHandler {
 
     private function handleNotification(msg:NotificationResponse):void {
         dispatchEvent(new NotificationEvent(msg.condition, msg.notifierPid));
+    }
+}
+
+class NoticeHandler extends AbstractFEBEMessageHandler {
+
+    public function NoticeHandler(target:IEventDispatcher) {
+        super(target);
+        _handlerMethods[NoticeResponse] = handleNotice;
+        _handlerMethods[ErrorResponse] = handleNotice
+    }
+
+    private function handleNotice(msg:ResponseMessageBase):void {
+        dispatchEvent(new NoticeEvent(msg is ErrorResponse ? NoticeEvent.ERROR : NoticeEvent.NOTICE, msg.fields));
     }
 }
