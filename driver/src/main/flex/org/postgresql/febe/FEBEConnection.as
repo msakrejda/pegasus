@@ -210,7 +210,7 @@ package org.postgresql.febe {
 
         private function flushPendingResults():void {
             if (_queryHandler && _currResults.length > 0) {
-                _queryHandler.handleData(_currResults);
+                _queryHandler.handleData(_currResults, serverParams);
                 _currResults = [];
             }
         }

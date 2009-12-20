@@ -1,15 +1,15 @@
 package org.postgresql.codec.decode {
 
 	import org.postgresql.codec.IPGTypeDecoder;
-	import org.postgresql.febe.DateStyle;
-	import org.postgresql.febe.EncodingFormat;
+	import org.postgresql.DateStyle;
+	import org.postgresql.EncodingFormat;
 	import org.postgresql.febe.FieldDescription;
 	import org.postgresql.io.ICDataInput;
 
 	public class DateOut implements IPGTypeDecoder {
 
 		public function decode(bytes:ICDataInput, format:FieldDescription, serverParams:Object):Object {
-			case (format.format) {
+			switch (format.format) {
 				case EncodingFormat.TEXT:
 		            if (!('DateStyle' in serverParams)) {
 		                throw new ArgumentError("No DateStyle specified");
@@ -25,7 +25,7 @@ package org.postgresql.codec.decode {
 		            // need to treat it as a microsencond offset since 2000 (not 1970).
 		            return null;
 		        default:
-                    throw new ArgumentError("Unknown format: " + fieldInfo.format); 
+                    throw new ArgumentError("Unknown format: " + format.format); 
 			}
 		}
 
@@ -55,7 +55,7 @@ package org.postgresql.codec.decode {
             }
 
             if (dateStr.charAt(19) == '.') {
-            	millis = int(dateStr.substr(19, tzSignIdx - 19)) * 1000; 
+            	millis = int(Number(dateStr.substr(19, tzSignIdx - 19)) * 1000); 
             } else {
             	millis = 0;
             }
@@ -72,9 +72,19 @@ package org.postgresql.codec.decode {
             } else {
             	tzOffset = NaN;
             }
-            var result:Date = new Date(year, mon, day, hour, min, sec, millis);
+            var result:Date = new Date(year, mon - 1 /* 0-numbered months (!) */, day, hour, min, sec, millis);
             if (!isNaN(tzOffset)) {
-            	result.timezoneOffset = tzOffset;
+            	// timezoneOffset is ready-only, so we cannot manipulate it here. Essentially,
+            	// all dates in ActionScritpt are going to be in the client's timezone. If a
+            	// timezone offset is specified, we need to adjust the date by the difference
+            	// between our timezone and tzoffset. Note that due to some fantastically
+            	// creative API design, time zones "behind" GMT actually have positive offsets,
+            	// and timezones "ahead of" GMT have negative offsets, so we add instead of
+            	// subtracting.
+            	var tzDiff:Number = tzOffset + result.timezoneOffset;
+            	if (tzDiff != 0) {
+            		result.time += tzDiff * 1000 * 60;
+            	}
             }
             return result;
  		}

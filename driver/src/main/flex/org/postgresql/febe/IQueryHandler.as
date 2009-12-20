@@ -14,7 +14,7 @@ package org.postgresql.febe {
 		 * to the raw bytes for each field. This method will be called
 		 * zero or more times before handleCompletion is called. 
 		 */
-		function handleData(rows:Array):void;
+		function handleData(rows:Array, serverParams:Object):void;
 		/**
 		 * Indicates successful completion of a query. After this is
 		 * called, no other methods on this IQueryHandler will be called. 

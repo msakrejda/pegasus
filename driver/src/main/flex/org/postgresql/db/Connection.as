@@ -53,7 +53,7 @@ package org.postgresql.db {
         	if (_pendingExecution.length > 0) {
         		var nextQuery:Object = _pendingExecution.shift();
         		_baseConn.executeSimpleQuery(nextQuery.sql,
-                    new DefaultQueryHandler(_codecs, nextQuery.statement));
+                    new DefaultQueryHandler(nextQuery.statement, _codecs));
         	}
         }
 
@@ -69,7 +69,7 @@ package org.postgresql.db {
             }
 
             if (_baseConn.rfq) {
-                _baseConn.executeSimpleQuery(sql, new DefaultQueryHandler(_codecs, statement));   
+                _baseConn.executeSimpleQuery(sql, new DefaultQueryHandler(statement, _codecs));   
             } else {
                 _pendingExecution.push({ statement: statement, sql: sql });
             }
@@ -102,7 +102,7 @@ class DefaultQueryHandler implements IQueryHandler {
 
     private var _data:Array;
 
-	public function DefaultQueryHandler(codecs:CodecFactory, stmt:IStatement) {
+	public function DefaultQueryHandler(stmt:IStatement, codecs:CodecFactory) {
 		_stmt = stmt;
 		_codecFactory = codecs;
 		_data = [];
@@ -116,14 +116,14 @@ class DefaultQueryHandler implements IQueryHandler {
     	}
     }
 
-    public function handleData(rows:Array):void {
+    public function handleData(rows:Array, serverParams:Object):void {
     	// TODO: handle streaming
     	for each (var row:Array in rows) {
     		var decodedRow:Array = [];
     		for (var i:int = 0; i < row.length; i++) { 
     			if (row[i]) {
     				// TODO: this needs access to serverParams
-    				decodedRow.push(_decoders[i].decode(row[i], _fields[i], {}));
+    				decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
     			} else {
     				decodedRow.push(null);
     			}
