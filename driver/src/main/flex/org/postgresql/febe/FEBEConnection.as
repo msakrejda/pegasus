@@ -187,8 +187,8 @@ package org.postgresql.febe {
 	
 	    private function handleComplete(msg:CommandComplete):void {
 	        if (_queryHandler) {
+	        	flushPendingResults();
 	        	_queryHandler.handleCompletion(msg.commandTag, msg.affectedRows, msg.oid);
-	        	_currResults = [];
 	        	_queryHandler = null;
 	        } else {
 	        	throw new ProtocolError("Unexpected CommandComplete"); 
@@ -208,11 +208,15 @@ package org.postgresql.febe {
 	        }
 	    }
 
+        private function flushPendingResults():void {
+            if (_queryHandler && _currResults.length > 0) {
+                _queryHandler.handleData(_currResults);
+                _currResults = [];
+            }
+        }
+
         private function handleBatchComplete(e:Event):void {
-        	if (_queryHandler && _currResults.length > 0) {
-        		_queryHandler.handleData(_currResults);
-        		_currResults = [];
-        	}
+        	flushPendingResults();
         }
 
         // executeSimpleQuery and executeQuery should both notify caller when commandComplete
