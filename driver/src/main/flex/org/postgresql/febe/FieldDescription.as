@@ -2,25 +2,33 @@ package org.postgresql.febe {
 
     import org.postgresql.io.ICDataInput;
 
-    public class FieldDescription {
+    public class FieldDescription implements IFieldInfo {
 
         public var name:String;
         public var tableOid:int;
         public var attributeNum:int;
-        public var typeOid:int;
+        private var _typeOid:int;
         public var typeSize:int;
         public var typeModifier:int;
-        public var format:int;
+        private var _format:int;
 
         public function read(input:ICDataInput):void {
             name = input.readCString();
             tableOid = input.readInt();
             attributeNum = input.readShort();
-            typeOid = input.readInt();
+            _typeOid = input.readInt();
             typeSize = input.readShort();
             typeModifier = input.readInt();
-            format = input.readShort();
+            _format = input.readShort();
             EncodingFormat.validate(format);
+        }
+
+        public function get typeOid():int {
+        	return _typeOid;
+        }
+
+        public function get format():int {
+        	return _format;
         }
 
     }

@@ -1,32 +1,35 @@
-package org.postgresql.codec.text {
+package org.postgresql.codec.decode {
 
 	import org.postgresql.codec.IPGTypeDecoder;
-	import org.postgresql.codec.IPGTypeEncoder;
 	import org.postgresql.febe.DateStyle;
-	import org.postgresql.febe.message.FieldDescription;
+	import org.postgresql.febe.EncodingFormat;
+	import org.postgresql.febe.FieldDescription;
 	import org.postgresql.io.ICDataInput;
-	import org.postgresql.io.ICDataOutput;
 
-	public class DateCodec implements IPGTypeDecoder, IPGTypeEncoder {
-
-        private static const isoRe:RegExp = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(?:\+/)?;
+	public class DateOut implements IPGTypeDecoder {
 
 		public function decode(bytes:ICDataInput, format:FieldDescription, serverParams:Object):Object {
-			if (!('DateStyle' in serverParams)) {
-				throw new ArgumentError("No DateStyle specified");
+			case (format.format) {
+				case EncodingFormat.TEXT:
+		            if (!('DateStyle' in serverParams)) {
+		                throw new ArgumentError("No DateStyle specified");
+		            }
+		            var outputStyle:String = DateStyle.parse(serverParams['DateStyle'])[0];
+		            if (outputStyle != DateStyle.OUTPUT_ISO) {
+		                throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
+		            }
+		            return parseISO(bytes.readUTFBytes(bytes.bytesAvailable));
+		        case EncodingFormat.BINARY:
+		            // TODO: implement me. on the wire, the value here depends on
+		            // whether we have integer datetimes. After we parse this, we
+		            // need to treat it as a microsencond offset since 2000 (not 1970).
+		            return null;
+		        default:
+                    throw new ArgumentError("Unknown format: " + fieldInfo.format); 
 			}
-			var outputStyle:String = serverParams['DateStyle'].split(',')[0];
-			if (outputStyle != DateStyle.OUTPUT_ISO) {
-				throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
-			}
-			var 
-			return; 
 		}
-		
-		public function encode(bytes:ICDataOutput, serverParams:Object, value:Object):void {
-		}
-		
-		private function parseISO(dateStr:String):void {
+
+		private function parseISO(dateStr:String):Date {
 			// this parses strings in the format
 			// y y y y - M M - d d  h h : m m : s s (.fraction)?(tz:mm)?
 			// 0         5     8    11    14    17    20
@@ -73,8 +76,8 @@ package org.postgresql.codec.text {
             if (!isNaN(tzOffset)) {
             	result.timezoneOffset = tzOffset;
             }
- 
-		}
+            return result;
+ 		}
 		
 	}
 }

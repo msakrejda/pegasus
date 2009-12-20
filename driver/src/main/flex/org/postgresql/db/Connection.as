@@ -1,15 +1,18 @@
 package org.postgresql.db {
 
+    import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
     
-    import org.postgresql.codec.TypeCodecFactory;
+    import org.postgresql.codec.CodecFactory;
+    import org.postgresql.event.NoticeEvent;
+    import org.postgresql.event.NotificationEvent;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.MessageBroker;
 
     public class Connection extends EventDispatcher {
 
-        private var _codecs:TypeCodecFactory;
+        private var _codecs:CodecFactory;
         private var _baseConn:FEBEConnection;
 
         private var _params:Object;
@@ -17,33 +20,41 @@ package org.postgresql.db {
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
-        // TODO: for now, this will always be one query
-        private var _pendingResult:Array;
 
-        // needs to know about authenticated, rfq, notice/error, notification
-        // pass itself as nested dispatcher to various handlers on FEBEConnection?
-        public function Connection(baseConn:FEBEConnection, codecs:TypeCodecFactory) {
+        public function Connection(baseConn:FEBEConnection, codecs:CodecFactory) {
             _baseConn = baseConn;
             _codecs = codecs;
 
-            // add listeners to the broker for rfq, auth handling, paramStatus, backendKeyData,
-            // rowDescription, dataRow, commandComplete
+            // add listeners to the baseConn for rfq, paramStatus, notice / error / notification
+            _baseConn.addEventListener(FEBEConnection.READY_FOR_QUERY, handleRfq);
 
-            // authenticator, {simple,extended}QueryExecutor, copy, function call, cancel, terminate
-
-            // Authentication
-
-            // Notification
-
-            // Notice / Error
-
-            // Query
-
-            // Copy
+            // Unfortunately, our two-tiered approach here means there are a number of
+            // events the base connection dispatches that we just want to rebroadcast
+            // directly--we do this by cloning them...            
+            _baseConn.addEventListener(FEBEConnection.PARAM_CHANGE, handleRebroadcast);
+            _baseConn.addEventListener(FEBEConnection.CONNECTED, handleRebroadcast);
+            _baseConn.addEventListener(NoticeEvent.NOTICE, handleRebroadcast);
+            _baseConn.addEventListener(NoticeEvent.ERROR, handleRebroadcast);
+            _baseConn.addEventListener(NotificationEvent.NOTIFICATION, handleRebroadcast);
+            
+            // support, {simple,extended}QueryExecutor, copy, function call, cancel, terminate
 
             _active = new Dictionary();
             _pendingExecution = [];
-            _pendingResult = [];
+        }
+
+        private function handleRebroadcast(e:Event):void {
+        	var newEvent:Event = e.clone();
+        	dispatchEvent(newEvent);
+        }
+
+
+        private function handleRfq(e:Event):void {
+        	if (_pendingExecution.length > 0) {
+        		var nextQuery:Object = _pendingExecution.shift();
+        		_baseConn.executeSimpleQuery(nextQuery.sql,
+                    new DefaultQueryHandler(_codecs, nextQuery.statement));
+        	}
         }
 
         public function createStatement():IStatement {
@@ -58,10 +69,7 @@ package org.postgresql.db {
             }
 
             if (_baseConn.rfq) {
-            	// TODO: what is the proper API here? should _baseConn track the
-            	// statement, or Connection?
-                //_baseConn.execute(sql, statement);
-                _pendingResult.push({ statement: statement, sql: sql });
+                _baseConn.executeSimpleQuery(sql, new DefaultQueryHandler(_codecs, statement));   
             } else {
                 _pendingExecution.push({ statement: statement, sql: sql });
             }
@@ -80,32 +88,60 @@ package org.postgresql.db {
 }
 
 import org.postgresql.febe.IQueryHandler;
-import org.postgresql.codec.TypeCodecFactory;
+import org.postgresql.codec.CodecFactory;
 import org.postgresql.db.IStatement;
+import org.postgresql.febe.FieldDescription;
+import flash.utils.ByteArray;
 
 class DefaultQueryHandler implements IQueryHandler {
 
-	private var _codecFactory:TypeCodecFactory;
+	private var _codecFactory:CodecFactory;
 	private var _stmt:IStatement;
 	private var _fields:Array;
+	private var _decoders:Array;
 
-	public function DefaultQueryHandler(codecs:TypeCodecFactory, stmt:IStatement) {
+    private var _data:Array;
+
+	public function DefaultQueryHandler(codecs:CodecFactory, stmt:IStatement) {
 		_stmt = stmt;
 		_codecFactory = codecs;
+		_data = [];
 	}
 
     public function handleMetadata(fields:Array):void {
     	_fields = fields;
+    	_decoders = [];
+    	for each (var f:FieldDescription in fields) {
+    		_decoders.push(_codecFactory.getDecoder(f.typeOid));
+    	}
     }
 
     public function handleData(rows:Array):void {
-    	//if (!_stmt.isStreaming) {
-    		//_stmt.addRows(process(rows));
-    	//}
-    	//_stmt.dispatchEvent('data event');
+    	// TODO: handle streaming
+    	for each (var row:Array in rows) {
+    		var decodedRow:Array = [];
+    		for (var i:int = 0; i < row.length; i++) { 
+    			if (row[i]) {
+    				// TODO: this needs access to serverParams
+    				decodedRow.push(_decoders[i].decode(row[i], _fields[i], {}));
+    			} else {
+    				decodedRow.push(null);
+    			}
+    		}
+    		_data.push(decodedRow);
+    	}
     }
 
     public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
     	//_stmt.dispatchEvent('complete');
+    	trace('complete');
+    }
+
+    public function handleNotice(fields:Object):void {
+    	
+    }
+
+    public function handleError(fields:Object):void {
+    	
     }
 }

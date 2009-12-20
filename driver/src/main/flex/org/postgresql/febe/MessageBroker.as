@@ -2,9 +2,11 @@ package org.postgresql.febe {
 
     import flash.events.Event;
     import flash.events.EventDispatcher;
+    import flash.utils.Dictionary;
     
     import mx.logging.ILogger;
     import mx.logging.Log;
+    import mx.utils.ObjectUtil;
     
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
@@ -32,9 +34,17 @@ package org.postgresql.febe {
 
         private static const LOGGER:ILogger = Log.getLogger("org.postgresql.febe.MessageBroker");
 
+        /**
+         * Depending on the nested IDataStream implementation, incoming messages may
+         * arrive in batches. When a batch of messages has been processed, this event
+         * is dispatched. It allows us to implement features like result set streaming
+         * in an efficient and useful manner.
+         */  
+        public static const BATCH_COMPLETE:String = "batchComplete";
+
         // Commented-out messages are part of the protocol but unimplemented. COPY
-        // will probably be implemented at some point; the function call subprotocol
-        // probably will not be
+        // will probably be implemented at some point; the function call (fastpath)
+        // subprotocol probably will not be
         public static const backendMessageTypes:Object = {
             'R': AuthenticationRequest,
             'K': BackendKeyData,
@@ -64,12 +74,16 @@ package org.postgresql.febe {
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
 
+        private var _msgListeners:Dictionary;
+        
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(SocketDataStream.DATA_AVAILABLE, handleSocketData);
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
+
+            _msgListeners = new Dictionary();
         }
 
         private function handleSocketData(e:Event):void {
@@ -95,6 +109,7 @@ package org.postgresql.febe {
 		            _nextMessageLen = -1;
                 }
 	        }
+	        dispatchEvent(new Event(BATCH_COMPLETE));
         }
 
         public function send(message:IFEMessage):void {
@@ -106,7 +121,21 @@ package org.postgresql.febe {
 
         private function dispatch(message:IBEMessage):void {
             LOGGER.debug('<= {0}', message);
-            dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, message));
+            var listener:Function = _msgListeners[Object(message).constructor];
+            if (listener != null) {
+            	listener(message);
+                dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, message));
+            } else {
+            	dispatchEvent(new MessageEvent(MessageEvent.DROPPED, message));
+            }
+        }
+        
+        public function setMessageListener(msg:Class, callback:Function):void {
+       		_msgListeners[msg] = callback;
+        }
+
+        public function clearMessageListener(msg:Class):void {
+        	delete _msgListeners[msg];
         }
 
     }

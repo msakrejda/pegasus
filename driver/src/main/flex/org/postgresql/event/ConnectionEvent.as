@@ -1,4 +1,4 @@
-package org.postgresql.febe.event {
+package org.postgresql.event {
 
     import flash.events.Event;
 

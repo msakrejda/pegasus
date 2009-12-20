@@ -20,5 +20,15 @@ package org.postgresql.febe {
 		 * called, no other methods on this IQueryHandler will be called. 
 		 */
 		function handleCompletion(command:String, affected:int=0, oid:int=-1):void;
+		/**
+		 * Indicates a warning related to the query. The query may still
+		 * complete successfully.
+		 */
+        function handleNotice(fields:Object):void;
+        /**
+         * Indicates an error related to the queyr. The query will not complete
+         * successfully and no other methods of this handler will be called.
+         */
+        function handleError(fields:Object):void;
 	}
 }

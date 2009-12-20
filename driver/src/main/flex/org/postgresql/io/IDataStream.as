@@ -1,9 +1,10 @@
-package org.postgresql.io
-{
+package org.postgresql.io {
+
     import flash.events.IEventDispatcher;
 
-    public interface IDataStream extends ICDataInput, ICDataOutput, IEventDispatcher
-    {
+    // TODO: the IDataStream needs to define CLOSE and ERROR events
+    // to be generically useful to the MessageBroker
+    public interface IDataStream extends ICDataInput, ICDataOutput, IEventDispatcher {
 
     }
 }
