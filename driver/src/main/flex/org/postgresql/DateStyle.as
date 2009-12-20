@@ -1,4 +1,4 @@
-package org.postgresql.febe {
+package org.postgresql {
 
 	public class DateStyle {
 		public static const OUTPUT_ISO:String = 'ISO';

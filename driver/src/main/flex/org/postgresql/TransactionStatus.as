@@ -1,4 +1,4 @@
-package org.postgresql.febe {
+package org.postgresql {
 
 	public class TransactionStatus {
         public static const IDLE:String = 'I';

@@ -1,4 +1,4 @@
-package org.postgresql.febe {
+package org.postgresql {
 
 	public class EncodingFormat {
 		public static const TEXT:int = 0;

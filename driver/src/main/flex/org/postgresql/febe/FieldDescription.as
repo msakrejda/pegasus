@@ -1,5 +1,6 @@
 package org.postgresql.febe {
 
+    import org.postgresql.EncodingFormat;
     import org.postgresql.io.ICDataInput;
 
     public class FieldDescription implements IFieldInfo {

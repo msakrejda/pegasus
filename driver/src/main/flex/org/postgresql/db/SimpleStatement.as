@@ -5,13 +5,18 @@ package org.postgresql.db {
     internal class SimpleStatement extends EventDispatcher implements IStatement {
 
         private var _conn:Connection;
+        private var _columns:Array;
 
         public function SimpleStatement(conn:Connection) {
             _conn = conn;
         }
+        
+        internal function setColumns(value:Array):void {
+        	_columns = value;
+        }
 
         public function get columns():Array {
-        	return [];
+        	return _columns;
         }
 
         public function execute(sql:String):void {

@@ -1,4 +1,4 @@
-package org.postgresql.febe {
+package org.postgresql {
 
     public class Oid {
         public static const UNSPECIFIED:int = 0;

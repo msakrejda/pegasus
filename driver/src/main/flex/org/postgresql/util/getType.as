@@ -1,14 +1,16 @@
 package org.postgresql.util {
 
-    public function getType(value:Object):Object {
+    public function getType(value:Object):Class {
         if (value == null) {
             throw new ArgumentError("Cannot determine type of null value");
         }
-        // Note that since the int class is a low-level primitive
-        // in ActionScript, it has some weird behaviors. Namely,
-        // Object(42).constructor == Number, not int. Therefore,
-        // we check the type before returning the class.
-        return value is int ? int : value.constructor;
+        if (value is int) {
+        	return int;
+        } else if (value is uint) {
+        	return uint;
+        } else {
+        	return value.constructor;
+        }
     }
 
 }

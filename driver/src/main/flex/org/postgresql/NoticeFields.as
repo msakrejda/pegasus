@@ -1,4 +1,4 @@
-package org.postgresql.febe {
+package org.postgresql {
 
 	public class NoticeFields {
 

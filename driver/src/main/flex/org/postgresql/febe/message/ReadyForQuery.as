@@ -1,6 +1,6 @@
 package org.postgresql.febe.message {
 
-    import org.postgresql.febe.TransactionStatus;
+    import org.postgresql.TransactionStatus;
     import org.postgresql.io.ICDataInput;
 
     public class ReadyForQuery extends AbstractMessage implements IBEMessage {

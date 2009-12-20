@@ -133,7 +133,9 @@ class DefaultQueryHandler implements IQueryHandler {
     }
 
     public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
-    	//_stmt.dispatchEvent('complete');
+    	for each (var row:Array in _data) {
+    		trace (row.join(','));
+    	}
     	trace('complete');
     }
 

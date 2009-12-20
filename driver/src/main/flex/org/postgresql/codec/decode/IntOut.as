@@ -1,9 +1,9 @@
 package org.postgresql.codec.decode {
 
 	import org.postgresql.codec.IPGTypeDecoder;
-	import org.postgresql.febe.EncodingFormat;
+	import org.postgresql.EncodingFormat;
 	import org.postgresql.febe.FieldDescription;
-	import org.postgresql.febe.Oid;
+	import org.postgresql.Oid;
 	import org.postgresql.io.ICDataInput;
 
 	public class IntOut implements IPGTypeDecoder {
