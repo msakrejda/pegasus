@@ -48,7 +48,7 @@ package org.postgresql.febe.message {
         }
 
         public function read(input:ICDataInput):void {
-            subtype = input.readByte();
+            subtype = input.readInt();
             if (!(subtype in subtypes)) {
                 throw new MessageError("Unexpected AuthenticationRequest type: " + subtype, this);
             }

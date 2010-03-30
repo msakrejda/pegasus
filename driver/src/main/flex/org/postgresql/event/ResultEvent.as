@@ -8,8 +8,8 @@ package org.postgresql.event {
 
 		public var results:Array;
 
-		public function ResultEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super(type, bubbles, cancelable);
+		public function ResultEvent(type:String) {
+			super(type);
 		}
 		
 	}

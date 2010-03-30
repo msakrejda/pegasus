@@ -97,8 +97,8 @@ package org.postgresql.febe {
                 	_nextMessageLen = _dataStream.readInt() - 4;
                 } else {
 		            // TODO: We should not have to copy the message to its own array: we
-		            // should wrap the stream in something that sets a 'dummy' limit to
-		            // the number of bytes this particular message can read.
+		            // should wrap the stream in something that sets an arbitrary hard limit
+		            // to the number of bytes this particular message can read.
 		            var messageBytes:ByteDataStream = new ByteDataStream();
 		            _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
 		

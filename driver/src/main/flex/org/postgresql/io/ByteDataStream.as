@@ -12,5 +12,8 @@ package org.postgresql.io {
             IOUtil.writeCString(this, value);
         }
 
+        public function close():void {
+            /* do nothing */
+        }
     }
 }

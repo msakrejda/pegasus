@@ -18,6 +18,7 @@ package org.postgresql.febe {
 	import org.postgresql.febe.message.NoticeResponse;
 	import org.postgresql.febe.message.NotificationResponse;
 	import org.postgresql.febe.message.ParameterStatus;
+	import org.postgresql.febe.message.PasswordMessage;
 	import org.postgresql.febe.message.Query;
 	import org.postgresql.febe.message.ReadyForQuery;
 	import org.postgresql.febe.message.ResponseMessageBase;
@@ -38,7 +39,12 @@ package org.postgresql.febe {
         private static const LOGGER:ILogger = Log.getLogger("org.postgresql.db.Connection");
 
 		private var _params:Object;
+
+        private var _brokerFactory:MessageBrokerFactory;
 		private var _broker:MessageBroker;
+		// Note that we may have multiple outstanding queries, but
+		// we'll only want to cancel at most one
+        private var _cancelBroker:MessageBroker;
 
         private var _authenticated:Boolean;
         private var _connecting:Boolean;
@@ -50,14 +56,31 @@ package org.postgresql.febe {
         private var _queryHandler:IQueryHandler;
         private var _currResults:Array;
 
+        private var _password:String;
+
 	    public var backendPid:int;
 	    public var backendKey:int;
 	
 	    public var serverParams:Object;
 
-		public function FEBEConnection(params:Object, broker:MessageBroker) {
+
+        // Note that params here are params we want to send to the server in the
+        // startup packet. The jdbc driver sends this:
+        // {
+        //      user: user,
+        //      database: database,
+        //      client_encoding: "UNICODE",
+        //      DateStyle: "ISO"
+        // };
+        // Furthermore, we need the password if we're doing authentication that
+        // involves a password. Jdbc also passes in a flag to use SSL here, but
+        // it could be handy to handle that in the message broker factory
+
+		public function FEBEConnection(params:Object, password:String, brokerFactory:MessageBrokerFactory) {
 			_params = params;
-			_broker = broker;
+            _brokerFactory = brokerFactory;
+            // Our main broker
+            _broker = brokerFactory.create();
 
             _connected = false;
             _connecting = false;
@@ -65,6 +88,8 @@ package org.postgresql.febe {
 
             _queryHandler = null;
             _currResults = [];
+            
+            _password = password;
 
             serverParams = {};
             backendKey = -1;
@@ -94,12 +119,16 @@ package org.postgresql.febe {
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
+            // TODO: this should probably be an error event since it's
+            // happening asynchronously
         	throw new ProtocolError("Unexpected message: " + msg.type);
         }
 	
 	    private function handleAuth(msg:AuthenticationRequest):void {
 	        if (msg.subtype == AuthenticationRequest.OK) {
-	            _authenticated = true;              
+	            _authenticated = true;
+	        } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
+	            _broker.send(new PasswordMessage(_password));
 	        } else {
 	            throw new ProtocolError("Unsupported authentication type requested");                   
 	        }
@@ -165,6 +194,9 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
+               for (var key:String in msg.fields) {
+                   trace(key, msg.fields[key]);
+               }
                dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, msg.fields));
             }        	
         }
@@ -222,9 +254,6 @@ package org.postgresql.febe {
         // executeSimpleQuery and executeQuery should both notify caller when commandComplete
         // returns a result set. when rfq, the nesting Connection should issue another query.
 
-        // additionally, there is fastpath (function call) and copy. It might be handy to
-        // support a structured explain
-
         // since these will only have one outstanding statement at any given time, perhaps
         // we should keep that as a member variable while the call is being executed. We
         // need to have some concept of 'outstanding statement' (which could lead to more
@@ -253,6 +282,14 @@ package org.postgresql.febe {
         	// > execute(portal)
         	// < commandComplete | errorResponse | emptyQueryResponse | portalSuspended
         	// > sync
+        }
+
+        // additionally, there is fastpath (function call) and copy. It might be handy to
+        // support a structured explain
+
+        public /* ? */ function cancel():void {
+            // probably want to do this per-query instead, and possibly add something
+            // like a 'clear()' to cancel all pending queries
         }
 
         public function close():void {

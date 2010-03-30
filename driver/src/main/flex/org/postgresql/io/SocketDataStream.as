@@ -6,10 +6,13 @@ package org.postgresql.io {
 
     public class SocketDataStream extends Socket implements IDataStream {
 
-        // TODO: pull out into DataStreamEvent class
+        // TODO: pull out into DataStreamEvent class. It's also kind of a dirty
+        // hack to re-use the same event constant value. Unfortunately, the Socket
+        // class doesn't seem to like dispatching another event off itself in the
+        // ProgressEvent handler.
         public static const DATA_AVAILABLE:String = ProgressEvent.SOCKET_DATA;
 
-        public function SocketDataStream(host:String=null, port:int=0) {
+        public function SocketDataStream(host:String, port:int) {
             super(host, port);
         }
 

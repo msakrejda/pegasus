@@ -7,8 +7,8 @@ package org.postgresql.event {
         public static const CONNECTED:String = 'connectedConnectionEvent';
         public static const CLOSED:String = 'closedConnectionEvent';
 
-        public function ConnectionEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-            super(type, bubbles, cancelable);
+        public function ConnectionEvent(type:String) {
+            super(type);
         }
 
     }

@@ -9,8 +9,8 @@ package org.postgresql.event {
 
         public var fields:Object;
 
-        public function NoticeEvent(type:String, fields:Object, bubbles:Boolean=false, cancelable:Boolean=false) {
-            super(type, bubbles, cancelable);
+        public function NoticeEvent(type:String, fields:Object) {
+            super(type);
             this.fields = fields;
         }
 

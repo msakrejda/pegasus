@@ -21,6 +21,8 @@ package org.postgresql.db {
         private var _active:Dictionary;
         private var _pendingExecution:Array;
 
+        // query handler factory instead of CodecFactory--codecs are
+        // only used for handlers
         public function Connection(baseConn:FEBEConnection, codecs:CodecFactory) {
             _baseConn = baseConn;
             _codecs = codecs;
@@ -56,11 +58,19 @@ package org.postgresql.db {
                     new DefaultQueryHandler(nextQuery.statement, _codecs));
         	}
         }
+        
+        internal function cancelStatement(stmt:IStatement):void {
+            
+        }
 
         public function createStatement():IStatement {
             var s:IStatement = new SimpleStatement(this);
             _active[s] = true;
             return s;
+        }
+        
+        public function close():void {
+            
         }
 
         internal function executeQuery(statement:IStatement, sql:String):void {

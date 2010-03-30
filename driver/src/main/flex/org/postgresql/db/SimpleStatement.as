@@ -10,17 +10,22 @@ package org.postgresql.db {
         public function SimpleStatement(conn:Connection) {
             _conn = conn;
         }
-        
-        internal function setColumns(value:Array):void {
-        	_columns = value;
-        }
 
         public function get columns():Array {
         	return _columns;
         }
 
-        public function execute(sql:String):void {
+        public function executeQuery(sql:String):ResultSet {
             _conn.executeQuery(this, sql);
+            return null;
+        }
+
+        public function executeUpdate(sql:String):Result {
+            return null;
+        }
+
+        public function cancel():void {
+            _conn.cancelStatement(this);
         }
 
         public function close():void {
