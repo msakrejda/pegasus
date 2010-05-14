@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	xmlns:debug="org.postgresql.debug.*">
+<mx:Script>
+    <![CDATA[
+        import org.postgresql.io.SocketDataStreamFactory;
+        import org.postgresql.febe.MessageBrokerFactory;
+    	import org.postgresql.Oid;
+    	import org.postgresql.codec.decode.IntOut;
+        import org.postgresql.codec.decode.DateOut;
+    	import org.postgresql.codec.CodecFactory;
+    	import mx.controls.Alert;
+    	import org.postgresql.febe.FEBEConnection;
+        import org.postgresql.db.IStatement;
+        import org.postgresql.db.Connection;
+        import org.postgresql.febe.message.Query;
+        import mx.logging.Log;
+        import mx.logging.LogEventLevel;
+        import mx.logging.targets.TraceTarget;
+        import org.postgresql.io.SocketDataStream;
+        import org.postgresql.febe.message.StartupMessage;
+        import org.postgresql.febe.MessageBroker;
+    
+        private var str:SocketDataStream;
+    
+        private function handleClick(e:Event):void {
+            trace('connecting');
+            if (Capabilities.isDebugger) {
+                var logTarget:TraceTarget = new TraceTarget();
+                logTarget.level = LogEventLevel.ALL;
+                logTarget.includeCategory = true;
+                logTarget.includeDate = true;
+                logTarget.includeTime = true;
+                logTarget.includeLevel = true;
+                Log.addTarget(logTarget);
+            }
+
+            var brokerFactory:MessageBrokerFactory =
+                new MessageBrokerFactory(
+                    new SocketDataStreamFactory('localhost', 5432));
+            var params:Object = {
+                user: 'maciek',
+                database: 'postgres'
+            };
+            var codecFactory:CodecFactory = new CodecFactory();
+            codecFactory.registerDecoder(Oid.INT4, int, new IntOut());
+            codecFactory.registerDecoder(Oid.TIMESTAMP, Date, new DateOut());
+            codecFactory.registerDecoder(Oid.TIMESTAMPTZ, Date, new DateOut());
+            var febeConn:FEBEConnection = new FEBEConnection(params, 'foo', brokerFactory);
+            febeConn.connect();
+            var conn:Connection = new Connection(febeConn, codecFactory);
+            var stmt:IStatement = conn.createStatement()
+            stmt.executeQuery("select now()::timestamp, now()::timestamptz");
+        }
+
+    ]]>
+</mx:Script>
+    <mx:Button label="connect" click="handleClick(event)"/>
+</mx:WindowedApplication>
