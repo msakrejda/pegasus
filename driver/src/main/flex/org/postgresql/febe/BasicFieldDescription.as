@@ -2,13 +2,16 @@ package org.postgresql.febe {
 
 	public class BasicFieldDescription implements IFieldInfo {
 
-		public var typeOid:int;
-		public var format:int;
+		private var _typeOid:int;
+		private var _format:int;
 
 		public function BasicFieldDescription(oid:int, format:int) {
-            this.oid = oid;
-            this.format = format;
+            _typeOid = oid;
+            _format = format;
 		}
+		
+		public function get format():int { return _format; }
+		public function get typeOid():int { return _typeOid; }
 
 	}
 }
