@@ -1,36 +1,57 @@
 package org.postgresql.log {
 	import flash.system.Capabilities;
 	
+	import mx.formatters.DateFormatter;
+	
 	import org.postgresql.util.AbstractMethodError;
 	import org.postgresql.util.assert;
 
 	public class AbstractLogTarget implements ILogTarget {
+		
+		private var _format:String;
+/*
+		 *	%d	date in YYYY-MM-DD format
+		 *	%t	time in HH:MM:SS format
+		 *	%l	log level
+		 *	%c	class
+		 *	%m	method
+		 *	%n	line number
+		 * 	%s	message
+		 *
+ */
 
-		public var includeCategory:Boolean;
-		public var includeClass:Boolean;
-		public var includeMethod:Boolean;
-		public var includeLine:Boolean;
-		public var includeDate:Boolean;
-		public var includeTime:Boolean;
+		private var _timeFormatter:DateFormatter;
+		private var _dateFormatter:DateFormatter;
 
-		public var fieldSeparator:String;
+ 		private var _getStack:Boolean;
 
-		public function AbstractLogTarget() {
-			includeCategory = true;
-			// Class is usually going to be the same thing as category
-			includeClass = false; 
-			includeMethod = false;
-			includeLine = false;
-			includeDate = true;
-			includeTime = true;
+ 		public function AbstractLogTarget() {
+			format = '%d %t [%l]: %c - %m (%n): %s';
+ 			_dateFormatter = new DateFormatter();
+ 			_dateFormatter.formatString = 'YYYY-MM-DD';
 
-			fieldSeparator = ' ';
+ 			_timeFormatter = new DateFormatter();
+ 			_timeFormatter.formatString = 'JJ:NN:SS';
+ 		}
+
+		public function get format():String {
+			return _format;
+		}
+		public function set format(value:String):void {
+			if (_format != value) {
+				_format = value;
+				if (/%[mn]/.test(value)) {
+					_getStack = true;
+				} else {
+					_getStack = false;
+				}
+			}
 		}
 		
 		public function handleMessage(level:int, category:String, msg:String):void {
-			// TODO: respect includeCategory
-			var result:String = '[' + LogLevel.toString(level) + ']' + fieldSeparator + category;
-			if (Capabilities.isDebugger && (includeClass || includeMethod || includeLine)) {
+			var methodName:String = '<unknown>';
+			var lineNo:String = '??';
+			if (Capabilities.isDebugger && (_getStack)) {
 				var stack:String = new Error().getStackTrace();
 				if (stack) {
 					// We're in business--massive hackery ensues
@@ -57,44 +78,48 @@ package org.postgresql.log {
 						// 2. class (if any)
 						// 3. function (or <anonymous>)
 						// 4. line no
+						// For now, we ignore the captured class and just use the category, although
+						// that may change in the future (e.g., regarding non-Class-related functions)
 						var match:Array = String(stackElements[methodIndex]).match(new RegExp(
 							'\\s+at ((?:global/)' + symbolName + '(?:\\.' + symbolName + ')*::)?(?:(' + symbolName +
 							')/)?(' + symbolName + '|<anonymous>)\\(\\)\\[.*:(\\d+)\\]'
 						));
 						if (match) {
-							var extraFields:Array = [];
-							if (includeClass) {
-								var packageStr:String = (match[1] || '');
-								var classStr:String
-								if (packageStr) {
-									classStr = packageStr + '.';
-								} else {
-									classStr = '';
-								}
-								classStr += (match[2] || '<none>');
+							var packageStr:String = (match[1] || '');
+							var classStr:String
+							if (packageStr) {
+								classStr = packageStr + '.';
+							} else {
+								classStr = '';
+							}
+							classStr += (match[2] || '<none>');
 
-								extraFields.push(classStr); 
-							}
-							if (includeMethod) {
-								var methodName:String = match[3];
-								assert("Could not find method name in stack trace", methodName);
-								extraFields.push(methodName);
-							}
-							if (includeLine) {
-								var lineNo:String = match[4];
-								assert("Could not find line number in stack trace", lineNo);
-								extraFields.push(lineNo);
-							}
-							if (extraFields.length > 0) {
-								result += fieldSeparator + extraFields.join(fieldSeparator);
-							}
+							methodName = match[3];
+							assert("Could not find method name in stack trace", methodName);
+
+							lineNo = match[4];
+							assert("Could not find line number in stack trace", lineNo);
 						}
 						
 					}
 					
 				}
-			} 
-			doHandleMessage(result + fieldSeparator + msg);
+			}
+			var logTime:Date = new Date();
+			var result:String = _format.replace(/%[dtlcmns]/g, function():String {
+				var token:String = arguments[0];
+				switch (token) {
+					case '%d':	return _dateFormatter.format(logTime);
+					case '%t':	return _timeFormatter.format(logTime);
+					case '%l':	return LogLevel.toString(level);
+					case '%c':	return category;
+					case '%m':	return methodName;
+					case '%n':	return lineNo;
+					case '%s':	return msg;
+					default  :	throw new ArgumentError("Unexpected match: " + token);
+				}
+			});
+			doHandleMessage(result);
 		}
 		
 		protected function doHandleMessage(msg:String):void {

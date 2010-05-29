@@ -9,12 +9,13 @@ package org.postgresql.log {
 		private static var _categoryTargets:Object = {};
 
 		private static var _targetLevels:Dictionary = new Dictionary();
+		private static var _classToCategory:Dictionary = new Dictionary();
 
 		public static function getLogger(clazz:Class):ILogger {
-			// Note that we could cache this lookup, but this can leak memory
-			// if you're dealing with modules that would otherwise be unloaded.
-			// We could use weak references, however.
-			var type:String = flash.utils.getQualifiedClassName(clazz);
+			// TODO: this does not work well for top-level functions like assert, since
+			// getQualifiedClassName returns 'builtin.as$0::MethodClosure'
+			var type:String = flash.utils.getQualifiedClassName(clazz).replace('::', '.');
+			_classToCategory[clazz] = type;
 			if (!(type in _categoryLoggers)) {
 				_categoryLoggers[type] = new Logger(type, doLog);
 				_categoryTargets[type] = [];
