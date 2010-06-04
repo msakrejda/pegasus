@@ -27,6 +27,7 @@ package org.postgresql.log {
 
  		public function AbstractLogTarget() {
 			format = '%d %t [%l]: %c - %m (%n): %s';
+			// TODO: replace with non-Flex utility classes
  			_dateFormatter = new DateFormatter();
  			_dateFormatter.formatString = 'YYYY-MM-DD';
 
@@ -80,8 +81,11 @@ package org.postgresql.log {
 						// 4. line no
 						// For now, we ignore the captured class and just use the category, although
 						// that may change in the future (e.g., regarding non-Class-related functions)
+						//
+						// Note that 'global/' is a prefix for non-method functions (e.g., assert). In these
+						// cases, the package name still follows.
 						var match:Array = String(stackElements[methodIndex]).match(new RegExp(
-							'\\s+at ((?:global/)' + symbolName + '(?:\\.' + symbolName + ')*::)?(?:(' + symbolName +
+							'\\s+at ((?:global/)?' + symbolName + '(?:\\.' + symbolName + ')*::)?(?:(' + symbolName +
 							')/)?(' + symbolName + '|<anonymous>)\\(\\)\\[.*:(\\d+)\\]'
 						));
 						if (match) {
