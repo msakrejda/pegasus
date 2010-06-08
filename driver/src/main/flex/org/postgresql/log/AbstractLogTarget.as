@@ -1,9 +1,8 @@
 package org.postgresql.log {
 	import flash.system.Capabilities;
 	
-	import mx.formatters.DateFormatter;
-	
 	import org.postgresql.util.AbstractMethodError;
+	import org.postgresql.util.DateFormatter;
 	import org.postgresql.util.assert;
 
 	public class AbstractLogTarget implements ILogTarget {
