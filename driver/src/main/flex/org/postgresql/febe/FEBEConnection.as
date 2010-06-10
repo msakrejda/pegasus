@@ -130,7 +130,7 @@ package org.postgresql.febe {
 	        } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
 	            _broker.send(new PasswordMessage(_password));
 	        } else {
-	            throw new ProtocolError("Unsupported authentication type requested");                   
+	            throw new UnsupportedProtocolFeatureError("Unsupported authentication type requested: " + msg.subtype);                   
 	        }
 	    }
 
