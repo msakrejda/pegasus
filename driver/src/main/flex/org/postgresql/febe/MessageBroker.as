@@ -4,10 +4,6 @@ package org.postgresql.febe {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
     
-    import mx.logging.ILogger;
-    import mx.logging.Log;
-    import mx.utils.ObjectUtil;
-    
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.Bind;
@@ -29,10 +25,12 @@ package org.postgresql.febe {
     import org.postgresql.io.ByteDataStream;
     import org.postgresql.io.IDataStream;
     import org.postgresql.io.SocketDataStream;
+    import org.postgresql.log.ILogger;
+    import org.postgresql.log.Log;
 
     public class MessageBroker extends EventDispatcher {
 
-        private static const LOGGER:ILogger = Log.getLogger("org.postgresql.febe.MessageBroker");
+        private static const LOGGER:ILogger = Log.getLogger(MessageBroker); 
 
         /**
          * Depending on the nested IDataStream implementation, incoming messages may

@@ -3,9 +3,6 @@ package org.postgresql.febe {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	import mx.logging.ILogger;
-	import mx.logging.Log;
-	
 	import org.postgresql.event.NoticeEvent;
 	import org.postgresql.event.NotificationEvent;
 	import org.postgresql.febe.message.AuthenticationRequest;
@@ -25,6 +22,8 @@ package org.postgresql.febe {
 	import org.postgresql.febe.message.RowDescription;
 	import org.postgresql.febe.message.StartupMessage;
 	import org.postgresql.febe.message.Terminate;
+	import org.postgresql.log.ILogger;
+	import org.postgresql.log.Log;
 
     // A FEBEConnection can execute one statement at a time (when it is rfq).
     // It does not do any parameter encoding or result set decoding: these
@@ -36,7 +35,7 @@ package org.postgresql.febe {
         public static const PARAM_CHANGE:String = 'paramChange';
         public static const READY_FOR_QUERY:String = 'readyForQuery';
 
-        private static const LOGGER:ILogger = Log.getLogger("org.postgresql.db.Connection");
+        private static const LOGGER:ILogger = Log.getLogger(FEBEConnection);
 
 		private var _params:Object;
 
@@ -194,10 +193,11 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
-               for (var key:String in msg.fields) {
-                   trace(key, msg.fields[key]);
-               }
-               dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, msg.fields));
+					LOGGER.debug("Non-query error:");
+                for (var key:String in msg.fields) {
+                    LOGGER.debug(key, msg.fields[key]);
+                }
+                dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, msg.fields));
             }        	
         }
 	
