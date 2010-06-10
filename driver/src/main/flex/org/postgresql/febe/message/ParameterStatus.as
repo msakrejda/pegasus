@@ -1,8 +1,7 @@
 package org.postgresql.febe.message {
 
-    import mx.utils.StringUtil;
-
     import org.postgresql.io.ICDataInput;
+    import org.postgresql.util.format;
 
     public class ParameterStatus extends AbstractMessage implements IBEMessage {
 
@@ -15,7 +14,7 @@ package org.postgresql.febe.message {
         }
 
         public override function toString():String {
-            return StringUtil.substitute("{0} {{1} : {2}}", type, name, value);
+            return format("{0} {{1} : {2}}", type, name, value);
         }
     }
 }
