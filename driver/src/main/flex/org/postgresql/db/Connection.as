@@ -70,7 +70,7 @@ package org.postgresql.db {
         }
         
         public function close():void {
-            
+            _baseConn.close();
         }
 
         internal function executeQuery(statement:IStatement, sql:String):void {
@@ -89,7 +89,7 @@ package org.postgresql.db {
             if (!(statement in _active)) {
                 throw new ArgumentError("Attempting to close unregistered statement: " + statement);
             }
-            // Send close for portal / statement
+            // TODO: Send close for portal / statement
             delete _active[statement];
         }
 
