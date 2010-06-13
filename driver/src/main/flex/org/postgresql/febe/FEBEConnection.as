@@ -43,8 +43,6 @@ package org.postgresql.febe {
         private var _brokerFactory:MessageBrokerFactory;
 		private var _broker:MessageBroker;
 
-        private var _cancelBroker:MessageBroker;
-
         private var _authenticated:Boolean;
         private var _connecting:Boolean;
         private var _connected:Boolean;
@@ -118,8 +116,7 @@ package org.postgresql.febe {
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
-            // TODO: this should probably be an error event since it's
-            // happening asynchronously
+            // TODO: this should probably be an error event since it's happening asynchronously
         	throw new ProtocolError("Unexpected message: " + msg.type);
         }
 	
@@ -193,7 +190,7 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
-					LOGGER.debug("Non-query error:");
+				LOGGER.debug("Non-query error:");
                 for (var key:String in msg.fields) {
                     LOGGER.debug(key, msg.fields[key]);
                 }
@@ -251,10 +248,10 @@ package org.postgresql.febe {
         	flushPendingResults();
         }
 
-        // executeSimpleQuery and executeQuery should both notify caller when commandComplete
-        // returns a result set. when rfq, the nesting Connection should issue another query.
+        // Methods executeSimpleQuery and executeQuery should both notify caller when commandComplete
+        // returns a result set. When rfq, the nesting Connection should issue another query.
 
-        // since these will only have one outstanding statement at any given time, perhaps
+        // Since these will only have one outstanding statement at any given time, perhaps
         // we should keep that as a member variable while the call is being executed. We
         // need to have some concept of 'outstanding statement' (which could lead to more
         // than one result set for a simple query), and we still need to process notices
