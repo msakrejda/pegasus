@@ -1,9 +1,10 @@
 package org.postgresql.codec.decode {
 
-	import org.postgresql.codec.IPGTypeDecoder;
 	import org.postgresql.DateStyle;
 	import org.postgresql.EncodingFormat;
+	import org.postgresql.codec.IPGTypeDecoder;
 	import org.postgresql.febe.FieldDescription;
+	import org.postgresql.febe.UnsupportedProtocolFeatureError;
 	import org.postgresql.io.ICDataInput;
 
 	public class DateOut implements IPGTypeDecoder {
@@ -23,7 +24,7 @@ package org.postgresql.codec.decode {
 		            // TODO: implement me. on the wire, the value here depends on
 		            // whether we have integer datetimes. After we parse this, we
 		            // need to treat it as a microsencond offset since 2000 (not 1970).
-		            return null;
+		            throw new UnsupportedProtocolFeatureError("Binary format not supported");
 		        default:
                     throw new ArgumentError("Unknown format: " + format.format); 
 			}
@@ -88,10 +89,5 @@ package org.postgresql.codec.decode {
             }
             return result;
  		}
-
-		public function get resultClass():Class {
-			return Date;
-		}
-		
 	}
 }

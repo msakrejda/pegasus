@@ -25,10 +25,5 @@ package org.postgresql.codec.decode {
 				    throw new ArgumentError("Unknown format: " + format.format);
 			}
 		}
-
-		public function get resultClass():Class {
-			return int;
-		}
-
 	}
 }

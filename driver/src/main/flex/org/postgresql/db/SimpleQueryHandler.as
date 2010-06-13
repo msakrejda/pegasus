@@ -27,7 +27,7 @@ package org.postgresql.db {
 	    		var decoder:IPGTypeDecoder = _codecFactory.getDecoder(f.typeOid);
 	    		_decoders.push(decoder);
 	    		// TODO: ColumnFactory?
-	    		columns.push(new Column(f.name, decoder.resultClass, f.typeOid));
+	    		columns.push(new Column(f.name, _codecFactory.getOutputClass(f.typeOid), f.typeOid));
 	    	}
 	    	_resultHandler.handleColumns(columns);
 	    }

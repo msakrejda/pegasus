@@ -9,6 +9,5 @@ package org.postgresql.codec {
     	 * may be defined by the field description and server parameters.
     	 */ 
         function decode(bytes:ICDataInput, format:FieldDescription, serverParams:Object):Object;
-        function get resultClass():Class;
     }
 }
