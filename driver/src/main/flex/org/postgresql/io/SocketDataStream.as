@@ -16,11 +16,11 @@ package org.postgresql.io {
         }
 
         private function handleSocketData(e:ProgressEvent):void {
-        	dispatchEvent(new DataStreamEvent(DataStreamEvent.PROGRESS));
+            dispatchEvent(new DataStreamEvent(DataStreamEvent.PROGRESS));
         }
         
         private function handleDisconnected(e:Event):void {
-        	dispatchEvent(new DataStreamEvent(DataStreamEvent.DISCONNECTED));
+            dispatchEvent(new DataStreamEvent(DataStreamEvent.DISCONNECTED));
         }
 
         public function readCString():String {

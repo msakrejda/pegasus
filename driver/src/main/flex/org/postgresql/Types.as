@@ -1,5 +1,5 @@
 package org.postgresql {
-	// These are the X/OPEN / java.sql.Types values; they may be handy
+    // These are the X/OPEN / java.sql.Types values; they may be handy
     public class Types {
         public static const ARRAY:int = 2003;
         public static const BIGINT:int = -5;

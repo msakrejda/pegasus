@@ -35,18 +35,18 @@ package org.postgresql.codec {
             return _decoders[oid];
         }
 
-		public function getOutputClass(oid:int):Class {
-			return _oidToType[oid];
-		}
+        public function getOutputClass(oid:int):Class {
+            return _oidToType[oid];
+        }
 
         public function getEncoder(value:Object):IPGTypeEncoder {
-        	if (value is int) {
-        		return _encoders[int];
-        	} else if (value is uint) {
-        		return _encoders[uint];
-        	} else {
-        		return _encoders[Object(value).constructor];
-        	}
+            if (value is int) {
+                return _encoders[int];
+            } else if (value is uint) {
+                return _encoders[uint];
+            } else {
+                return _encoders[Object(value).constructor];
+            }
         }
 
     }

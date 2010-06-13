@@ -42,35 +42,35 @@ package org.postgresql.db {
         }
         
         public function handleConnected():void {
-        	dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
+            dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
         }
         
         public function handleConnectionDrop():void {
-        	// TODO: error out on activity after disconnection
-        	dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+            // TODO: error out on activity after disconnection
+            dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
         }
 
-		public function handleError(fields:Object):void {
-			dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
-		}
+        public function handleError(fields:Object):void {
+            dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
+        }
 
-		public function handleNotice(fields:Object):void {
-			dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, fields));
-		}
+        public function handleNotice(fields:Object):void {
+            dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, fields));
+        }
 
-		public function handleNotification(condition:String, notifierPid:int):void {
-			dispatchEvent(new NotificationEvent(condition, notifierPid));
-		}
+        public function handleNotification(condition:String, notifierPid:int):void {
+            dispatchEvent(new NotificationEvent(condition, notifierPid));
+        }
 
-		public function handleParameterChange(name:String, newValue:Object):void {
-			dispatchEvent(new ParameterChangeEvent(name, newValue));
-		}
+        public function handleParameterChange(name:String, newValue:Object):void {
+            dispatchEvent(new ParameterChangeEvent(name, newValue));
+        }
 
         public function handleRfq():void {
-        	if (_pendingExecution.length > 0) {
-        		var nextQuery:Object = _pendingExecution.shift();
-        		_baseConn.executeSimpleQuery(nextQuery.sql, nextQuery.handler);
-        	}
+            if (_pendingExecution.length > 0) {
+                var nextQuery:Object = _pendingExecution.shift();
+                _baseConn.executeSimpleQuery(nextQuery.sql, nextQuery.handler);
+            }
         }
         
         internal function cancelStatement(stmt:IStatement):void {
@@ -78,15 +78,15 @@ package org.postgresql.db {
                 throw new ArgumentError("Attempting to cancel unregistered statement: " + stmt);
             }
             if (_currentStatement == stmt) {
-            	_baseConn.cancel();
+                _baseConn.cancel();
             }
             // Dequeue any pending handlers related to this statement
-        	for (var i:int = 0; i < _pendingExecution.length; i++) {
-        		var pending:Object = _pendingExecution[i];
-        		if (pending.statement == stmt) {
-        			_pendingExecution.splice(i, 1);
-        		}
-        	}
+            for (var i:int = 0; i < _pendingExecution.length; i++) {
+                var pending:Object = _pendingExecution[i];
+                if (pending.statement == stmt) {
+                    _pendingExecution.splice(i, 1);
+                }
+            }
         }
 
         public function createStatement():IStatement {
@@ -105,8 +105,8 @@ package org.postgresql.db {
             }
 
             if (_baseConn.rfq) {
-            	_currentHandler = handler;
-            	_currentStatement = statement;
+                _currentHandler = handler;
+                _currentStatement = statement;
                 _baseConn.executeSimpleQuery(sql, handler);
             } else {
                 _pendingExecution.push({ sql: sql, statement: statement, handler: handler });
@@ -114,7 +114,7 @@ package org.postgresql.db {
         }
 
         internal function closeStatement(statement:IStatement):void {
-        	// TODO: clean up outstanding handlers for statement
+            // TODO: clean up outstanding handlers for statement
             if (!(statement in _active)) {
                 throw new ArgumentError("Attempting to close unregistered statement: " + statement);
             }

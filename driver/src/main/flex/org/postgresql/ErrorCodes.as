@@ -1,5 +1,5 @@
 package org.postgresql {
-	// error codes from: http://www.postgresql.org/docs/8.4/static/errcodes-appendix.html
+    // error codes from: http://www.postgresql.org/docs/8.4/static/errcodes-appendix.html
     public class ErrorCodes {
         public static const errors:Object = {
             // Class 00 — Successful Completion

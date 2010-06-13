@@ -1,12 +1,12 @@
 package org.postgresql.febe {
-	public interface IConnectionHandler {
-		/**
-		 * Indicates a warning not related to a query. The connection is still live.
-		 */
+    public interface IConnectionHandler {
+        /**
+         * Indicates a warning not related to a query. The connection is still live.
+         */
         function handleNotice(fields:Object):void;
-		/**
-		 * Indicates an error not related to a query. The connection is still live.
-		 */
+        /**
+         * Indicates an error not related to a query. The connection is still live.
+         */
         function handleError(fields:Object):void;
 
         function handleNotification(condition:String, notifierPid:int):void;
@@ -16,5 +16,5 @@ package org.postgresql.febe {
         function handleConnectionDrop():void;
         function handleConnected():void;
         function handleParameterChange(name:String, newValue:Object):void;
-	}
+    }
 }

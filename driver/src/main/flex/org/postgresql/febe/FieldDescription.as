@@ -25,11 +25,11 @@ package org.postgresql.febe {
         }
 
         public function get typeOid():int {
-        	return _typeOid;
+            return _typeOid;
         }
 
         public function get format():int {
-        	return _format;
+            return _format;
         }
 
     }

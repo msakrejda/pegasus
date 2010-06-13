@@ -1,43 +1,43 @@
 package org.postgresql.febe {
 
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	
-	import org.postgresql.event.NoticeEvent;
-	import org.postgresql.event.NotificationEvent;
-	import org.postgresql.febe.message.AuthenticationRequest;
-	import org.postgresql.febe.message.BackendKeyData;
-	import org.postgresql.febe.message.CancelRequest;
-	import org.postgresql.febe.message.CommandComplete;
-	import org.postgresql.febe.message.DataRow;
-	import org.postgresql.febe.message.EmptyQueryResponse;
-	import org.postgresql.febe.message.ErrorResponse;
-	import org.postgresql.febe.message.IBEMessage;
-	import org.postgresql.febe.message.NoticeResponse;
-	import org.postgresql.febe.message.NotificationResponse;
-	import org.postgresql.febe.message.ParameterStatus;
-	import org.postgresql.febe.message.PasswordMessage;
-	import org.postgresql.febe.message.Query;
-	import org.postgresql.febe.message.ReadyForQuery;
-	import org.postgresql.febe.message.ResponseMessageBase;
-	import org.postgresql.febe.message.RowDescription;
-	import org.postgresql.febe.message.StartupMessage;
-	import org.postgresql.febe.message.Terminate;
-	import org.postgresql.log.ILogger;
-	import org.postgresql.log.Log;
+    import flash.events.Event;
+    import flash.events.EventDispatcher;
+    
+    import org.postgresql.event.NoticeEvent;
+    import org.postgresql.event.NotificationEvent;
+    import org.postgresql.febe.message.AuthenticationRequest;
+    import org.postgresql.febe.message.BackendKeyData;
+    import org.postgresql.febe.message.CancelRequest;
+    import org.postgresql.febe.message.CommandComplete;
+    import org.postgresql.febe.message.DataRow;
+    import org.postgresql.febe.message.EmptyQueryResponse;
+    import org.postgresql.febe.message.ErrorResponse;
+    import org.postgresql.febe.message.IBEMessage;
+    import org.postgresql.febe.message.NoticeResponse;
+    import org.postgresql.febe.message.NotificationResponse;
+    import org.postgresql.febe.message.ParameterStatus;
+    import org.postgresql.febe.message.PasswordMessage;
+    import org.postgresql.febe.message.Query;
+    import org.postgresql.febe.message.ReadyForQuery;
+    import org.postgresql.febe.message.ResponseMessageBase;
+    import org.postgresql.febe.message.RowDescription;
+    import org.postgresql.febe.message.StartupMessage;
+    import org.postgresql.febe.message.Terminate;
+    import org.postgresql.log.ILogger;
+    import org.postgresql.log.Log;
 
     // A FEBEConnection can execute one statement at a time (when it is rfq).
     // It does not do any parameter encoding or result set decoding: these
     // are passed through as binary payloads, with decoding to be done at
     // a higher level.
-	public class FEBEConnection {
+    public class FEBEConnection {
 
         private static const LOGGER:ILogger = Log.getLogger(FEBEConnection);
 
-		private var _params:Object;
+        private var _params:Object;
 
         private var _brokerFactory:MessageBrokerFactory;
-		private var _broker:MessageBroker;
+        private var _broker:MessageBroker;
 
         private var _authenticated:Boolean;
         private var _connecting:Boolean;
@@ -53,10 +53,10 @@ package org.postgresql.febe {
         
         private var _connHandler:IConnectionHandler;
 
-	    private var _backendPid:int;
-	    private var _backendKey:int;
-	
-	    public var serverParams:Object;
+        private var _backendPid:int;
+        private var _backendKey:int;
+    
+        public var serverParams:Object;
 
 
         // Note that params here are params we want to send to the server in the
@@ -71,8 +71,8 @@ package org.postgresql.febe {
         // involves a password. Jdbc also passes in a flag to use SSL here, but
         // it could be handy to handle that in the message broker factory
 
-		public function FEBEConnection(params:Object, password:String, brokerFactory:MessageBrokerFactory) {
-			_params = params;
+        public function FEBEConnection(params:Object, password:String, brokerFactory:MessageBrokerFactory) {
+            _params = params;
             _brokerFactory = brokerFactory;
 
             _connected = false;
@@ -87,18 +87,18 @@ package org.postgresql.febe {
             serverParams = {};
             _backendKey = -1;
             _backendPid = -1;
-		}
+        }
 
         public function get rfq():Boolean {
-        	return _rfq;
+            return _rfq;
         }
 
         public function get status():String {
-        	return _status;
+            return _status;
         }
 
         public function connect(handler:IConnectionHandler):void {
-        	_connHandler = handler;
+            _connHandler = handler;
 
             _broker = _brokerFactory.create();
             // TODO: This is a little ugly, especially since the underlying
@@ -108,14 +108,14 @@ package org.postgresql.febe {
             // It's also ugly to just pass a raw function here.
             _broker.disconnectHandler = _connHandler.handleConnectionDrop;
 
-        	_broker.setMessageListener(AuthenticationRequest, handleAuth);
-        	_broker.setMessageListener(BackendKeyData, handleKeyData);
-        	_broker.setMessageListener(ParameterStatus, handleParam);
-        	_broker.setMessageListener(NoticeResponse, handleNotice);
-        	_broker.setMessageListener(ErrorResponse, handleError);
-        	_broker.setMessageListener(ReadyForQuery, handleFirstRfq);
+            _broker.setMessageListener(AuthenticationRequest, handleAuth);
+            _broker.setMessageListener(BackendKeyData, handleKeyData);
+            _broker.setMessageListener(ParameterStatus, handleParam);
+            _broker.setMessageListener(NoticeResponse, handleNotice);
+            _broker.setMessageListener(ErrorResponse, handleError);
+            _broker.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-        	_broker.addEventListener(MessageBroker.BATCH_COMPLETE, handleBatchComplete);
+            _broker.addEventListener(MessageBroker.BATCH_COMPLETE, handleBatchComplete);
 
             _broker.send(new StartupMessage(_params));
         }
@@ -123,20 +123,20 @@ package org.postgresql.febe {
         private function handleUnexpectedMessage(msg:IBEMessage):void {
             // TODO: this should probably be an error event since it's happening asynchronously,
             // or just hand it off to the connection handler
-        	throw new ProtocolError("Unexpected message: " + msg.type);
+            throw new ProtocolError("Unexpected message: " + msg.type);
         }
-	
-	    private function handleAuth(msg:AuthenticationRequest):void {
-	    	// TODO: more auth types
-	        if (msg.subtype == AuthenticationRequest.OK) {
-	            _authenticated = true;
-	        } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
-	            _broker.send(new PasswordMessage(_password));
-	        } else {
-	        	// TODO: see above
-	            throw new UnsupportedProtocolFeatureError("Unsupported authentication type requested: " + msg.subtype);                   
-	        }
-	    }
+    
+        private function handleAuth(msg:AuthenticationRequest):void {
+            // TODO: more auth types
+            if (msg.subtype == AuthenticationRequest.OK) {
+                _authenticated = true;
+            } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
+                _broker.send(new PasswordMessage(_password));
+            } else {
+                // TODO: see above
+                throw new UnsupportedProtocolFeatureError("Unsupported authentication type requested: " + msg.subtype);                   
+            }
+        }
 
         private function handleFirstRfq(msg:ReadyForQuery):void {
             if (_authenticated) {
@@ -163,87 +163,87 @@ package org.postgresql.febe {
                 throw new ProtocolError("Unexpected ReadyForQuery without AuthenticationOK"); 
             }
         }
-	
-	    private function handleKeyData(msg:BackendKeyData):void {
-	        _backendKey = msg.key;
-	        _backendPid = msg.pid;
-	    }
-	
-	    private function handleParam(msg:ParameterStatus):void {
-	        serverParams[msg.name] = msg.value;
-	        if (_connected) {
-	           _connHandler.handleParameterChange(msg.name, msg.value);
-	        }
-	    }
-	
-	    private function handleRfq(msg:ReadyForQuery):void {
-	        _rfq = true;
-	        _status = msg.status;
-	        _connHandler.handleRfq();
-	    }
-	
-	    private function handleNotification(msg:NotificationResponse):void {
-	    	_connHandler.handleNotification(msg.condition, msg.notifierPid);
-	    }
-	
-	    private function handleNotice(msg:ResponseMessageBase):void {
-	    	if (_queryHandler) {
-    			_queryHandler.handleNotice(msg.fields);
-	    	} else {
-	    		_connHandler.handleNotice(msg.fields);
+    
+        private function handleKeyData(msg:BackendKeyData):void {
+            _backendKey = msg.key;
+            _backendPid = msg.pid;
+        }
+    
+        private function handleParam(msg:ParameterStatus):void {
+            serverParams[msg.name] = msg.value;
+            if (_connected) {
+               _connHandler.handleParameterChange(msg.name, msg.value);
             }
-	    }
+        }
+    
+        private function handleRfq(msg:ReadyForQuery):void {
+            _rfq = true;
+            _status = msg.status;
+            _connHandler.handleRfq();
+        }
+    
+        private function handleNotification(msg:NotificationResponse):void {
+            _connHandler.handleNotification(msg.condition, msg.notifierPid);
+        }
+    
+        private function handleNotice(msg:ResponseMessageBase):void {
+            if (_queryHandler) {
+                _queryHandler.handleNotice(msg.fields);
+            } else {
+                _connHandler.handleNotice(msg.fields);
+            }
+        }
 
         private function handleError(msg:ErrorResponse):void {
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
-				LOGGER.debug("Non-query error:");
+                LOGGER.debug("Non-query error:");
                 for (var key:String in msg.fields) {
                     LOGGER.debug(key, msg.fields[key]);
                 }
                 _connHandler.handleError(msg.fields);
-            }        	
+            }            
         }
-	
-	    private function handleMetadata(msg:RowDescription):void {
-	        if (_queryHandler) {
-	        	_queryHandler.handleMetadata(msg.fields);
-	        } else {
-	        	throw new ProtocolError('Unexpected RowDescription message');
-	        }
-	    }
-	
-	    private function handleData(msg:DataRow):void {
-	        if (_queryHandler) {
-	        	_currResults.push(msg.rowBytes);
-	        } else {
-	        	throw new ProtocolError('Unexpected DataRow message');
-	        }
-	    }
-	
-	    private function handleComplete(msg:CommandComplete):void {
-	        if (_queryHandler) {
-	        	flushPendingResults();
-	        	_queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
-	        	_queryHandler = null;
-	        } else {
-	        	throw new ProtocolError("Unexpected CommandComplete"); 
-	        }
-	    }
-	
-	    private function handleEmpty(msg:EmptyQueryResponse):void {
-	        // This is equivalent to CommandComplete when an empty query completes.
-	        // Let's call this a query completing successfully. Theoretically, we may want
-	        // to handle this differently, but there's little practical use for that.
-	        if (_queryHandler) {
-	        	_queryHandler.handleCompletion('EMPTY QUERY');
-	        	_currResults = [];
-	        	_queryHandler = null;
-	        } else {
-	        	throw new ProtocolError("Unexpected EmptyQueryResponse");
-	        }
-	    }
+    
+        private function handleMetadata(msg:RowDescription):void {
+            if (_queryHandler) {
+                _queryHandler.handleMetadata(msg.fields);
+            } else {
+                throw new ProtocolError('Unexpected RowDescription message');
+            }
+        }
+    
+        private function handleData(msg:DataRow):void {
+            if (_queryHandler) {
+                _currResults.push(msg.rowBytes);
+            } else {
+                throw new ProtocolError('Unexpected DataRow message');
+            }
+        }
+    
+        private function handleComplete(msg:CommandComplete):void {
+            if (_queryHandler) {
+                flushPendingResults();
+                _queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
+                _queryHandler = null;
+            } else {
+                throw new ProtocolError("Unexpected CommandComplete"); 
+            }
+        }
+    
+        private function handleEmpty(msg:EmptyQueryResponse):void {
+            // This is equivalent to CommandComplete when an empty query completes.
+            // Let's call this a query completing successfully. Theoretically, we may want
+            // to handle this differently, but there's little practical use for that.
+            if (_queryHandler) {
+                _queryHandler.handleCompletion('EMPTY QUERY');
+                _currResults = [];
+                _queryHandler = null;
+            } else {
+                throw new ProtocolError("Unexpected EmptyQueryResponse");
+            }
+        }
 
         private function flushPendingResults():void {
             if (_queryHandler && _currResults.length > 0) {
@@ -253,7 +253,7 @@ package org.postgresql.febe {
         }
 
         private function handleBatchComplete(e:Event):void {
-        	flushPendingResults();
+            flushPendingResults();
         }
 
         // Methods executeSimpleQuery and executeQuery should both notify caller when commandComplete
@@ -270,33 +270,33 @@ package org.postgresql.febe {
         // query-data-available and statement-complete messages. We should also batch
         // the data-available messages--dispatching an event per-DataRow would be silly.
         public function executeSimpleQuery(sql:String, handler:IQueryHandler):void {
-        	if (!_rfq) {
-        		throw new ArgumentError("FEBEConnection is not ready for query");
-        	}
+            if (!_rfq) {
+                throw new ArgumentError("FEBEConnection is not ready for query");
+            }
             _queryHandler = handler;
             _broker.send(new Query(sql));
         }
 
         public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
-        	// > parse(statement)
-        	// < parseComplete | errorResponse
-        	// > bind(portal)
-        	// < bindComplete | errorResponse
-        	// > describe(portal)
-        	// < rowDescription
-        	// > execute(portal)
-        	// < commandComplete | errorResponse | emptyQueryResponse | portalSuspended
-        	// > sync
+            // > parse(statement)
+            // < parseComplete | errorResponse
+            // > bind(portal)
+            // < bindComplete | errorResponse
+            // > describe(portal)
+            // < rowDescription
+            // > execute(portal)
+            // < commandComplete | errorResponse | emptyQueryResponse | portalSuspended
+            // > sync
         }
 
         // additionally, there is fastpath (function call) and copy. It might be handy to
         // support a structured explain
 
         public function cancel():void {
-        	// Note that cancel needs to happen in a separate connection to make any sense
-        	var cancelBroker:MessageBroker = _brokerFactory.create();
-        	cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
-        	cancelBroker.close();
+            // Note that cancel needs to happen in a separate connection to make any sense
+            var cancelBroker:MessageBroker = _brokerFactory.create();
+            cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
+            cancelBroker.close();
         }
 
         public function close():void {
@@ -307,5 +307,5 @@ package org.postgresql.febe {
             }
         }
 
-	}
+    }
 }

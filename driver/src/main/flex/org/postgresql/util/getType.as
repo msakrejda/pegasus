@@ -5,11 +5,11 @@ package org.postgresql.util {
             throw new ArgumentError("Cannot determine type of null value");
         }
         if (value is int) {
-        	return int;
+            return int;
         } else if (value is uint) {
-        	return uint;
+            return uint;
         } else {
-        	return value.constructor;
+            return value.constructor;
         }
     }
 

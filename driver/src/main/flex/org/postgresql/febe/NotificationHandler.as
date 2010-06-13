@@ -1,8 +1,8 @@
 package org.postgresql.febe {
 
-	import flash.events.IEventDispatcher;
-	
-	public class NotificationHandler {
-		
-	}
+    import flash.events.IEventDispatcher;
+    
+    public class NotificationHandler {
+        
+    }
 }

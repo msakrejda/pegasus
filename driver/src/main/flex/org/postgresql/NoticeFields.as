@@ -1,6 +1,6 @@
 package org.postgresql {
 
-	public class NoticeFields {
+    public class NoticeFields {
 
         private static const FIELD_DESCRIPTIONS:Object = {
             S : 'SEVERITY',
@@ -31,13 +31,13 @@ package org.postgresql {
         public static const ROUTINE:String = 'R';
 
         public static function describe(fieldCode:String):String {
-        	if (fieldCode in FIELD_DESCRIPTIONS) {
-        		return FIELD_DESCRIPTIONS[fieldCode];
-        	} else {
-        		return "UNKNOWN FIELD (" + fieldCode + ")";
-        	}
-        	
+            if (fieldCode in FIELD_DESCRIPTIONS) {
+                return FIELD_DESCRIPTIONS[fieldCode];
+            } else {
+                return "UNKNOWN FIELD (" + fieldCode + ")";
+            }
+            
         }
 
-	}
+    }
 }
