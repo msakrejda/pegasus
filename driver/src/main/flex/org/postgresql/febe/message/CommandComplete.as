@@ -12,11 +12,10 @@ package org.postgresql.febe.message {
         public var oid:int;
         public var affectedRows:int;
 
-        // TODO: though the docs don't say so, I believe this can also be DROP, ALTER
         private static const SELECT_CMD:RegExp = /SELECT/;
         private static const INSERT_CMD:RegExp = /INSERT (\d+) (\d+)/;
         private static const COPY_CMD:RegExp = /COPY (\d+)?/;
-        private static const OTHER_CMD:RegExp = /(DELETE|UPDATE|MOVE|FETCH) (\d+)/;
+        private static const OTHER_ROW_CMD:RegExp = /(DELETE|UPDATE|MOVE|FETCH) (\d+)/;
 
         public function CommandComplete() {
             oid = -1;
@@ -36,8 +35,8 @@ package org.postgresql.febe.message {
                 command = 'INSERT';
                 oid = match[1];
                 affectedRows = match[2];
-            } else if (OTHER_CMD.test(commandTag)) {
-                match = commandTag.match(OTHER_CMD);
+            } else if (OTHER_ROW_CMD.test(commandTag)) {
+                match = commandTag.match(OTHER_ROW_CMD);
                 if (match.length != 3) {
                      badTag(commandTag);
                 }
@@ -51,7 +50,7 @@ package org.postgresql.febe.message {
                 command = 'COPY';
                 affectedRows = match.length > 1 ? match.length[1] : -1;
             } else {
-                badTag(commandTag);
+                command = commandTag;
             }
         }
 
