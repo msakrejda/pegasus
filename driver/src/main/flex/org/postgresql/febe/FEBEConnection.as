@@ -30,11 +30,7 @@ package org.postgresql.febe {
     // It does not do any parameter encoding or result set decoding: these
     // are passed through as binary payloads, with decoding to be done at
     // a higher level.
-	public class FEBEConnection extends EventDispatcher {
-
-        public static const CONNECTED:String = 'connected';
-        public static const PARAM_CHANGE:String = 'paramChange';
-        public static const READY_FOR_QUERY:String = 'readyForQuery';
+	public class FEBEConnection {
 
         private static const LOGGER:ILogger = Log.getLogger(FEBEConnection);
 
@@ -54,6 +50,8 @@ package org.postgresql.febe {
         private var _currResults:Array;
 
         private var _password:String;
+        
+        private var _connHandler:IConnectionHandler;
 
 	    public var backendPid:int;
 	    public var backendKey:int;
@@ -102,7 +100,9 @@ package org.postgresql.febe {
         	return _status;
         }
 
-        public function connect():void {
+        public function connect(handler:IConnectionHandler):void {
+        	_connHandler = handler;
+
         	_broker.setMessageListener(AuthenticationRequest, handleAuth);
         	_broker.setMessageListener(BackendKeyData, handleKeyData);
         	_broker.setMessageListener(ParameterStatus, handleParam);
@@ -116,16 +116,19 @@ package org.postgresql.febe {
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
-            // TODO: this should probably be an error event since it's happening asynchronously
+            // TODO: this should probably be an error event since it's happening asynchronously,
+            // or just hand it off to the connection handler
         	throw new ProtocolError("Unexpected message: " + msg.type);
         }
 	
 	    private function handleAuth(msg:AuthenticationRequest):void {
+	    	// TODO: more auth types
 	        if (msg.subtype == AuthenticationRequest.OK) {
 	            _authenticated = true;
 	        } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
 	            _broker.send(new PasswordMessage(_password));
 	        } else {
+	        	// TODO: see above
 	            throw new UnsupportedProtocolFeatureError("Unsupported authentication type requested: " + msg.subtype);                   
 	        }
 	    }
@@ -149,8 +152,8 @@ package org.postgresql.febe {
                 _broker.setMessageListener(CommandComplete, handleComplete);
                 _broker.setMessageListener(EmptyQueryResponse, handleEmpty);
 
-                dispatchEvent(new Event(READY_FOR_QUERY));
-                dispatchEvent(new Event(CONNECTED));
+                _connHandler.handleRfq();
+                _connHandler.handleConnected();
             } else {
                 throw new ProtocolError("Unexpected ReadyForQuery without AuthenticationOK"); 
             }
@@ -164,25 +167,25 @@ package org.postgresql.febe {
 	    private function handleParam(msg:ParameterStatus):void {
 	        serverParams[msg.name] = msg.value;
 	        if (_connected) {
-	           dispatchEvent(new Event(PARAM_CHANGE));
+	           _connHandler.handleParameterChange(msg.name, msg.value);
 	        }
 	    }
 	
 	    private function handleRfq(msg:ReadyForQuery):void {
 	        _rfq = true;
 	        _status = msg.status;
-	        dispatchEvent(new Event(READY_FOR_QUERY));
+	        _connHandler.handleRfq();
 	    }
 	
 	    private function handleNotification(msg:NotificationResponse):void {
-	        dispatchEvent(new NotificationEvent(msg.condition, msg.notifierPid));
+	    	_connHandler.handleNotification(msg.condition, msg.notifierPid);
 	    }
 	
 	    private function handleNotice(msg:ResponseMessageBase):void {
 	    	if (_queryHandler) {
     			_queryHandler.handleNotice(msg.fields);
 	    	} else {
-	           dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, msg.fields));
+	    		_connHandler.handleNotice(msg.fields);
             }
 	    }
 
@@ -194,7 +197,7 @@ package org.postgresql.febe {
                 for (var key:String in msg.fields) {
                     LOGGER.debug(key, msg.fields[key]);
                 }
-                dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, msg.fields));
+                _connHandler.handleError(msg.fields);
             }        	
         }
 	

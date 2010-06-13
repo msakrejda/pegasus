@@ -1,16 +1,21 @@
 package org.postgresql.db {
 
-    import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
     
+    import org.postgresql.event.ConnectionEvent;
     import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.NotificationEvent;
+    import org.postgresql.event.ParameterChangeEvent;
     import org.postgresql.febe.FEBEConnection;
+    import org.postgresql.febe.IConnectionHandler;
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
 
-    public class Connection extends EventDispatcher {
+    public class Connection extends EventDispatcher implements IConnectionHandler {
+
+        public static const PARAM_CHANGE:String = 'paramChange';
+        public static const READY_FOR_QUERY:String = 'readyForQuery';
 
         private var _queryHandlerFactory:QueryHandlerFactory;
         private var _baseConn:FEBEConnection;
@@ -29,32 +34,38 @@ package org.postgresql.db {
             // into an injected statementFactory
             _queryHandlerFactory = queryHandlerFactory;
 
-            // add listeners to the baseConn for rfq, paramStatus, notice / error / notification
-            _baseConn.addEventListener(FEBEConnection.READY_FOR_QUERY, handleRfq);
-
-            // Unfortunately, our two-tiered approach here means there are a number of
-            // events the base connection dispatches that we just want to rebroadcast
-            // directly--we do this by cloning them...            
-            _baseConn.addEventListener(FEBEConnection.PARAM_CHANGE, handleRebroadcast);
-            _baseConn.addEventListener(FEBEConnection.CONNECTED, handleRebroadcast);
-            _baseConn.addEventListener(NoticeEvent.NOTICE, handleRebroadcast);
-            _baseConn.addEventListener(NoticeEvent.ERROR, handleRebroadcast);
-            _baseConn.addEventListener(NotificationEvent.NOTIFICATION, handleRebroadcast);
-            
-            // support, {simple,extended}QueryExecutor, copy, function call, cancel, terminate
+            // TODO: extended query support, copy, function call
 
             _active = new Dictionary();
             _pendingExecution = [];
-            _baseConn.connect();
+            _baseConn.connect(this);
+        }
+        
+        public function handleConnected():void {
+        	dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
+        }
+        
+        public function handleConnectionDrop():void {
+        	dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
         }
 
-        private function handleRebroadcast(e:Event):void {
-        	var newEvent:Event = e.clone();
-        	dispatchEvent(newEvent);
-        }
+		public function handleError(fields:Object):void {
+			dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
+		}
 
+		public function handleNotice(fields:Object):void {
+			dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, fields));
+		}
 
-        private function handleRfq(e:Event):void {
+		public function handleNotification(condition:String, notifierPid:int):void {
+			dispatchEvent(new NotificationEvent(condition, notifierPid));
+		}
+
+		public function handleParameterChange(name:String, newValue:Object):void {
+			dispatchEvent(new ParameterChangeEvent(name, newValue));
+		}
+
+        public function handleRfq():void {
         	if (_pendingExecution.length > 0) {
         		var nextQuery:Object = _pendingExecution.shift();
         		_baseConn.executeSimpleQuery(nextQuery.sql, nextQuery.handler);
