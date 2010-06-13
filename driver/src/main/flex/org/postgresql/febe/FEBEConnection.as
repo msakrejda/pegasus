@@ -53,8 +53,8 @@ package org.postgresql.febe {
         
         private var _connHandler:IConnectionHandler;
 
-	    public var backendPid:int;
-	    public var backendKey:int;
+	    private var _backendPid:int;
+	    private var _backendKey:int;
 	
 	    public var serverParams:Object;
 
@@ -85,8 +85,8 @@ package org.postgresql.febe {
             _password = password;
 
             serverParams = {};
-            backendKey = -1;
-            backendPid = -1;
+            _backendKey = -1;
+            _backendPid = -1;
 
             // Our main broker
             _broker = brokerFactory.create();
@@ -160,8 +160,8 @@ package org.postgresql.febe {
         }
 	
 	    private function handleKeyData(msg:BackendKeyData):void {
-	        backendKey = msg.key;
-	        backendPid = msg.pid;
+	        _backendKey = msg.key;
+	        _backendPid = msg.pid;
 	    }
 	
 	    private function handleParam(msg:ParameterStatus):void {
@@ -290,7 +290,7 @@ package org.postgresql.febe {
         public function cancel():void {
         	// Note that cancel needs to happen in a separate connection to make any sense
         	var cancelBroker:MessageBroker = _brokerFactory.create();
-        	cancelBroker.send(new CancelRequest(backendPid, backendKey));
+        	cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
         	cancelBroker.close();
         }
 
