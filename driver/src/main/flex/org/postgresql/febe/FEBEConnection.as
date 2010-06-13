@@ -217,7 +217,7 @@ package org.postgresql.febe {
 	    private function handleComplete(msg:CommandComplete):void {
 	        if (_queryHandler) {
 	        	flushPendingResults();
-	        	_queryHandler.handleCompletion(msg.commandTag, msg.affectedRows, msg.oid);
+	        	_queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
 	        	_queryHandler = null;
 	        } else {
 	        	throw new ProtocolError("Unexpected CommandComplete"); 
