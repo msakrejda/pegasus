@@ -23,8 +23,8 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.ReadyForQuery;
     import org.postgresql.febe.message.RowDescription;
     import org.postgresql.io.ByteDataStream;
+    import org.postgresql.io.DataStreamEvent;
     import org.postgresql.io.IDataStream;
-    import org.postgresql.io.SocketDataStream;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
 
@@ -76,7 +76,7 @@ package org.postgresql.febe {
         
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
-            _dataStream.addEventListener(SocketDataStream.DATA_AVAILABLE, handleSocketData);
+            _dataStream.addEventListener(DataStreamEvent.PROGRESS, handleStreamData);
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
@@ -84,7 +84,7 @@ package org.postgresql.febe {
             _msgListeners = new Dictionary();
         }
 
-        private function handleSocketData(e:Event):void {
+        private function handleStreamData(e:Event):void {
         	while (_dataStream.connected &&
         		   (_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5) ||
         	       (_nextMessageLen != -1 && _dataStream.bytesAvailable >= _nextMessageLen)) {
