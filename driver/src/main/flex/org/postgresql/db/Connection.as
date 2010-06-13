@@ -22,10 +22,10 @@ package org.postgresql.db {
         private var _pendingExecution:Array;
         private var _currentlyExecuting:IQueryHandler;
 
-        // query handler factory instead of CodecFactory--codecs are only used for handlers
-        
         public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
+            // TODO: this is only passed off to Statements, so it should be pulled up
+            // into an injected statementFactory
             _queryHandlerFactory = queryHandlerFactory;
 
             // add listeners to the baseConn for rfq, paramStatus, notice / error / notification
@@ -44,6 +44,7 @@ package org.postgresql.db {
 
             _active = new Dictionary();
             _pendingExecution = [];
+            _baseConn.connect();
         }
 
         private function handleRebroadcast(e:Event):void {
@@ -85,7 +86,7 @@ package org.postgresql.db {
             _baseConn.close();
         }
 
-        internal function executeQuery(sql:String, handler:IQueryHandler):void {
+        internal function execute(sql:String, handler:IQueryHandler):void {
             if (!(handler.statement in _active)) {
                 throw new ArgumentError("Attempting to execute unregistered statement: " + handler.statement);
             }
@@ -99,7 +100,7 @@ package org.postgresql.db {
         }
 
         internal function closeStatement(statement:IStatement):void {
-        	// TODO: handle outstanding handlers for statement
+        	// TODO: clean up outstanding handlers for statement
             if (!(statement in _active)) {
                 throw new ArgumentError("Attempting to close unregistered statement: " + statement);
             }

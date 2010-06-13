@@ -76,8 +76,6 @@ package org.postgresql.febe {
 		public function FEBEConnection(params:Object, password:String, brokerFactory:MessageBrokerFactory) {
 			_params = params;
             _brokerFactory = brokerFactory;
-            // Our main broker
-            _broker = brokerFactory.create();
 
             _connected = false;
             _connecting = false;
@@ -91,6 +89,9 @@ package org.postgresql.febe {
             serverParams = {};
             backendKey = -1;
             backendPid = -1;
+
+            // Our main broker
+            _broker = brokerFactory.create();
 		}
 
         public function get rfq():Boolean {
@@ -102,7 +103,6 @@ package org.postgresql.febe {
         }
 
         public function connect():void {
-        	// TODO: support disconnect / reconnect
         	_broker.setMessageListener(AuthenticationRequest, handleAuth);
         	_broker.setMessageListener(BackendKeyData, handleKeyData);
         	_broker.setMessageListener(ParameterStatus, handleParam);
@@ -269,7 +269,7 @@ package org.postgresql.febe {
             _broker.send(new Query(sql));
         }
 
-        public function executeQuery():void {
+        public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
         	// > parse(statement)
         	// < parseComplete | errorResponse
         	// > bind(portal)
@@ -295,6 +295,7 @@ package org.postgresql.febe {
             if (_connected) {
                 _broker.send(new Terminate());
                 _broker.close();
+                _connected = false;
             }
         }
 
