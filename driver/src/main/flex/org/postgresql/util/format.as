@@ -1,10 +1,10 @@
 package org.postgresql.util {
 
-	public function format(template:String, ...arguments):String {
-		return template.replace(/{(\d+)}/, function():String {
+	public function format(template:String, ...args):String {
+		return template.replace(/{(\d+)}/g, function():String {
 			var replacementIndex:int = int(arguments[1]);
-			return replacementIndex < arguments.length ?
-				arguments[replacementIndex] :
+			return replacementIndex < args.length ?
+				args[replacementIndex] :
 				arguments[0];
 		});
 	}

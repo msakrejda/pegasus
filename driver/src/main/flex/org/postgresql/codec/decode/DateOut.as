@@ -88,6 +88,10 @@ package org.postgresql.codec.decode {
             }
             return result;
  		}
+
+		public function get resultClass():Class {
+			return Date;
+		}
 		
 	}
 }

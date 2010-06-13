@@ -85,7 +85,8 @@ package org.postgresql.febe {
         }
 
         private function handleSocketData(e:Event):void {
-        	while ((_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5) ||
+        	while (_dataStream.connected &&
+        		   (_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5) ||
         	       (_nextMessageLen != -1 && _dataStream.bytesAvailable >= _nextMessageLen)) {
                 if (_nextMessageLen == -1) {
                 	_nextMessageType = _dataStream.readByte();
@@ -134,6 +135,10 @@ package org.postgresql.febe {
 
         public function clearMessageListener(msg:Class):void {
         	delete _msgListeners[msg];
+        }
+
+        public function close():void {
+        	_dataStream.close();
         }
 
     }

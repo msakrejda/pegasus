@@ -7,6 +7,7 @@ package org.postgresql.febe {
 	import org.postgresql.event.NotificationEvent;
 	import org.postgresql.febe.message.AuthenticationRequest;
 	import org.postgresql.febe.message.BackendKeyData;
+	import org.postgresql.febe.message.CancelRequest;
 	import org.postgresql.febe.message.CommandComplete;
 	import org.postgresql.febe.message.DataRow;
 	import org.postgresql.febe.message.EmptyQueryResponse;
@@ -41,8 +42,7 @@ package org.postgresql.febe {
 
         private var _brokerFactory:MessageBrokerFactory;
 		private var _broker:MessageBroker;
-		// Note that we may have multiple outstanding queries, but
-		// we'll only want to cancel at most one
+
         private var _cancelBroker:MessageBroker;
 
         private var _authenticated:Boolean;
@@ -228,8 +228,8 @@ package org.postgresql.febe {
 	    }
 	
 	    private function handleEmpty(msg:EmptyQueryResponse):void {
-	        // this is equivalent to CommandComplete when an empty let's pretend
-	        // that the query completed successfully. Theoretically, we may want
+	        // This is equivalent to CommandComplete when an empty query completes.
+	        // Let's call this a query completing successfully. Theoretically, we may want
 	        // to handle this differently, but there's little practical use for that.
 	        if (_queryHandler) {
 	        	_queryHandler.handleCompletion('EMPTY QUERY');
@@ -287,14 +287,17 @@ package org.postgresql.febe {
         // additionally, there is fastpath (function call) and copy. It might be handy to
         // support a structured explain
 
-        public /* ? */ function cancel():void {
-            // probably want to do this per-query instead, and possibly add something
-            // like a 'clear()' to cancel all pending queries
+        public function cancel():void {
+        	// Note that cancel needs to happen in a separate connection to make any sense
+        	var cancelBroker:MessageBroker = _brokerFactory.create();
+        	cancelBroker.send(new CancelRequest(backendPid, backendKey));
+        	cancelBroker.close();
         }
 
         public function close():void {
             if (_connected) {
-                _broker.send(new Terminate());                
+                _broker.send(new Terminate());
+                _broker.close();
             }
         }
 

@@ -1,9 +1,9 @@
 package org.postgresql.codec.decode {
 
-	import org.postgresql.codec.IPGTypeDecoder;
 	import org.postgresql.EncodingFormat;
-	import org.postgresql.febe.FieldDescription;
 	import org.postgresql.Oid;
+	import org.postgresql.codec.IPGTypeDecoder;
+	import org.postgresql.febe.FieldDescription;
 	import org.postgresql.io.ICDataInput;
 
 	public class IntOut implements IPGTypeDecoder {
@@ -24,6 +24,10 @@ package org.postgresql.codec.decode {
 				default:
 				    throw new ArgumentError("Unknown format: " + format.format);
 			}
+		}
+
+		public function get resultClass():Class {
+			return int;
 		}
 
 	}

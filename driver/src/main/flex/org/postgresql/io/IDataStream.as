@@ -11,5 +11,6 @@ package org.postgresql.io {
         // factory can be used instead to get a new stream if necessary.
         function flush():void;
         function close():void;
+        function get connected():Boolean;
     }
 }

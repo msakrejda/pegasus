@@ -23,6 +23,5 @@ package org.postgresql.io {
         public function writeCString(value:String):void {
             IOUtil.writeCString(this, value);
         }
-
     }
 }

@@ -4,15 +4,15 @@ package org.postgresql.db {
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
     
-    import org.postgresql.codec.CodecFactory;
     import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.NotificationEvent;
     import org.postgresql.febe.FEBEConnection;
+    import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
 
     public class Connection extends EventDispatcher {
 
-        private var _codecs:CodecFactory;
+        private var _queryHandlerFactory:QueryHandlerFactory;
         private var _baseConn:FEBEConnection;
 
         private var _params:Object;
@@ -20,12 +20,13 @@ package org.postgresql.db {
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
+        private var _currentlyExecuting:IQueryHandler;
 
-        // query handler factory instead of CodecFactory--codecs are
-        // only used for handlers
-        public function Connection(baseConn:FEBEConnection, codecs:CodecFactory) {
+        // query handler factory instead of CodecFactory--codecs are only used for handlers
+        
+        public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
-            _codecs = codecs;
+            _queryHandlerFactory = queryHandlerFactory;
 
             // add listeners to the baseConn for rfq, paramStatus, notice / error / notification
             _baseConn.addEventListener(FEBEConnection.READY_FOR_QUERY, handleRfq);
@@ -54,17 +55,28 @@ package org.postgresql.db {
         private function handleRfq(e:Event):void {
         	if (_pendingExecution.length > 0) {
         		var nextQuery:Object = _pendingExecution.shift();
-        		_baseConn.executeSimpleQuery(nextQuery.sql,
-                    new DefaultQueryHandler(nextQuery.statement, _codecs));
+        		_baseConn.executeSimpleQuery(nextQuery.sql, nextQuery.handler);
         	}
         }
         
         internal function cancelStatement(stmt:IStatement):void {
-            
+            if (!(stmt in _active)) {
+                throw new ArgumentError("Attempting to cancel unregistered statement: " + stmt);
+            }
+            if (_currentlyExecuting.statement == stmt) {
+            	_baseConn.cancel();
+            }
+            // Dequeue any pending handlers related to this statement
+        	for (var i:int = 0; i < _pendingExecution.length; i++) {
+        		var pending:Object = _pendingExecution[i];
+        		if (pending.handler.statement == stmt) {
+        			_pendingExecution.splice(i, 1);
+        		}
+        	}
         }
 
         public function createStatement():IStatement {
-            var s:IStatement = new SimpleStatement(this);
+            var s:IStatement = new SimpleStatement(this, _queryHandlerFactory);
             _active[s] = true;
             return s;
         }
@@ -73,87 +85,28 @@ package org.postgresql.db {
             _baseConn.close();
         }
 
-        internal function executeQuery(statement:IStatement, sql:String):void {
-            if (!(statement in _active)) {
-                throw new ArgumentError("Attempting to execute unregistered statement: " + statement);
+        internal function executeQuery(sql:String, handler:IQueryHandler):void {
+            if (!(handler.statement in _active)) {
+                throw new ArgumentError("Attempting to execute unregistered statement: " + handler.statement);
             }
 
             if (_baseConn.rfq) {
-                _baseConn.executeSimpleQuery(sql, new DefaultQueryHandler(statement, _codecs));   
+            	_currentlyExecuting = handler;
+                _baseConn.executeSimpleQuery(sql, handler);
             } else {
-                _pendingExecution.push({ statement: statement, sql: sql });
+                _pendingExecution.push({ handler: handler, sql: sql });
             }
         }
 
         internal function closeStatement(statement:IStatement):void {
+        	// TODO: handle outstanding handlers for statement
             if (!(statement in _active)) {
                 throw new ArgumentError("Attempting to close unregistered statement: " + statement);
             }
-            // TODO: Send close for portal / statement
+            // TODO: Send close for portal / statement when not just simple query protocol
             delete _active[statement];
         }
 
 
-    }
-}
-
-import org.postgresql.febe.IQueryHandler;
-import org.postgresql.codec.CodecFactory;
-import org.postgresql.db.IStatement;
-import org.postgresql.febe.FieldDescription;
-import flash.utils.ByteArray;
-
-class DefaultQueryHandler implements IQueryHandler {
-
-	private var _codecFactory:CodecFactory;
-	private var _stmt:IStatement;
-	private var _fields:Array;
-	private var _decoders:Array;
-
-    private var _data:Array;
-
-	public function DefaultQueryHandler(stmt:IStatement, codecs:CodecFactory) {
-		_stmt = stmt;
-		_codecFactory = codecs;
-		_data = [];
-	}
-
-    public function handleMetadata(fields:Array):void {
-    	_fields = fields;
-    	_decoders = [];
-    	for each (var f:FieldDescription in fields) {
-    		_decoders.push(_codecFactory.getDecoder(f.typeOid));
-    	}
-    }
-
-    public function handleData(rows:Array, serverParams:Object):void {
-    	// TODO: handle streaming
-    	for each (var row:Array in rows) {
-    		var decodedRow:Array = [];
-    		for (var i:int = 0; i < row.length; i++) { 
-    			if (row[i]) {
-    				// TODO: this needs access to serverParams
-    				decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
-    			} else {
-    				decodedRow.push(null);
-    			}
-    		}
-    		_data.push(decodedRow);
-    	}
-    }
-
-    public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
-    	for each (var row:Array in _data) {
-    		trace (row.join(','));
-    	}
-    	trace('complete');
-    }
-
-    public function handleNotice(fields:Object):void {
-    	
-    }
-
-    public function handleError(fields:Object):void {
-    	
     }
 }

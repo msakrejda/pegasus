@@ -1,35 +1,55 @@
 package org.postgresql.db {
 
-    import flash.events.EventDispatcher;
+	import org.postgresql.event.MetadataEvent;
+	import org.postgresql.event.NoticeEvent;
+	import org.postgresql.event.ResultSetEvent;
 
-    // TODO: with result streaming, the results property can't just
-    // provide the full results. It can provide the latest, or just null
-    // to indicate that 
-    public class ResultSet extends EventDispatcher implements IResultSet {
+	public class ResultSet extends ResultBase implements IResultSet, IResultHandler {
 
-        private var _columns:Array;
+		private var _columns:Array;
+		private var _data:Array;
 
-        public var streaming:Boolean = false;
-        
-        internal function setColumns(value:Array):void {
-            _columns = value;
-        }
+		public function ResultSet(stmt:IStatement) {
+			super(stmt);
+			_data = [];
+		}
+		
+		public function handleColumns(cols:Array):void {
+			_columns = cols;
+			dispatchEvent(new MetadataEvent(MetadataEvent.METADATA, _columns));
+		}
 
-        internal function handleData(data:*):void {
-            //
-        }
+		public function handleRow(rowData:Array):void {
+			var mappedRow:Object = {};
+			// map rows from index-based to column-keyed
+			for (var i:int = 0; i < rowData.length; i++) {
+				var col:Column = _columns[i];
+				mappedRow[col.name] = rowData[i];
+			}
+			_data.push(mappedRow);
+		}
 
-        public function get columns():Array {
-            return [];
-        }
+		public function handleBatch():void {
+			// TODO: this will come into play with streaming
+		}
 
-        public function get data():* {
-            return [];
-        }
+		public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
+			dispatchEvent(new ResultSetEvent(ResultSetEvent.RESULT, _data));
+		}
 
-        public function close():void {
-            
-        }
+		public function get columns():Array {
+			return _columns;
+		}
+		
+		public function get data():Array {
+			return _data;
+		}
+		
+		public function close():void {
+			_data = [];
+			_columns = [];
+			// ? -- there may not be anything else to do for simple queries here
+		}
 
-    }
+	}
 }

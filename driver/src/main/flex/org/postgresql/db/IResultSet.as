@@ -4,7 +4,7 @@ package org.postgresql.db {
 
 	public interface IResultSet extends IEventDispatcher {
         function get columns():Array;
-		function get data():*;
+		function get data():Array;
 		function close():void;
 	}
 }
