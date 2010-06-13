@@ -1,6 +1,8 @@
-driver/src/main/flex/.actionScriptProperties
-driver/src/main/flex/.flexLibProperties
-driver/src/main/flex/.project
-driver/src/main/flex/.settings/
-driver/src/main/flex/bin/
+**/.actionScriptProperties
+**/.flexProperties
+**/.flexLibProperties
+**/.project
+**/.settings/
+**/bin/
+**/bin-debug/
 
