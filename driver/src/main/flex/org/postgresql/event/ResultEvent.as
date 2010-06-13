@@ -6,11 +6,13 @@ package org.postgresql.event {
 
         public static const RESULT:String = 'result'; 
 
+		public var command:String;
 		public var affectedRows:int;
 		public var insertOid:int;
 
-		public function ResultEvent(type:String, affected:int, oid:int) {
+		public function ResultEvent(type:String, command:String, affected:int, oid:int) {
 			super(type);
+			this.command = command;
 			this.insertOid = oid;
 			this.affectedRows = affected;
 		}

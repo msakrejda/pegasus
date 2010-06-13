@@ -28,7 +28,7 @@ package org.postgresql.db {
 			// TODO: expose command?
 			_affectedRows = rows;
 			_oid = oid;
-			dispatchEvent(new ResultEvent(ResultEvent.RESULT, rows, oid));
+			dispatchEvent(new ResultEvent(ResultEvent.RESULT, command, rows, oid));
 		}
     	
         public function get affectedRows():int {
