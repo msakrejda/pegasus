@@ -16,14 +16,14 @@ package org.postgresql.db {
         public function executeQuery(sql:String):IResultSet {
         	var resultSet:ResultSet = new ResultSet(this);
         	var queryHandler:SimpleQueryHandler = _queryHandlerFactory.createSimpleHandler(resultSet);
-            _conn.execute(sql, queryHandler);
+            _conn.execute(sql, this, queryHandler);
             return resultSet;
         }
 
         public function executeUpdate(sql:String):IResult {
         	var result:Result = new Result(this);
         	var queryHandler:SimpleQueryHandler = _queryHandlerFactory.createSimpleHandler(result);
-            _conn.execute(sql, queryHandler);
+            _conn.execute(sql, this, queryHandler);
             return result;
         }
 

@@ -20,7 +20,8 @@ package org.postgresql.db {
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
-        private var _currentlyExecuting:IQueryHandler;
+        private var _currentHandler:IQueryHandler;
+        private var _currentStatement:IStatement;
 
         public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
@@ -64,13 +65,13 @@ package org.postgresql.db {
             if (!(stmt in _active)) {
                 throw new ArgumentError("Attempting to cancel unregistered statement: " + stmt);
             }
-            if (_currentlyExecuting.statement == stmt) {
+            if (_currentStatement == stmt) {
             	_baseConn.cancel();
             }
             // Dequeue any pending handlers related to this statement
         	for (var i:int = 0; i < _pendingExecution.length; i++) {
         		var pending:Object = _pendingExecution[i];
-        		if (pending.handler.statement == stmt) {
+        		if (pending.statement == stmt) {
         			_pendingExecution.splice(i, 1);
         		}
         	}
@@ -86,16 +87,17 @@ package org.postgresql.db {
             _baseConn.close();
         }
 
-        internal function execute(sql:String, handler:IQueryHandler):void {
-            if (!(handler.statement in _active)) {
-                throw new ArgumentError("Attempting to execute unregistered statement: " + handler.statement);
+        internal function execute(sql:String, statement:IStatement, handler:IQueryHandler):void {
+            if (!(statement in _active)) {
+                throw new ArgumentError("Attempting to execute unregistered statement: " + statement);
             }
 
             if (_baseConn.rfq) {
-            	_currentlyExecuting = handler;
+            	_currentHandler = handler;
+            	_currentStatement = statement;
                 _baseConn.executeSimpleQuery(sql, handler);
             } else {
-                _pendingExecution.push({ handler: handler, sql: sql });
+                _pendingExecution.push({ sql: sql, statement: statement, handler: handler });
             }
         }
 

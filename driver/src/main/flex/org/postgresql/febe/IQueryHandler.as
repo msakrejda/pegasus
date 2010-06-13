@@ -4,10 +4,6 @@ package org.postgresql.febe {
 
 	public interface IQueryHandler {
 		/**
-		 * IStatement associated with this handler.
-		 */
-		function get statement():IStatement;
-		/**
 		 * Handle the FieldDescription metadata relating to this query.
 		 * This will be called before handleMetadata or handleCompletion.
 		 *
