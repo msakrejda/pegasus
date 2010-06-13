@@ -87,9 +87,6 @@ package org.postgresql.febe {
             serverParams = {};
             _backendKey = -1;
             _backendPid = -1;
-
-            // Our main broker
-            _broker = brokerFactory.create();
 		}
 
         public function get rfq():Boolean {
@@ -102,6 +99,14 @@ package org.postgresql.febe {
 
         public function connect(handler:IConnectionHandler):void {
         	_connHandler = handler;
+
+            _broker = _brokerFactory.create();
+            // TODO: This is a little ugly, especially since the underlying
+            // data stream can theoretically give up the ghost before this
+            // step happens. In practice, that's not likely due to Flash
+            // Player's asynchronous execution model, but it'd be nice to fix.
+            // It's also ugly to just pass a raw function here.
+            _broker.disconnectHandler = _connHandler.handleConnectionDrop;
 
         	_broker.setMessageListener(AuthenticationRequest, handleAuth);
         	_broker.setMessageListener(BackendKeyData, handleKeyData);

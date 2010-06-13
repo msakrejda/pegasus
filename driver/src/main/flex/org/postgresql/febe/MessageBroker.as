@@ -68,6 +68,7 @@ package org.postgresql.febe {
         }
 
         private var _dataStream:IDataStream;
+        private var _onDisconnected:Function;
 
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
@@ -77,6 +78,7 @@ package org.postgresql.febe {
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(DataStreamEvent.PROGRESS, handleStreamData);
+            _dataStream.addEventListener(DataStreamEvent.DISCONNECTED, handleDisconnected);
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
@@ -84,7 +86,14 @@ package org.postgresql.febe {
             _msgListeners = new Dictionary();
         }
 
-        private function handleStreamData(e:Event):void {
+        public function set disconnectHandler(handler:Function):void {
+        	_onDisconnected = handler;
+        }
+        private function handleDisconnected(e:DataStreamEvent):void {
+        	_onDisconnected();
+        }
+
+        private function handleStreamData(e:DataStreamEvent):void {
         	while (_dataStream.connected &&
         		   (_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5) ||
         	       (_nextMessageLen != -1 && _dataStream.bytesAvailable >= _nextMessageLen)) {
@@ -100,7 +109,7 @@ package org.postgresql.febe {
 		            // to the number of bytes this particular message can read.
 		            var messageBytes:ByteDataStream = new ByteDataStream();
 		            _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
-		
+					// TODO: validate that we have a valid _nextMessageType
 		            var nextMessage:IBEMessage = new backendMessageTypes[String.fromCharCode(_nextMessageType)]();
 		            nextMessage.read(messageBytes);
 		            dispatch(nextMessage);
@@ -112,8 +121,8 @@ package org.postgresql.febe {
         }
 
         public function send(message:IFEMessage):void {
-        	// TODO: move the logging out to remove Flex dependencies here
             LOGGER.debug('=> {0}', message);
+    		// TODO: handle write errors here (or in FEBEConnection)
             message.write(_dataStream);
             dispatchEvent(new MessageEvent(MessageEvent.SENT, message));
         }

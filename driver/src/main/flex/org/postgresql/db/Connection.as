@@ -46,6 +46,7 @@ package org.postgresql.db {
         }
         
         public function handleConnectionDrop():void {
+        	// TODO: error out on activity after disconnection
         	dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
         }
 
