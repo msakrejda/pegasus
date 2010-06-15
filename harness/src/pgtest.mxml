@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
-	xmlns:debug="org.postgresql.debug.*">
+    xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
-    	import org.postgresql.event.ResultEvent;
-    	import org.postgresql.event.ResultEvent;
-    	import org.postgresql.db.IResult;
-    	import org.postgresql.db.QueryHandlerFactory;
-    	import mx.olap.QueryError;
-    	import org.postgresql.db.Column;
-    	import org.postgresql.event.MetadataEvent;
-    	import org.postgresql.event.ResultSetEvent;
-    	import org.postgresql.db.IResultSet;
-    	import org.postgresql.util.DateFormatter;
-    	import org.postgresql.util.assert;
-    	import org.postgresql.log.Log;
-    	import org.postgresql.log.LogLevel;
-    	import org.postgresql.log.TraceTarget;
+        import org.postgresql.codec.decode.TextOut;
+        import org.postgresql.event.ResultEvent;
+        import org.postgresql.event.ResultEvent;
+        import org.postgresql.db.IResult;
+        import org.postgresql.db.QueryHandlerFactory;
+        import org.postgresql.db.Column;
+        import org.postgresql.event.MetadataEvent;
+        import org.postgresql.event.ResultSetEvent;
+        import org.postgresql.db.IResultSet;
+        import org.postgresql.util.DateFormatter;
+        import org.postgresql.util.assert;
+        import org.postgresql.log.Log;
+        import org.postgresql.log.LogLevel;
+        import org.postgresql.log.TraceTarget;
         import org.postgresql.io.SocketDataStreamFactory;
         import org.postgresql.febe.MessageBrokerFactory;
-    	import org.postgresql.Oid;
-    	import org.postgresql.codec.decode.IntOut;
+        import org.postgresql.Oid;
+        import org.postgresql.codec.decode.IntOut;
         import org.postgresql.codec.decode.DateOut;
-    	import org.postgresql.codec.CodecFactory;
-    	import mx.controls.Alert;
-    	import org.postgresql.febe.FEBEConnection;
+        import org.postgresql.codec.CodecFactory;
+        import mx.controls.Alert;
+        import org.postgresql.febe.FEBEConnection;
         import org.postgresql.db.IStatement;
         import org.postgresql.db.Connection;
         import org.postgresql.febe.message.Query;
@@ -38,7 +38,7 @@
         private function handleClick(e:Event):void {
             trace('connecting');
             if (Capabilities.isDebugger) {
-            	var logTarget:TraceTarget = new TraceTarget();
+                var logTarget:TraceTarget = new TraceTarget();
                 logTarget.format = "%d %t [%l] %c - %m (%n): %s";
                 Log.addTarget(logTarget, LogLevel.DEBUG);
             }
@@ -51,13 +51,19 @@
                 database: 'maciek'
             };
             var codecFactory:CodecFactory = new CodecFactory();
+            codecFactory.registerDecoder(Oid.INT2, int, new IntOut());
             codecFactory.registerDecoder(Oid.INT4, int, new IntOut());
             codecFactory.registerDecoder(Oid.TIMESTAMP, Date, new DateOut());
             codecFactory.registerDecoder(Oid.TIMESTAMPTZ, Date, new DateOut());
+            codecFactory.registerDecoder(Oid.BPCHAR, String, new TextOut());
+            codecFactory.registerDecoder(Oid.VARCHAR, String, new TextOut());
+            codecFactory.registerDecoder(Oid.CHAR, String, new TextOut());
+            codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
             var febeConn:FEBEConnection = new FEBEConnection(params, 'foo', brokerFactory);
             var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(codecFactory));
             var stmt:IStatement = conn.createStatement()
-            var result:IResultSet = stmt.executeQuery("select now()::timestamp as t1, now()::timestamptz as t2");
+            var result:IResultSet = stmt.executeQuery("select now()::timestamp as t1, now()::timestamptz as t2, " +
+                "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3");
             result.addEventListener(MetadataEvent.METADATA, handleMetadata);
             result.addEventListener(ResultSetEvent.RESULT, handleData);
             var result1:IResult = stmt.executeUpdate("drop table if exists test");
@@ -70,27 +76,27 @@
             result4.addEventListener(MetadataEvent.METADATA, handleMetadata);
             result4.addEventListener(ResultSetEvent.RESULT, handleData);
             result4.addEventListener(ResultSetEvent.RESULT, function(e:ResultSetEvent):void {
-	            conn.close();
+                conn.close();
             });
             
         }
         private function handleResult(e:ResultEvent):void {
-        	trace(e.command, e.affectedRows);
+            trace(e.command, e.affectedRows);
         }
         
         private function handleMetadata(e:MetadataEvent):void {
-        	trace('received metadata:');
-        	for each (var col:Column in e.columns) {
-        		trace('\t', col.name, '\t', col.type);
-        	}
+            trace('received metadata:');
+            for each (var col:Column in e.columns) {
+                trace('\t', col.name, '\t', col.type);
+            }
         }
         private function handleData(e:ResultSetEvent):void {
-            	trace('received data');
-            	for each (var item:Object in e.data) {
-            		for (var colName:String in item) {
-            			trace('\t', colName, '\t', item[colName]);
-            		}
-            	}
+                trace('received data');
+                for each (var item:Object in e.data) {
+                    for (var colName:String in item) {
+                        trace('\t', colName, '\t', item[colName]);
+                    }
+                }
         }
 
     ]]>
