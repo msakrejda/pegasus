@@ -3,6 +3,7 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
+        import org.postgresql.codec.decode.FloatOut;
         import org.postgresql.codec.decode.TextOut;
         import org.postgresql.event.ResultEvent;
         import org.postgresql.event.ResultEvent;
@@ -53,6 +54,8 @@
             var codecFactory:CodecFactory = new CodecFactory();
             codecFactory.registerDecoder(Oid.INT2, int, new IntOut());
             codecFactory.registerDecoder(Oid.INT4, int, new IntOut());
+            codecFactory.registerDecoder(Oid.FLOAT4, int, new FloatOut());
+            codecFactory.registerDecoder(Oid.FLOAT8, int, new FloatOut());
             codecFactory.registerDecoder(Oid.TIMESTAMP, Date, new DateOut());
             codecFactory.registerDecoder(Oid.TIMESTAMPTZ, Date, new DateOut());
             codecFactory.registerDecoder(Oid.BPCHAR, String, new TextOut());
@@ -63,7 +66,7 @@
             var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(codecFactory));
             var stmt:IStatement = conn.createStatement()
             var result:IResultSet = stmt.executeQuery("select now()::timestamp as t1, now()::timestamptz as t2, " +
-                "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3");
+                "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3, 1.2::float4 as float4, 1.3::float8 as float8");
             result.addEventListener(MetadataEvent.METADATA, handleMetadata);
             result.addEventListener(ResultSetEvent.RESULT, handleData);
             var result1:IResult = stmt.executeUpdate("drop table if exists test");
