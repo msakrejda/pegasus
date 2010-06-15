@@ -2,9 +2,9 @@ An ActionScript 3 driver for the PostgreSQL open source database.
 
 Currently supports only the simple query protocol (no parameters),
 clear-text password (and trust) authentication, integer datetimes,
-Unicode encoding, and int4 and timestamp / timestamptz output. Also,
-the error handling is a little shaky, especially with respect to
-dropped connections.
+Unicode encoding, and char, varchar, text, int2, int4 and timestamp /
+timestamptz output. Also, the error handling is a little shaky,
+especially with respect to dropped connections.
 
 More features (especially more data types, md5 auth, and more solid
 error handling) are in progress.
