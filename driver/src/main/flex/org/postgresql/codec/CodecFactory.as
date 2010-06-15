@@ -32,7 +32,12 @@ package org.postgresql.codec {
         }
 
         public function getDecoder(oid:int):IPGTypeDecoder {
-            return _decoders[oid];
+            if (oid in _decoders) {
+                return _decoders[oid];
+            } else {
+                throw new ArgumentError("No decoder found for oid: " + oid);
+            }
+            
         }
 
         public function getOutputClass(oid:int):Class {
