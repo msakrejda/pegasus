@@ -32,5 +32,9 @@ package org.postgresql.febe {
             return _format;
         }
 
+        public function toString():String {
+            return name + '(oid:' + _typeOid + ',attno:' + attributeNum + ',size:' + typeSize + ',typmod:' + typeModifier + ')';
+        }
+
     }
 }

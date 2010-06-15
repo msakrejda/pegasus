@@ -6,8 +6,12 @@ package org.postgresql.db {
     import org.postgresql.codec.IPGTypeDecoder;
     import org.postgresql.febe.FieldDescription;
     import org.postgresql.febe.IQueryHandler;
+    import org.postgresql.log.ILogger;
+    import org.postgresql.log.Log;
     
     internal class SimpleQueryHandler extends EventDispatcher implements IQueryHandler {
+
+        private static const LOGGER:ILogger = Log.getLogger(SimpleQueryHandler);
     
         private var _codecFactory:CodecFactory;
         private var _resultHandler:IResultHandler;
@@ -29,6 +33,7 @@ package org.postgresql.db {
                 // TODO: ColumnFactory?
                 columns.push(new Column(f.name, _codecFactory.getOutputClass(f.typeOid), f.typeOid));
             }
+            LOGGER.debug("Got fields: {0}", fields.join(' '));
             _resultHandler.handleColumns(columns);
         }
     
