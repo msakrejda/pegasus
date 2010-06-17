@@ -14,9 +14,6 @@ package org.postgresql.db {
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
-        public static const PARAM_CHANGE:String = 'paramChange';
-        public static const READY_FOR_QUERY:String = 'readyForQuery';
-
         private var _queryHandlerFactory:QueryHandlerFactory;
         private var _baseConn:FEBEConnection;
 
