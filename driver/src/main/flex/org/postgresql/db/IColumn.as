@@ -1,4 +1,7 @@
 package org.postgresql.db {
+	/**
+	 * Class describing a field of data in an IResultSet.
+	 */
 	public interface IColumn {
 		/**
 		 * The name of this column: either the alias specified in the target
