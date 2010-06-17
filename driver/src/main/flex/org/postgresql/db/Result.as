@@ -2,7 +2,7 @@ package org.postgresql.db {
 
     import org.postgresql.event.ResultEvent;
     
-    public class Result extends ResultBase implements IResult, IResultHandler {
+    internal class Result extends ResultBase implements IResult, IResultHandler {
 
         private var _affectedRows:int;
         private var _oid:int;
