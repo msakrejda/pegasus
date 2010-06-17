@@ -12,7 +12,7 @@ package org.postgresql.db {
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
 
-    public class Connection extends EventDispatcher implements IConnectionHandler {
+    public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
         public static const PARAM_CHANGE:String = 'paramChange';
         public static const READY_FOR_QUERY:String = 'readyForQuery';
