@@ -1,12 +1,15 @@
 package org.postgresql.db {
-    public class Column {
+    internal class Column implements IColumn {
+    	private var _name:String;
+    	private var _type:Class;
+    	private var _typeOid:int;
         public function Column(name:String, type:Class, typeOid:int) {
-            this.name = name;
-            this.type = type;
-            this.typeOid = typeOid;
+            _name = name;
+            _type = type;
+            _typeOid = typeOid;
         }
-        public var name:String;
-        public var type:Class;
-        public var typeOid:int;
+        public function get name():String { return _name; }
+        public function get type():Class { return _type; }
+        public function get typeOid():int { return _typeOid; }
     }
 }
