@@ -3,13 +3,14 @@ package org.postgresql.codec.decode {
     import org.postgresql.DateStyle;
     import org.postgresql.EncodingFormat;
     import org.postgresql.codec.IPGTypeDecoder;
-    import org.postgresql.febe.FieldDescription;
+    import org.postgresql.febe.IFieldInfo;
     import org.postgresql.febe.UnsupportedProtocolFeatureError;
     import org.postgresql.io.ICDataInput;
 
     public class DateOut implements IPGTypeDecoder {
+    	// Currently, we only support ISO-style date parsing, and only text mode
 
-        public function decode(bytes:ICDataInput, format:FieldDescription, serverParams:Object):Object {
+        public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
                     if (!('DateStyle' in serverParams)) {
