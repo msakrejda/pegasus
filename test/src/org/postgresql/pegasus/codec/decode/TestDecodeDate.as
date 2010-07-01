@@ -33,9 +33,6 @@ package org.postgresql.pegasus.codec.decode {
 			];
 		}
 
-//		[Test]
-//		public function testFoo():void { trace('hello world'); }
-
 		[Test(dataProvider="getTestDates")]
 		public function testDecodeDate(bytes:ByteDataStream, format:IFieldInfo, serverParams:Object, expected:Date):void {
 			var result:Date = _decoder.decode(bytes, format, serverParams) as Date;
