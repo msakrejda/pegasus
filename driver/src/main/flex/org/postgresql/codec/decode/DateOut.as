@@ -6,6 +6,7 @@ package org.postgresql.codec.decode {
     import org.postgresql.febe.IFieldInfo;
     import org.postgresql.febe.UnsupportedProtocolFeatureError;
     import org.postgresql.io.ICDataInput;
+    import org.postgresql.util.DateUtil;
 
     public class DateOut implements IPGTypeDecoder {
     	// Currently, we only support ISO-style date parsing, and only text mode
@@ -20,7 +21,16 @@ package org.postgresql.codec.decode {
                     if (outputStyle != DateStyle.OUTPUT_ISO) {
                         throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
                     }
-                    return parseISO(bytes.readUTFBytes(bytes.bytesAvailable));
+                    var dateStr:String = bytes.readUTFBytes(bytes.bytesAvailable);
+                    // Unfortunately, ActionScript does not have infinite dates: this is probably
+                    // a reasonable workaround for the moment
+                    if (dateStr == 'infinity') {
+                    	return new Date(DateUtil.MAX_DATE_TICKS);
+                    } else if (dateStr == '-infinity') {
+                    	return new Date(DateUtil.MIN_DATE_TICKS);
+                    } else {
+                    	return parseISO(dateStr);
+                    }
                 case EncodingFormat.BINARY:
                     // TODO: implement me. on the wire, the value here depends on
                     // whether we have integer datetimes. After we parse this, we
