@@ -1,6 +1,5 @@
 package org.postgresql.pegasus.codec.decode {
 	import org.flexunit.Assert;
-	import org.flexunit.asserts.assertEquals;
 	import org.postgresql.DateStyle;
 	import org.postgresql.EncodingFormat;
 	import org.postgresql.Oid;
@@ -8,6 +7,7 @@ package org.postgresql.pegasus.codec.decode {
 	import org.postgresql.febe.BasicFieldDescription;
 	import org.postgresql.febe.IFieldInfo;
 	import org.postgresql.io.ByteDataStream;
+	import org.postgresql.util.DateUtil;
 
 	[RunWith("org.flexunit.runners.Parameterized")]
 	public class TestDecodeDate {
@@ -18,23 +18,18 @@ package org.postgresql.pegasus.codec.decode {
 			_decoder = new DateOut();
 		}
 		
-		private static function getBytes(str:String):ByteDataStream {
-			var bytes:ByteDataStream = new ByteDataStream();
-			bytes.writeUTFBytes(str);
-			bytes.position = 0;
-			return bytes;				
-		};
-
 		public static function getTestDates():Array {
 			var format:BasicFieldDescription = new BasicFieldDescription(Oid.TIMESTAMP, EncodingFormat.TEXT);
 			var params:Object = { DateStyle: DateStyle.OUTPUT_ISO + ', ' + DateStyle.ORDER_YMD };
 			return [
-				[ getBytes('2000-01-01 00:00:00'), format, params, new Date(2000, 0, 1, 0, 0, 0) ]
+				[ getBytes('2000-01-01 00:00:00'), format, params, new Date(2000, 0, 1, 0, 0, 0) ],
+				[ getBytes('infinity'), format, params, new Date(DateUtil.MAX_DATE_TICKS) ],
+				[ getBytes('-infinity'), format, params, new Date(DateUtil.MIN_DATE_TICKS) ]
 			];
 		}
 
 		[Test(dataProvider="getTestDates")]
-		public function testDecodeDate(bytes:ByteDataStream, format:IFieldInfo, serverParams:Object, expected:Date):void {
+		public function testDecodeTimestamp(bytes:ByteDataStream, format:IFieldInfo, serverParams:Object, expected:Date):void {
 			var result:Date = _decoder.decode(bytes, format, serverParams) as Date;
 			Assert.assertEquals(expected.time, result.time);
 		}
