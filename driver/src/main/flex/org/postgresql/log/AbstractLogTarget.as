@@ -26,7 +26,7 @@ package org.postgresql.log {
 
          public function AbstractLogTarget() {
             format = '%d %t [%l]: %c - %m (%n): %s';
-            // TODO: replace with non-Flex utility classes
+
              _dateFormatter = new DateFormatter();
              _dateFormatter.formatString = 'YYYY-MM-DD';
 
