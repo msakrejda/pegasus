@@ -3,6 +3,7 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
+    	import org.postgresql.db.IColumn;
         import org.postgresql.codec.decode.FloatOut;
         import org.postgresql.codec.decode.TextOut;
         import org.postgresql.event.ResultEvent;
@@ -89,7 +90,7 @@
         
         private function handleMetadata(e:MetadataEvent):void {
             trace('received metadata:');
-            for each (var col:Column in e.columns) {
+            for each (var col:IColumn in e.columns) {
                 trace('\t', col.name, '\t', col.type);
             }
         }
