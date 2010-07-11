@@ -105,6 +105,7 @@ package org.postgresql.febe {
             // step happens. In practice, that's not likely due to Flash
             // Player's asynchronous execution model, but it'd be nice to fix.
             _broker.addEventListener(MessageStreamEvent.DISCONNECTED, handleDisconnected);
+            _broker.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
 
             _messageHandler.setMessageListener(AuthenticationRequest, handleAuth);
             _messageHandler.setMessageListener(BackendKeyData, handleKeyData);
@@ -113,7 +114,6 @@ package org.postgresql.febe {
             _messageHandler.setMessageListener(ErrorResponse, handleError);
             _messageHandler.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-            _broker.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
 
             _broker.send(new StartupMessage(_params));
         }

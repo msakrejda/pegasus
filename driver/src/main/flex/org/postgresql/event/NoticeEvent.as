@@ -4,8 +4,8 @@ package org.postgresql.event {
 
     public class NoticeEvent extends Event {
 
-        public static const NOTICE:String = 'noticeNoticeEvent';
-        public static const ERROR:String = 'errorNoticeEvent';
+        public static const NOTICE:String = 'notice';
+        public static const ERROR:String = 'error';
 
         public var fields:Object;
 
