@@ -3,7 +3,7 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
-    	import org.postgresql.db.IColumn;
+        import org.postgresql.db.IColumn;
         import org.postgresql.codec.decode.FloatOut;
         import org.postgresql.codec.decode.TextOut;
         import org.postgresql.event.ResultEvent;

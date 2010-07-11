@@ -302,7 +302,7 @@ package org.postgresql.febe {
         }
 
         private function handleDisconnected(e:MessageStreamEvent):void {
-        	_connHandler.handleDisconnected();
+            _connHandler.handleDisconnected();
         }
 
         public function close():void {
@@ -331,32 +331,32 @@ import org.postgresql.log.Log;
  */
 class MessageHandler {
 
-	private static const LOGGER:ILogger = Log.getLogger(MessageHandler);
+    private static const LOGGER:ILogger = Log.getLogger(MessageHandler);
 
     private var _msgListeners:Dictionary;
     private var _broker:IMessageBroker;
             
-	public function MessageHandler(broker:IMessageBroker) {
-		_msgListeners = new Dictionary();
-		_broker = broker;
-		_broker.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
-	}
-	
-	private function handleMessageReceived(e:MessageEvent):void {
-		var msg:IBEMessage = IBEMessage(e.message);
-		assert("No message associated with message event", msg);
-		if (Object(msg).constructor in _msgListeners) {
-			var listener:Function = _msgListeners[Object(msg).constructor];
-			if (listener != null) {
-				listener(msg);
-			} else {
-				LOGGER.warn("No message listener associated with message {0}; dropping", msg);
-			}
-		}
-	}
+    public function MessageHandler(broker:IMessageBroker) {
+        _msgListeners = new Dictionary();
+        _broker = broker;
+        _broker.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
+    }
+    
+    private function handleMessageReceived(e:MessageEvent):void {
+        var msg:IBEMessage = IBEMessage(e.message);
+        assert("No message associated with message event", msg);
+        if (Object(msg).constructor in _msgListeners) {
+            var listener:Function = _msgListeners[Object(msg).constructor];
+            if (listener != null) {
+                listener(msg);
+            } else {
+                LOGGER.warn("No message listener associated with message {0}; dropping", msg);
+            }
+        }
+    }
 
     public function setMessageListener(msg:Class, callback:Function):void {
-		_msgListeners[msg] = callback;
+        _msgListeners[msg] = callback;
     }
 
     public function clearMessageListener(msg:Class):void {

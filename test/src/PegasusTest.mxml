@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" 
-	creationComplete="handleInit(event)" styleName="flexUnitApplication" width="1200" height="800"
-	xmlns:listeners="org.flexunit.listeners.*" xmlns:flexui="org.flexunit.flexui.*">
-	
-	<mx:Script>
-		<![CDATA[
-			import org.postgresql.pegasus.codec.CodecSuite;
+    creationComplete="handleInit(event)" styleName="flexUnitApplication" width="1200" height="800"
+    xmlns:listeners="org.flexunit.listeners.*" xmlns:flexui="org.flexunit.flexui.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import org.postgresql.pegasus.codec.CodecSuite;
 
-			import org.flexunit.assertThat;
-			import org.flexunit.asserts.*;
-			import org.flexunit.listeners.UIListener;
-			import org.flexunit.runner.FlexUnitCore;
-			import org.flexunit.runner.Request;
-			import org.flexunit.runner.notification.async.XMLListener;
+            import org.flexunit.assertThat;
+            import org.flexunit.asserts.*;
+            import org.flexunit.listeners.UIListener;
+            import org.flexunit.runner.FlexUnitCore;
+            import org.flexunit.runner.Request;
+            import org.flexunit.runner.notification.async.XMLListener;
 
-			private var _core:FlexUnitCore;
+            private var _core:FlexUnitCore;
 
-			private function handleInit(event:Event):void {
-				_core = new FlexUnitCore();
+            private function handleInit(event:Event):void {
+                _core = new FlexUnitCore();
 
-				_core.addListener( new UIListener( uiListener ));
-				
-				_core.run( CodecSuite );
-			}
-		]]>
-	</mx:Script>
-	<flexui:TestRunnerBase id="uiListener" width="100%" height="100%" />
+                _core.addListener( new UIListener( uiListener ));
+                
+                _core.run( CodecSuite );
+            }
+        ]]>
+    </mx:Script>
+    <flexui:TestRunnerBase id="uiListener" width="100%" height="100%" />
 </mx:WindowedApplication>

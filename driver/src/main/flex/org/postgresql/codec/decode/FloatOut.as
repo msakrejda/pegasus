@@ -11,7 +11,7 @@ package org.postgresql.codec.decode {
         public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
-                	// Note that this also parses 'Infinity', '-Infinity', and 'NaN'
+                    // Note that this also parses 'Infinity', '-Infinity', and 'NaN'
                     return Number(bytes.readUTFBytes(bytes.bytesAvailable));
                 case EncodingFormat.BINARY:
                     switch (format.typeOid) {

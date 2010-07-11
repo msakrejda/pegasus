@@ -92,22 +92,22 @@ package org.postgresql.febe {
                     var nextTypeCode:String = String.fromCharCode(_nextMessageType);
                     var nextMessageClass:Class = backendMessageTypes[nextTypeCode];
                     if (!nextMessageClass) {
-                    	LOGGER.error("No message class found for message type {0}", nextTypeCode);
-                    	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                        LOGGER.error("No message class found for message type {0}", nextTypeCode);
+                        dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
                     } else {
-                    	try {
-	                    	var nextMessage:IBEMessage = new nextMessageClass();
-	                    	nextMessage.read(messageBytes);
-	                    	LOGGER.debug('<= {0}', nextMessage);
-							dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, nextMessage));
-                    	} catch (e:Error) {
-	                    	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
-                    	} finally {
-                    		// TODO: we should probably try sync in the catch or something: it's rather
-                    		// optimistic to assume that this finally clause will work for the failure case
-		                    _nextMessageType = -1;
-		                    _nextMessageLen = -1;
-                    	}
+                        try {
+                            var nextMessage:IBEMessage = new nextMessageClass();
+                            nextMessage.read(messageBytes);
+                            LOGGER.debug('<= {0}', nextMessage);
+                            dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, nextMessage));
+                        } catch (e:Error) {
+                            dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                        } finally {
+                            // TODO: we should probably try sync in the catch or something: it's rather
+                            // optimistic to assume that this finally clause will work for the failure case
+                            _nextMessageType = -1;
+                            _nextMessageLen = -1;
+                        }
                     }
                 }
             }
@@ -115,7 +115,7 @@ package org.postgresql.febe {
         }
 
         private function handleDisconnected(e:DataStreamEvent):void {
-        	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.DISCONNECTED));
+            dispatchEvent(new MessageStreamEvent(MessageStreamEvent.DISCONNECTED));
         }
 
         public function send(message:IFEMessage):void {

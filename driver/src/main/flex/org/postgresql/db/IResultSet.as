@@ -10,17 +10,17 @@ package org.postgresql.db {
      * contain details on the error.
      */
     public interface IResultSet extends IEventDispatcher {
-    	/**
-    	 * An Array of IColumn instances describing the fields in this result set.
-    	 * Available after the result set dispatches the MetadataEvent.METADATA event.
-    	 */
+        /**
+         * An Array of IColumn instances describing the fields in this result set.
+         * Available after the result set dispatches the MetadataEvent.METADATA event.
+         */
         function get columns():Array;
-    	/**
-    	 * Data returned by this query, as an Array of Objects, each mapping column names
-    	 * (as present in the <code>columns</code> Array) to their values for that row.
-    	 * <br/>
-    	 * Available after the result set dispatches ResultSetEvent.RESULT event.
-    	 */ 
+        /**
+         * Data returned by this query, as an Array of Objects, each mapping column names
+         * (as present in the <code>columns</code> Array) to their values for that row.
+         * <br/>
+         * Available after the result set dispatches ResultSetEvent.RESULT event.
+         */ 
         function get data():Array;
         /**
          * Release the resources held by this result set. 
