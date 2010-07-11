@@ -5,10 +5,6 @@ package org.postgresql.febe.message {
 
     public class DataRow extends AbstractMessage implements IBEMessage {
 
-        // TODO: encapsulating this better may allow us better
-        // performance here--if we can store the entire row data
-        // as a single byte array, we can still provide deserialization
-        // access to it field-by-field
         public var rowBytes:Array;
 
         public function read(input:ICDataInput):void {
