@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="pegasus" default="dist">
+
+  <property file="build.local.properties"/>
+  <property file="build.properties"/>
+
+  <!-- These can be overridden from the command line when building -->
+  <property name="pegasus.version" value="SNAPSHOT"/>
+  <property name="pegasus.branch" value="trunk"/>
+  <property name="pegasus.revision" value="non-release"/>
+
+  <property environment="env"/>
+
+  <property name="debug" value="true"/>
+
+  <property name="pegasus.src" value="driver/src/main/flex"/>
+  <property name="pegasus.swc" value="dist/pegasus-${pegasus.version}.swc"/>
+
+  <target name="clean" description="Removes artifacts from previous build">
+    <delete failonerror="false" includeEmptyDirs="true">
+	  <fileset dir="build"/>
+      <fileset dir="dist"/>
+    </delete>
+  </target>
+
+  <target name="init" description="Perform build setup">
+    <mkdir dir="build"/>
+    <mkdir dir="dist"/>
+  </target>
+
+  <target name="flex-setup">
+    <!--
+      The immutability of properties makes pulling this in from either
+      property file or environment a little awkward
+      -->
+    <condition property="FLEX_HOME" value="${flex.home}">
+      <isset property="flex.home"/>
+    </condition>
+    <condition property="FLEX_HOME" value="${env.FLEX_HOME}">
+      <isset property="env.FLEX_HOME"/>
+    </condition>
+    <fail message="flex.home must be specified in property file or FLEX_HOME environment variable must be set to build pegasus">
+      <condition>
+		<not>
+		  <isset property="FLEX_HOME"/>
+		</not>
+      </condition>
+    </fail>
+    <taskdef resource="flexTasks.tasks">
+      <classpath>
+		<fileset dir="${FLEX_HOME}/ant/lib">
+		  <include name="**/*.jar"/>
+		</fileset>
+      </classpath>
+    </taskdef>
+  </target>
+
+  <target name="swc" depends="flex-setup">
+    <!--
+       We need to fork here because the compc/mxmlc tasks are just <java> task wrappers,
+       and flex 3 and ant 1.7 depend on different versions of the apache Xerces library.
+      -->
+    <compc debug="${debug}" output="${pegasus.swc}" fork="true" maxmemory="512m">
+      <arg value="-headless-server=true"/>
+      <!--
+         Okay, it seems we need *both* source-path and include-sources. The documentation
+         is vague. I think this is what is colloquially known as a "clusterfuck" of an API
+        -->
+      <source-path>driver/src/main/flex</source-path>
+	  <include-sources dir="driver/src/main/flex" append="true">
+        <include name="**/*.as"/>
+      </include-sources>
+    </compc>
+  </target>
+
+  <target name="dist" depends="swc"/>
+
+</project>
