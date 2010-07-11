@@ -13,8 +13,10 @@ package org.postgresql.febe {
         
         function handleRfq():void;
 
-        function handleConnectionDrop():void;
         function handleConnected():void;
+
+        function handleDisconnected():void;
+
         function handleParameterChange(name:String, newValue:Object):void;
     }
 }

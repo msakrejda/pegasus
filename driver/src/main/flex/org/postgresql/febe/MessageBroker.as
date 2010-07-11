@@ -1,8 +1,6 @@
 package org.postgresql.febe {
 
-    import flash.events.Event;
     import flash.events.EventDispatcher;
-    import flash.utils.Dictionary;
     
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
@@ -28,17 +26,9 @@ package org.postgresql.febe {
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
 
-    public class MessageBroker extends EventDispatcher {
+    public class MessageBroker extends EventDispatcher implements IMessageBroker {
 
         private static const LOGGER:ILogger = Log.getLogger(MessageBroker); 
-
-        /**
-         * Depending on the nested IDataStream implementation, incoming messages may
-         * arrive in batches. When a batch of messages has been processed, this event
-         * is dispatched. It allows us to implement features like result set streaming
-         * in an efficient and useful manner.
-         */  
-        public static const BATCH_COMPLETE:String = "batchComplete";
 
         // Commented-out messages are part of the protocol but unimplemented. COPY
         // will probably be implemented at some point; the function call (fastpath)
@@ -72,8 +62,6 @@ package org.postgresql.febe {
 
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
-
-        private var _msgListeners:Dictionary;
         
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
@@ -82,26 +70,18 @@ package org.postgresql.febe {
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
-
-            _msgListeners = new Dictionary();
-        }
-
-        public function set disconnectHandler(handler:Function):void {
-            _onDisconnected = handler;
-        }
-        private function handleDisconnected(e:DataStreamEvent):void {
-            _onDisconnected();
         }
 
         private function handleStreamData(e:DataStreamEvent):void {
             while (_dataStream.connected &&
-                   (_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5) ||
+                   (_nextMessageLen == -1 && _dataStream.bytesAvailable >= 5 /* len + type */) ||
                    (_nextMessageLen != -1 && _dataStream.bytesAvailable >= _nextMessageLen)) {
                 if (_nextMessageLen == -1) {
                     _nextMessageType = _dataStream.readByte();
                     // FEBE encodes the message length as including the size
                     // of the length field itself. This does not work well for
-                    // our purposes--we subtract the size of the length field.
+                    // our purposes (it would make a number of things more confusing
+                    // than necessary), so we subtract the size of the length field.
                     _nextMessageLen = _dataStream.readInt() - 4;
                 } else {
                     // TODO: We should not have to copy the message to its own array: we
@@ -109,15 +89,33 @@ package org.postgresql.febe {
                     // to the number of bytes this particular message can read.
                     var messageBytes:ByteDataStream = new ByteDataStream();
                     _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
-                    // TODO: validate that we have a valid _nextMessageType
-                    var nextMessage:IBEMessage = new backendMessageTypes[String.fromCharCode(_nextMessageType)]();
-                    nextMessage.read(messageBytes);
-                    dispatch(nextMessage);
-                    _nextMessageType = -1;
-                    _nextMessageLen = -1;
+                    var nextTypeCode:String = String.fromCharCode(_nextMessageType);
+                    var nextMessageClass:Class = backendMessageTypes[nextTypeCode];
+                    if (!nextMessageClass) {
+                    	LOGGER.error("No message class found for message type {0}", nextTypeCode);
+                    	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                    } else {
+                    	try {
+	                    	var nextMessage:IBEMessage = new nextMessageClass();
+	                    	nextMessage.read(messageBytes);
+	                    	LOGGER.debug('<= {0}', nextMessage);
+							dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, nextMessage));
+                    	} catch (e:Error) {
+	                    	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                    	} finally {
+                    		// TODO: we should probably try sync in the catch or something: it's rather
+                    		// optimistic to assume that this finally clause will work for the failure case
+		                    _nextMessageType = -1;
+		                    _nextMessageLen = -1;
+                    	}
+                    }
                 }
             }
-            dispatchEvent(new Event(BATCH_COMPLETE));
+            dispatchEvent(new MessageStreamEvent(MessageStreamEvent.BATCH_COMPLETE));
+        }
+
+        private function handleDisconnected(e:DataStreamEvent):void {
+        	dispatchEvent(new MessageStreamEvent(MessageStreamEvent.DISCONNECTED));
         }
 
         public function send(message:IFEMessage):void {
@@ -125,25 +123,6 @@ package org.postgresql.febe {
             // TODO: handle write errors here (or in FEBEConnection)
             message.write(_dataStream);
             dispatchEvent(new MessageEvent(MessageEvent.SENT, message));
-        }
-
-        private function dispatch(message:IBEMessage):void {
-            LOGGER.debug('<= {0}', message);
-            var listener:Function = _msgListeners[Object(message).constructor];
-            if (listener != null) {
-                listener(message);
-                dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, message));
-            } else {
-                dispatchEvent(new MessageEvent(MessageEvent.DROPPED, message));
-            }
-        }
-        
-        public function setMessageListener(msg:Class, callback:Function):void {
-               _msgListeners[msg] = callback;
-        }
-
-        public function clearMessageListener(msg:Class):void {
-            delete _msgListeners[msg];
         }
 
         public function close():void {

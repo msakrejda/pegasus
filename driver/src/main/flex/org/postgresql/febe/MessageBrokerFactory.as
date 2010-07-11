@@ -10,7 +10,7 @@ package org.postgresql.febe {
             _streamFactory = streamFactory;
         }
 
-        public function create():MessageBroker {
+        public function create():IMessageBroker {
             return new MessageBroker(_streamFactory.create());
         }
 

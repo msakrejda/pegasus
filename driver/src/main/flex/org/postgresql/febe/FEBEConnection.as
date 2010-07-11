@@ -1,10 +1,7 @@
 package org.postgresql.febe {
 
     import flash.events.Event;
-    import flash.events.EventDispatcher;
     
-    import org.postgresql.event.NoticeEvent;
-    import org.postgresql.event.NotificationEvent;
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.CancelRequest;
@@ -37,7 +34,8 @@ package org.postgresql.febe {
         private var _params:Object;
 
         private var _brokerFactory:MessageBrokerFactory;
-        private var _broker:MessageBroker;
+        private var _broker:IMessageBroker;
+        private var _messageHandler:MessageHandler;
 
         private var _authenticated:Boolean;
         private var _connecting:Boolean;
@@ -101,21 +99,21 @@ package org.postgresql.febe {
             _connHandler = handler;
 
             _broker = _brokerFactory.create();
+            _messageHandler = new MessageHandler(_broker);
             // TODO: This is a little ugly, especially since the underlying
             // data stream can theoretically give up the ghost before this
             // step happens. In practice, that's not likely due to Flash
             // Player's asynchronous execution model, but it'd be nice to fix.
-            // It's also ugly to just pass a raw function here.
-            _broker.disconnectHandler = _connHandler.handleConnectionDrop;
+            _broker.addEventListener(MessageStreamEvent.DISCONNECTED, handleDisconnected);
 
-            _broker.setMessageListener(AuthenticationRequest, handleAuth);
-            _broker.setMessageListener(BackendKeyData, handleKeyData);
-            _broker.setMessageListener(ParameterStatus, handleParam);
-            _broker.setMessageListener(NoticeResponse, handleNotice);
-            _broker.setMessageListener(ErrorResponse, handleError);
-            _broker.setMessageListener(ReadyForQuery, handleFirstRfq);
+            _messageHandler.setMessageListener(AuthenticationRequest, handleAuth);
+            _messageHandler.setMessageListener(BackendKeyData, handleKeyData);
+            _messageHandler.setMessageListener(ParameterStatus, handleParam);
+            _messageHandler.setMessageListener(NoticeResponse, handleNotice);
+            _messageHandler.setMessageListener(ErrorResponse, handleError);
+            _messageHandler.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-            _broker.addEventListener(MessageBroker.BATCH_COMPLETE, handleBatchComplete);
+            _broker.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
 
             _broker.send(new StartupMessage(_params));
         }
@@ -145,17 +143,17 @@ package org.postgresql.febe {
                 _rfq = true;
                 _status = msg.status;
 
-                _broker.setMessageListener(ReadyForQuery, handleRfq);
-                _broker.setMessageListener(AuthenticationRequest, handleUnexpectedMessage);
-                _broker.setMessageListener(BackendKeyData, handleUnexpectedMessage);
+                _messageHandler.setMessageListener(ReadyForQuery, handleRfq);
+                _messageHandler.setMessageListener(AuthenticationRequest, handleUnexpectedMessage);
+                _messageHandler.setMessageListener(BackendKeyData, handleUnexpectedMessage);
 
-                _broker.setMessageListener(NotificationResponse, handleNotification);
-                _broker.setMessageListener(RowDescription, handleMetadata);
-                _broker.setMessageListener(DataRow, handleData);
+                _messageHandler.setMessageListener(NotificationResponse, handleNotification);
+                _messageHandler.setMessageListener(RowDescription, handleMetadata);
+                _messageHandler.setMessageListener(DataRow, handleData);
                 // _broker.setMessageListener(CopyInResponse, ...);
                 // _broker.setMessageListener(CopyOutResponse, ...);
-                _broker.setMessageListener(CommandComplete, handleComplete);
-                _broker.setMessageListener(EmptyQueryResponse, handleEmpty);
+                _messageHandler.setMessageListener(CommandComplete, handleComplete);
+                _messageHandler.setMessageListener(EmptyQueryResponse, handleEmpty);
 
                 _connHandler.handleRfq();
                 _connHandler.handleConnected();
@@ -293,10 +291,18 @@ package org.postgresql.febe {
         // support a structured explain
 
         public function cancel():void {
-            // Note that cancel needs to happen in a separate connection to make any sense
-            var cancelBroker:MessageBroker = _brokerFactory.create();
+            // Note that cancel needs to happen in a separate connection to make any sense.
+            // Since the broker goes out of scope here as soon as the method body ends,
+            // there may be some issues with GC (since socket communication is asynchronous),
+            // but Flash Player *should* queue everything it needs to do the physical send
+            // before GC.
+            var cancelBroker:IMessageBroker = _brokerFactory.create();
             cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
             cancelBroker.close();
+        }
+
+        private function handleDisconnected(e:MessageStreamEvent):void {
+        	_connHandler.handleDisconnected();
         }
 
         public function close():void {
@@ -307,5 +313,53 @@ package org.postgresql.febe {
             }
         }
 
+    }
+}
+
+import flash.utils.Dictionary;
+import org.postgresql.febe.IMessageBroker;
+import org.postgresql.febe.MessageEvent;
+import org.postgresql.febe.message.IBEMessage;
+import org.postgresql.util.assert;
+import org.postgresql.log.ILogger;
+import org.postgresql.log.Log;
+
+/**
+ * Helper class for reading messages. Note that this is not a full wrapper
+ * around the broker; it's just a simple facility of installing and removing
+ * message listeners.
+ */
+class MessageHandler {
+
+	private static const LOGGER:ILogger = Log.getLogger(MessageHandler);
+
+    private var _msgListeners:Dictionary;
+    private var _broker:IMessageBroker;
+            
+	public function MessageHandler(broker:IMessageBroker) {
+		_msgListeners = new Dictionary();
+		_broker = broker;
+		_broker.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
+	}
+	
+	private function handleMessageReceived(e:MessageEvent):void {
+		var msg:IBEMessage = IBEMessage(e.message);
+		assert("No message associated with message event", msg);
+		if (Object(msg).constructor in _msgListeners) {
+			var listener:Function = _msgListeners[Object(msg).constructor];
+			if (listener != null) {
+				listener(msg);
+			} else {
+				LOGGER.warn("No message listener associated with message {0}; dropping", msg);
+			}
+		}
+	}
+
+    public function setMessageListener(msg:Class, callback:Function):void {
+		_msgListeners[msg] = callback;
+    }
+
+    public function clearMessageListener(msg:Class):void {
+        delete _msgListeners[msg];
     }
 }
