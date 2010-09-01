@@ -3,17 +3,18 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
+    	import org.postgresql.db.IQueryHandler;
+    	import org.postgresql.db.SimpleResultHandler;
+    	import org.postgresql.db.SimpleQueryHandler;
         import org.postgresql.db.IColumn;
         import org.postgresql.codec.decode.FloatOut;
         import org.postgresql.codec.decode.TextOut;
         import org.postgresql.event.ResultEvent;
         import org.postgresql.event.ResultEvent;
-        import org.postgresql.db.IResult;
         import org.postgresql.db.QueryHandlerFactory;
         import org.postgresql.db.Column;
         import org.postgresql.event.MetadataEvent;
         import org.postgresql.event.ResultSetEvent;
-        import org.postgresql.db.IResultSet;
         import org.postgresql.util.DateFormatter;
         import org.postgresql.util.assert;
         import org.postgresql.log.Log;
@@ -27,7 +28,6 @@
         import org.postgresql.codec.CodecFactory;
         import mx.controls.Alert;
         import org.postgresql.febe.FEBEConnection;
-        import org.postgresql.db.IStatement;
         import org.postgresql.db.Connection;
         import org.postgresql.febe.message.Query;
 
@@ -64,43 +64,43 @@
             codecFactory.registerDecoder(Oid.CHAR, String, new TextOut());
             codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
             var febeConn:FEBEConnection = new FEBEConnection(params, 'foo', brokerFactory);
-            var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(codecFactory));
-            var stmt:IStatement = conn.createStatement()
-            var result:IResultSet = stmt.executeQuery("select now()::timestamp as t1, now()::timestamptz as t2, " +
-                "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3, 1.2::float4 as float4, 1.3::float8 as float8");
-            result.addEventListener(MetadataEvent.METADATA, handleMetadata);
-            result.addEventListener(ResultSetEvent.RESULT, handleData);
-            var result1:IResult = stmt.executeUpdate("drop table if exists test");
-            result1.addEventListener(ResultEvent.RESULT, handleResult);
-            var result2:IResult = stmt.executeUpdate("create table test(a int)");
-            result2.addEventListener(ResultEvent.RESULT, handleResult);
-            var result3:IResult = stmt.executeUpdate("insert into test(a) (values(1),(2),(3))");
-            result3.addEventListener(ResultEvent.RESULT, handleResult);
-            var result4:IResultSet = stmt.executeQuery("select * from test");
-            result4.addEventListener(MetadataEvent.METADATA, handleMetadata);
-            result4.addEventListener(ResultSetEvent.RESULT, handleData);
-            result4.addEventListener(ResultSetEvent.RESULT, function(e:ResultSetEvent):void {
+            var handlerFactory:QueryHandlerFactory = new QueryHandlerFactory(codecFactory);
+            var traceHandler:IQueryHandler = handlerFactory.createSimpleHandler(
+            	new SimpleResultHandler(handleData, handleResult)
+        	);
+            var conn:Connection = new Connection(febeConn);
+            conn.execute("select now()::timestamp as t1, now()::timestamptz as t2, " +
+                "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3, " +
+                "1.2::float4 as float4, 1.3::float8 as float8", traceHandler);
+            conn.execute("drop table if exists test", traceHandler);
+            conn.execute("create table test(a int)", traceHandler);
+            conn.execute("insert into test(a) (values(1),(2),(3))", traceHandler);
+
+            var closeFn:Function = function(command:String, affectedRows:int):void {
+            	handleResult(command, affectedRows);
                 conn.close();
-            });
+            };
+            var closeHandler:IQueryHandler = handlerFactory.createSimpleHandler(
+            	new SimpleResultHandler(handleData, closeFn)
+            );
+            conn.execute("select * from test", closeHandler); 
             
         }
-        private function handleResult(e:ResultEvent):void {
-            trace(e.command, e.affectedRows);
+        private function handleResult(command:String, affectedRows:int):void {
+            trace(command, affectedRows);
         }
-        
-        private function handleMetadata(e:MetadataEvent):void {
+
+        private function handleData(columns:Array, data:Array):void {
             trace('received metadata:');
-            for each (var col:IColumn in e.columns) {
+            for each (var col:IColumn in columns) {
                 trace('\t', col.name, '\t', col.type);
             }
-        }
-        private function handleData(e:ResultSetEvent):void {
-                trace('received data');
-                for each (var item:Object in e.data) {
-                    for (var colName:String in item) {
-                        trace('\t', colName, '\t', item[colName]);
-                    }
+            trace('received data');
+            for each (var item:Object in data) {
+                for (var colName:String in item) {
+                    trace('\t', colName, '\t', item[colName]);
                 }
+            }
         }
 
     ]]>

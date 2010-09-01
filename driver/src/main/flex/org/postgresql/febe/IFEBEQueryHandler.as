@@ -1,8 +1,6 @@
 package org.postgresql.febe {
-    import org.postgresql.db.IStatement;
-    
 
-    public interface IQueryHandler {
+    public interface IFEBEQueryHandler {
         /**
          * Handle the FieldDescription metadata relating to this query.
          * This will be called before handleMetadata or handleCompletion.

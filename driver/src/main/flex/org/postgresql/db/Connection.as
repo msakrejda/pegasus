@@ -9,31 +9,26 @@ package org.postgresql.db {
     import org.postgresql.event.ParameterChangeEvent;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
-    import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
-        private var _queryHandlerFactory:QueryHandlerFactory;
         private var _baseConn:FEBEConnection;
 
         private var _params:Object;
         private var _broker:MessageBroker;
 
-        private var _active:Dictionary;
         private var _pendingExecution:Array;
         private var _currentHandler:IQueryHandler;
-        private var _currentStatement:IStatement;
+        private var _currentToken:QueryToken;
+        private var _active:Dictionary;
 
-        public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
+        public function Connection(baseConn:FEBEConnection) {
             _baseConn = baseConn;
-            // TODO: this is only passed off to Statements, so it should be pulled up
-            // into an injected statementFactory
-            _queryHandlerFactory = queryHandlerFactory;
+            _active = new Dictionary();
 
             // TODO: extended query support, copy, function call
 
-            _active = new Dictionary();
             _pendingExecution = [];
             _baseConn.connect(this);
         }
@@ -66,59 +61,47 @@ package org.postgresql.db {
         public function handleRfq():void {
             if (_pendingExecution.length > 0) {
                 var nextQuery:Object = _pendingExecution.shift();
-                _baseConn.executeSimpleQuery(nextQuery.sql, nextQuery.handler);
+                doExecute(nextQuery.sql, nextQuery.token, nextQuery.handler);
             }
         }
         
-        internal function cancelStatement(stmt:IStatement):void {
-            if (!(stmt in _active)) {
-                throw new ArgumentError("Attempting to cancel unregistered statement: " + stmt);
+        public function cancelStatement(token:QueryToken):void {
+            if (!(token in _active)) {
+                throw new ArgumentError("Attempting to cancel unknown query");
             }
-            if (_currentStatement == stmt) {
+            if (_currentToken == token) {
                 _baseConn.cancel();
             }
             // Dequeue any pending handlers related to this statement
             for (var i:int = 0; i < _pendingExecution.length; i++) {
                 var pending:Object = _pendingExecution[i];
-                if (pending.statement == stmt) {
+                if (pending.token == token) {
                     _pendingExecution.splice(i, 1);
                 }
             }
         }
-
-        public function createStatement():IStatement {
-            var s:IStatement = new SimpleStatement(this, _queryHandlerFactory);
-            _active[s] = true;
-            return s;
+        
+        private function doExecute(sql:String, token:QueryToken, handler:IQueryHandler):void {
+            _currentHandler = handler;
+            _currentToken = token;
+            _baseConn.executeSimpleQuery(sql, handler);        	
         }
+
         
         public function close():void {
             _baseConn.close();
         }
 
-        internal function execute(sql:String, statement:IStatement, handler:IQueryHandler):void {
-            if (!(statement in _active)) {
-                throw new ArgumentError("Attempting to execute unregistered statement: " + statement);
-            }
-
+        public function execute(sql:String, handler:IQueryHandler):QueryToken {
+        	var token:QueryToken = new QueryToken(sql);
+        	_active[token] = true;
             if (_baseConn.rfq) {
-                _currentHandler = handler;
-                _currentStatement = statement;
-                _baseConn.executeSimpleQuery(sql, handler);
+				doExecute(sql, token, handler);
             } else {
-                _pendingExecution.push({ sql: sql, statement: statement, handler: handler });
+                _pendingExecution.push({ sql: sql, token: token, handler: handler });
             }
+            return token;
         }
-
-        internal function closeStatement(statement:IStatement):void {
-            // TODO: clean up outstanding handlers for statement
-            if (!(statement in _active)) {
-                throw new ArgumentError("Attempting to close unregistered statement: " + statement);
-            }
-            // TODO: Send close for portal / statement when not just simple query protocol
-            delete _active[statement];
-        }
-
 
     }
 }

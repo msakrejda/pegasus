@@ -44,7 +44,7 @@ package org.postgresql.febe {
         private var _rfq:Boolean;
         private var _status:String;
 
-        private var _queryHandler:IQueryHandler;
+        private var _queryHandler:IFEBEQueryHandler;
         private var _currResults:Array;
 
         private var _password:String;
@@ -267,7 +267,7 @@ package org.postgresql.febe {
         // To future-proof against result set streaming, we should dispatch separate
         // query-data-available and statement-complete messages. We should also batch
         // the data-available messages--dispatching an event per-DataRow would be silly.
-        public function executeSimpleQuery(sql:String, handler:IQueryHandler):void {
+        public function executeSimpleQuery(sql:String, handler:IFEBEQueryHandler):void {
             if (!_rfq) {
                 throw new ArgumentError("FEBEConnection is not ready for query");
             }
@@ -275,7 +275,7 @@ package org.postgresql.febe {
             _broker.send(new Query(sql));
         }
 
-        public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
+        public function executeQuery(sql:String, params:Array, handler:IFEBEQueryHandler):void {
             // > parse(statement)
             // < parseComplete | errorResponse
             // > bind(portal)

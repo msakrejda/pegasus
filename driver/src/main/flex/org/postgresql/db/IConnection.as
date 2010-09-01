@@ -1,5 +1,5 @@
 package org.postgresql.db {
-    import org.postgresql.event.ParameterChangeEvent;
+    import org.postgresql.db.IQueryHandler;
 
     /**
      * @eventType org.postgresql.event.ConnectionEvent.DISCONNECTED
@@ -30,11 +30,11 @@ package org.postgresql.db {
      * Represents a single connection to a PostgreSQL backend.
      */
     public interface IConnection {
-        /**
-         * Create a simple (unparameterizable) statement tied to this connection.
-         * Execution of multiple statements tied to the same connection is queued.
-         */
-        function createStatement():IStatement;
+
+		/**
+		 * Execute a query with the given handler.
+		 */
+        function execute(sql:String, handler:IQueryHandler):QueryToken;
         /**
          * Close the connection. This cleans up any outstanding resources related
          * to the connection. Note that a closed connection cannot be reopened.

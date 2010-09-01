@@ -1,8 +1,6 @@
 package org.postgresql.event {
 
     import flash.events.Event;
-    
-    import org.postgresql.db.IResultSet;
 
     public class ResultSetEvent extends Event {
 
