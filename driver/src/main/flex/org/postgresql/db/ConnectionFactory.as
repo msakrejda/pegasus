@@ -49,7 +49,7 @@ package org.postgresql.db {
             }
             params.username = username;
             var febeConn:FEBEConnection = new FEBEConnection(params, password, brokerFactory);
-            var conn:Connection = new Connection(febeConn);
+            var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(_codecFactory));
             return conn;
         }
     }

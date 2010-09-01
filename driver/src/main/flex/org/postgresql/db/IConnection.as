@@ -1,5 +1,4 @@
 package org.postgresql.db {
-    import org.postgresql.db.IQueryHandler;
 
     /**
      * @eventType org.postgresql.event.ConnectionEvent.DISCONNECTED
@@ -34,7 +33,7 @@ package org.postgresql.db {
 		/**
 		 * Execute a query with the given handler.
 		 */
-        function execute(sql:String, handler:IQueryHandler):QueryToken;
+        function execute(sql:String, handler:IResultHandler):QueryToken;
         /**
          * Close the connection. This cleans up any outstanding resources related
          * to the connection. Note that a closed connection cannot be reopened.

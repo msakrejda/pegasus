@@ -1,6 +1,7 @@
 package org.postgresql.db {
 
     import org.postgresql.codec.CodecFactory;
+    import org.postgresql.febe.IQueryHandler;
     
     public class QueryHandlerFactory {
 
@@ -10,7 +11,7 @@ package org.postgresql.db {
             _codecFactory = codecFactory;
         }
         
-        public function createSimpleHandler(resultHandler:IResultHandler):SimpleQueryHandler {
+        public function createSimpleHandler(resultHandler:IResultHandler):IQueryHandler {
             return new SimpleQueryHandler(resultHandler, _codecFactory);
         }
 

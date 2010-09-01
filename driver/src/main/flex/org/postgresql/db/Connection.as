@@ -9,11 +9,13 @@ package org.postgresql.db {
     import org.postgresql.event.ParameterChangeEvent;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
+    import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
         private var _baseConn:FEBEConnection;
+        private var _queryHandlerFactory:QueryHandlerFactory;
 
         private var _params:Object;
         private var _broker:MessageBroker;
@@ -23,8 +25,10 @@ package org.postgresql.db {
         private var _currentToken:QueryToken;
         private var _active:Dictionary;
 
-        public function Connection(baseConn:FEBEConnection) {
+
+        public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
+            _queryHandlerFactory = queryHandlerFactory;
             _active = new Dictionary();
 
             // TODO: extended query support, copy, function call
@@ -81,10 +85,11 @@ package org.postgresql.db {
             }
         }
         
-        private function doExecute(sql:String, token:QueryToken, handler:IQueryHandler):void {
-            _currentHandler = handler;
+        private function doExecute(sql:String, token:QueryToken, handler:IResultHandler):void {
+        	var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
+            _currentHandler = queryHandler;
             _currentToken = token;
-            _baseConn.executeSimpleQuery(sql, handler);        	
+            _baseConn.executeSimpleQuery(sql, queryHandler);        	
         }
 
         
@@ -92,7 +97,7 @@ package org.postgresql.db {
             _baseConn.close();
         }
 
-        public function execute(sql:String, handler:IQueryHandler):QueryToken {
+        public function execute(sql:String, handler:IResultHandler):QueryToken {
         	var token:QueryToken = new QueryToken(sql);
         	_active[token] = true;
             if (_baseConn.rfq) {

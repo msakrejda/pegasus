@@ -1,6 +1,6 @@
 package org.postgresql.db {
 
-    internal interface IResultHandler {
+    public interface IResultHandler {
     	/**
     	 * @param fields map of NoticeField code to detail text for that field. 
     	 */

@@ -3,7 +3,7 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
-    	import org.postgresql.db.IQueryHandler;
+    	import org.postgresql.db.IResultHandler;
     	import org.postgresql.db.SimpleResultHandler;
     	import org.postgresql.db.SimpleQueryHandler;
         import org.postgresql.db.IColumn;
@@ -65,10 +65,8 @@
             codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
             var febeConn:FEBEConnection = new FEBEConnection(params, 'foo', brokerFactory);
             var handlerFactory:QueryHandlerFactory = new QueryHandlerFactory(codecFactory);
-            var traceHandler:IQueryHandler = handlerFactory.createSimpleHandler(
-            	new SimpleResultHandler(handleData, handleResult)
-        	);
-            var conn:Connection = new Connection(febeConn);
+            var traceHandler:IResultHandler = new SimpleResultHandler(handleData, handleResult);
+            var conn:Connection = new Connection(febeConn, handlerFactory);
             conn.execute("select now()::timestamp as t1, now()::timestamptz as t2, " +
                 "'foo'::char(3) as txt1, 'foo'::varchar(3) as txt2, 'foo'::text as txt3, " +
                 "1.2::float4 as float4, 1.3::float8 as float8", traceHandler);
@@ -80,9 +78,7 @@
             	handleResult(command, affectedRows);
                 conn.close();
             };
-            var closeHandler:IQueryHandler = handlerFactory.createSimpleHandler(
-            	new SimpleResultHandler(handleData, closeFn)
-            );
+            var closeHandler:IResultHandler = new SimpleResultHandler(handleData, closeFn);
             conn.execute("select * from test", closeHandler); 
             
         }

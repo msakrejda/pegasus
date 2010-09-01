@@ -5,10 +5,11 @@ package org.postgresql.db {
     import org.postgresql.codec.CodecFactory;
     import org.postgresql.codec.IPGTypeDecoder;
     import org.postgresql.febe.FieldDescription;
+    import org.postgresql.febe.IQueryHandler;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
     
-    public class SimpleQueryHandler extends EventDispatcher implements IQueryHandler {
+    internal class SimpleQueryHandler extends EventDispatcher implements IQueryHandler {
 
         private static const LOGGER:ILogger = Log.getLogger(SimpleQueryHandler);
     
