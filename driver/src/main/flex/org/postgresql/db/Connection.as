@@ -66,7 +66,7 @@ package org.postgresql.db {
             dispatchEvent(new NotificationEvent(condition, notifierPid));
         }
 
-        public function handleParameterChange(name:String, newValue:Object):void {
+        public function handleParameterChange(name:String, newValue:String):void {
             dispatchEvent(new ParameterChangeEvent(name, newValue));
         }
 

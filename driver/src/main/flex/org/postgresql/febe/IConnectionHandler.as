@@ -45,6 +45,6 @@ package org.postgresql.febe {
 
         function handleDisconnected():void;
 
-        function handleParameterChange(name:String, newValue:Object):void;
+        function handleParameterChange(name:String, newValue:String):void;
     }
 }

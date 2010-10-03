@@ -1,5 +1,8 @@
 package org.postgresql {
 
+	/**
+	 * Class related to the representations of dates in PostgreSQL.  
+	 */
     public class DateStyle {
         public static const OUTPUT_ISO:String = 'ISO';
         public static const OUTPUT_POSTGRES:String = 'Postgres';
