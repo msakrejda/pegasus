@@ -36,7 +36,7 @@ package org.postgresql.db {
             LOGGER.debug("Got fields: {0}", fields.join(' '));
             _resultHandler.handleColumns(columns);
         }
-    
+
         public function handleData(rows:Array, serverParams:Object):void {
             for each (var row:Array in rows) {
                 var decodedRow:Array = [];

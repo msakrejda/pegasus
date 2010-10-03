@@ -91,7 +91,6 @@ package org.postgresql.db {
             _currentToken = token;
             _baseConn.executeSimpleQuery(sql, queryHandler);        	
         }
-
         
         public function close():void {
             _baseConn.close();
