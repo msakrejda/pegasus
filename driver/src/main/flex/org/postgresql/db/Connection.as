@@ -1,12 +1,15 @@
 package org.postgresql.db {
 
     import flash.events.EventDispatcher;
-    import flash.utils.Dictionary;
     
+    import org.postgresql.CodecError;
+    import org.postgresql.ProtocolError;
+    import org.postgresql.event.CodecErrorEvent;
     import org.postgresql.event.ConnectionEvent;
     import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.NotificationEvent;
     import org.postgresql.event.ParameterChangeEvent;
+    import org.postgresql.event.ProtocolErrorEvent;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
     import org.postgresql.febe.IQueryHandler;
@@ -23,13 +26,10 @@ package org.postgresql.db {
         private var _pendingExecution:Array;
         private var _currentHandler:IQueryHandler;
         private var _currentToken:QueryToken;
-        private var _active:Dictionary;
-
 
         public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
             _queryHandlerFactory = queryHandlerFactory;
-            _active = new Dictionary();
 
             // TODO: extended query support, copy, function call
 
@@ -45,6 +45,14 @@ package org.postgresql.db {
             // TODO: error out on activity after disconnection
             dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
         }
+
+		public function handleProtocolError(error:ProtocolError):void {
+			dispatchEvent(new ProtocolErrorEvent(ProtocolErrorEvent.PROTOCOL_ERROR, error));
+		}
+
+		public function handleCodecError(error:CodecError):void {
+			dispatchEvent(new CodecErrorEvent(CodecErrorEvent.CODEC_ERROR, error));
+		}
 
         public function handleError(fields:Object):void {
             dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
@@ -69,19 +77,24 @@ package org.postgresql.db {
             }
         }
         
-        public function cancelStatement(token:QueryToken):void {
-            if (!(token in _active)) {
-                throw new ArgumentError("Attempting to cancel unknown query");
-            }
+        public function cancel(token:QueryToken):void {
+        	var found:Boolean = false;
             if (_currentToken == token) {
                 _baseConn.cancel();
+                found = true;
+            } else {
+	            // See if a pending query corresponds to this token
+	            for (var i:int = 0; i < _pendingExecution.length; i++) {
+	                var pending:Object = _pendingExecution[i];
+	                if (pending.token == token) {
+	                    _pendingExecution.splice(i, 1);
+	                    found = true;
+	                    break;
+	                }
+	            }
             }
-            // Dequeue any pending handlers related to this statement
-            for (var i:int = 0; i < _pendingExecution.length; i++) {
-                var pending:Object = _pendingExecution[i];
-                if (pending.token == token) {
-                    _pendingExecution.splice(i, 1);
-                }
+            if (!found) {
+            	throw new ArgumentError("Attempting to cancel unknown query");
             }
         }
         
@@ -98,7 +111,6 @@ package org.postgresql.db {
 
         public function execute(sql:String, handler:IResultHandler):QueryToken {
         	var token:QueryToken = new QueryToken(sql);
-        	_active[token] = true;
             if (_baseConn.rfq) {
 				doExecute(sql, token, handler);
             } else {
