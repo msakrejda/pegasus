@@ -25,9 +25,7 @@ package org.postgresql.febe.message {
         public function read(input:ICDataInput):void {
             commandTag = input.readCString();
             var match:Array;
-            if (SELECT_CMD.test(commandTag)) {
-                // nothing to do here
-            } else if (INSERT_CMD.test(commandTag)) {
+            if (INSERT_CMD.test(commandTag)) {
                 match = commandTag.match(INSERT_CMD);
                 if (match.length != 3) {
                      badTag(commandTag);
