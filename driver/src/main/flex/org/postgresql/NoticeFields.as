@@ -36,7 +36,6 @@ package org.postgresql {
             } else {
                 return "UNKNOWN FIELD (" + fieldCode + ")";
             }
-            
         }
 
     }
