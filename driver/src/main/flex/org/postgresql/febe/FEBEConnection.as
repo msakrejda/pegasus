@@ -114,7 +114,6 @@ package org.postgresql.febe {
             _messageHandler.setMessageListener(ErrorResponse, handleError);
             _messageHandler.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-
             _broker.send(new StartupMessage(_params));
         }
 
@@ -140,8 +139,6 @@ package org.postgresql.febe {
             if (_authenticated) {
                 _connecting = false;
                 _connected = true;
-                _rfq = true;
-                _status = msg.status;
 
                 _messageHandler.setMessageListener(ReadyForQuery, handleRfq);
                 _messageHandler.setMessageListener(AuthenticationRequest, handleUnexpectedMessage);
@@ -155,8 +152,8 @@ package org.postgresql.febe {
                 _messageHandler.setMessageListener(CommandComplete, handleComplete);
                 _messageHandler.setMessageListener(EmptyQueryResponse, handleEmpty);
 
-                _connHandler.handleRfq();
                 _connHandler.handleConnected();
+                handleRfq(msg);
             } else {
                 throw new ProtocolError("Unexpected ReadyForQuery without AuthenticationOK"); 
             }
@@ -193,6 +190,12 @@ package org.postgresql.febe {
         }
 
         private function handleError(msg:ErrorResponse):void {
+        	// This approach (and the above for handleNotice) mean that there
+        	// is no good way to hand query-related errors back to the connection;
+        	// we'll live with this for now. The other approach of always passing
+        	// the errors to the connection, whether or not there is an active query,
+        	// has the issue that there's no way if the query handler already "took
+        	// care of" the error  
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
