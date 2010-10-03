@@ -1,6 +1,6 @@
 package org.postgresql.febe.message {
 
-    import org.postgresql.febe.ProtocolError;
+    import org.postgresql.ProtocolError;
     import org.postgresql.util.format;
 
     public class MessageError extends ProtocolError {

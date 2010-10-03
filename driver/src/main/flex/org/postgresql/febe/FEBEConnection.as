@@ -2,6 +2,8 @@ package org.postgresql.febe {
 
     import flash.events.Event;
     
+    import org.postgresql.ProtocolError;
+    import org.postgresql.UnsupportedProtocolFeatureError;
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.CancelRequest;
