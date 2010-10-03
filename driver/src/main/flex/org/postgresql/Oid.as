@@ -1,8 +1,8 @@
 package org.postgresql {
 
-	/**
-	 * OIDs for all the main PostgreSQL data types. 
-	 */
+    /**
+     * OIDs for all the main PostgreSQL data types. 
+     */
     public class Oid {
         public static const UNSPECIFIED:int = 0;
         public static const INT2:int = 21;

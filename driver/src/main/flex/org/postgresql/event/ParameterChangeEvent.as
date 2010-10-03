@@ -1,20 +1,20 @@
 package org.postgresql.event {
 
     import flash.events.Event;
-	
-	/**
-	 * Indicates a change in a server configuration paramter.
-	 */
+    
+    /**
+     * Indicates a change in a server configuration paramter.
+     */
     public class ParameterChangeEvent extends Event {
 
-		/**
-		 * A parameter change.
-		 */
+        /**
+         * A parameter change.
+         */
         public static const PARAMETER_CHANGE:String = 'parameterChange';
 
-		/**
-		 * Name of parameter that has changed.
-		 */
+        /**
+         * Name of parameter that has changed.
+         */
         public var name:String;
 
         /**

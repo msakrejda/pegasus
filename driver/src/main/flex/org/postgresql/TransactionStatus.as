@@ -1,12 +1,12 @@
 package org.postgresql {
 
-	/**
-	 * Possible values for the current transaction status of the connection. 
-	 */
+    /**
+     * Possible values for the current transaction status of the connection. 
+     */
     public class TransactionStatus {
-    	/**
-    	 * The connection is not in an open transaction.
-    	 */
+        /**
+         * The connection is not in an open transaction.
+         */
         public static const IDLE:String = 'I';
         /**
          * The connection is in an open transaction.

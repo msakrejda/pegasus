@@ -2,22 +2,22 @@ package org.postgresql.event {
 
     import flash.events.Event;
 
-	/**
-	 * A notification sent by the server as part of PostgreSQL's LISTEN / NOTIFY
-	 * functionality.
-	 */
+    /**
+     * A notification sent by the server as part of PostgreSQL's LISTEN / NOTIFY
+     * functionality.
+     */
     public class NotificationEvent extends Event {
 
-		/**
-		 * A notification.
-		 *
-		 * @eventType notification
-		 */
+        /**
+         * A notification.
+         *
+         * @eventType notification
+         */
         public static const NOTIFICATION:String = 'notification';
 
-		/**
-		 * The LISTEN condition.
-		 */
+        /**
+         * The LISTEN condition.
+         */
         public var condition:String;
 
         /**

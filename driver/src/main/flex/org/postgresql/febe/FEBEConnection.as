@@ -133,7 +133,7 @@ package org.postgresql.febe {
                 _broker.send(new PasswordMessage(_password));
             } else {
                 onProtocolError(new UnsupportedProtocolFeatureError(
-                	"Unsupported authentication type requested: " + msg.subtype));                   
+                    "Unsupported authentication type requested: " + msg.subtype));                   
             }
         }
 
@@ -192,12 +192,12 @@ package org.postgresql.febe {
         }
 
         private function handleError(msg:ErrorResponse):void {
-        	// This approach (and the above for handleNotice) mean that there
-        	// is no good way to hand query-related errors back to the connection;
-        	// we'll live with this for now. The other approach is to always pass
-        	// the errors to the connection, whether or not there is an active query,
-        	// but this way there's no way to tell whether the query handler
-        	// already "took care of" the error when the connection sees it.  
+            // This approach (and the above for handleNotice) mean that there
+            // is no good way to hand query-related errors back to the connection;
+            // we'll live with this for now. The other approach is to always pass
+            // the errors to the connection, whether or not there is an active query,
+            // but this way there's no way to tell whether the query handler
+            // already "took care of" the error when the connection sees it.  
             if (_queryHandler) {
                 _queryHandler.handleError(msg.fields);
             } else {
@@ -211,12 +211,12 @@ package org.postgresql.febe {
     
         private function handleMetadata(msg:RowDescription):void {
             if (_queryHandler) {
-            	assert("Unexpected data remaining in result buffer", _currResults.length == 0);
-           		try {
-                	_queryHandler.handleMetadata(msg.fields);
-             	} catch (e:CodecError) {
-             		onCodecError(e);
-             	}
+                assert("Unexpected data remaining in result buffer", _currResults.length == 0);
+                   try {
+                    _queryHandler.handleMetadata(msg.fields);
+                 } catch (e:CodecError) {
+                     onCodecError(e);
+                 }
             } else {
                 onProtocolError(new ProtocolError('Unexpected RowDescription message'));
             }
@@ -254,12 +254,12 @@ package org.postgresql.febe {
 
         private function flushPendingResults():void {
             if (_queryHandler && _currResults.length > 0) {
-            	try {
-	                _queryHandler.handleData(_currResults, serverParams);
-    	            _currResults = [];
-    	        } catch (e:CodecError) {
-             		onCodecError(e);
-             	}
+                try {
+                    _queryHandler.handleData(_currResults, serverParams);
+                    _currResults = [];
+                } catch (e:CodecError) {
+                     onCodecError(e);
+                 }
             }
         }
 
@@ -315,9 +315,9 @@ package org.postgresql.febe {
         }
 
         private function handleDisconnected(e:MessageStreamEvent):void {
-        	// In normal operation, this will be called as a response to close, so this
-        	// flag will already have been flipped; on errors, we want to ensure it is
-        	// set properly
+            // In normal operation, this will be called as a response to close, so this
+            // flag will already have been flipped; on errors, we want to ensure it is
+            // set properly
             _connected = false;
             _connHandler.handleDisconnected();
         }
@@ -331,14 +331,14 @@ package org.postgresql.febe {
         }
 
         private function onProtocolError(error:ProtocolError):void {
-        	close();
-        	_connHandler.handleProtocolError(error);
+            close();
+            _connHandler.handleProtocolError(error);
         }
 
         private function onCodecError(error:CodecError):void {
-        	// The query dies, but the connection is fine
-        	_queryHandler = null;
-        	_connHandler.handleCodecError(error);
+            // The query dies, but the connection is fine
+            _queryHandler = null;
+            _connHandler.handleCodecError(error);
         }
 
     }

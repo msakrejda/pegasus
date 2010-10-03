@@ -1,16 +1,16 @@
 package org.postgresql.db {
 
-	public class QueryToken {
+    public class QueryToken {
 
-		private var _sql:String;
+        private var _sql:String;
 
-		public function QueryToken(sql:String) {
-			_sql = sql;
-		}
+        public function QueryToken(sql:String) {
+            _sql = sql;
+        }
 
-		public function get sql():String {
-			return _sql;
-		}
+        public function get sql():String {
+            return _sql;
+        }
 
-	}
+    }
 }

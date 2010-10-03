@@ -46,13 +46,13 @@ package org.postgresql.db {
             dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
         }
 
-		public function handleProtocolError(error:ProtocolError):void {
-			dispatchEvent(new ProtocolErrorEvent(ProtocolErrorEvent.PROTOCOL_ERROR, error));
-		}
+        public function handleProtocolError(error:ProtocolError):void {
+            dispatchEvent(new ProtocolErrorEvent(ProtocolErrorEvent.PROTOCOL_ERROR, error));
+        }
 
-		public function handleCodecError(error:CodecError):void {
-			dispatchEvent(new CodecErrorEvent(CodecErrorEvent.CODEC_ERROR, error));
-		}
+        public function handleCodecError(error:CodecError):void {
+            dispatchEvent(new CodecErrorEvent(CodecErrorEvent.CODEC_ERROR, error));
+        }
 
         public function handleError(fields:Object):void {
             dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
@@ -78,31 +78,31 @@ package org.postgresql.db {
         }
         
         public function cancel(token:QueryToken):void {
-        	var found:Boolean = false;
+            var found:Boolean = false;
             if (_currentToken == token) {
                 _baseConn.cancel();
                 found = true;
             } else {
-	            // See if a pending query corresponds to this token
-	            for (var i:int = 0; i < _pendingExecution.length; i++) {
-	                var pending:Object = _pendingExecution[i];
-	                if (pending.token == token) {
-	                    _pendingExecution.splice(i, 1);
-	                    found = true;
-	                    break;
-	                }
-	            }
+                // See if a pending query corresponds to this token
+                for (var i:int = 0; i < _pendingExecution.length; i++) {
+                    var pending:Object = _pendingExecution[i];
+                    if (pending.token == token) {
+                        _pendingExecution.splice(i, 1);
+                        found = true;
+                        break;
+                    }
+                }
             }
             if (!found) {
-            	throw new ArgumentError("Attempting to cancel unknown query");
+                throw new ArgumentError("Attempting to cancel unknown query");
             }
         }
         
         private function doExecute(sql:String, token:QueryToken, handler:IResultHandler):void {
-        	var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
+            var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
             _currentHandler = queryHandler;
             _currentToken = token;
-            _baseConn.executeSimpleQuery(sql, queryHandler);        	
+            _baseConn.executeSimpleQuery(sql, queryHandler);            
         }
         
         public function close():void {
@@ -110,9 +110,9 @@ package org.postgresql.db {
         }
 
         public function execute(sql:String, handler:IResultHandler):QueryToken {
-        	var token:QueryToken = new QueryToken(sql);
+            var token:QueryToken = new QueryToken(sql);
             if (_baseConn.rfq) {
-				doExecute(sql, token, handler);
+                doExecute(sql, token, handler);
             } else {
                 _pendingExecution.push({ sql: sql, token: token, handler: handler });
             }

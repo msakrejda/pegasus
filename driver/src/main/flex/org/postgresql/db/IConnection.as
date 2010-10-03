@@ -30,9 +30,9 @@ package org.postgresql.db {
      */
     public interface IConnection {
 
-		/**
-		 * Execute a query with the given handler.
-		 */
+        /**
+         * Execute a query with the given handler.
+         */
         function execute(sql:String, handler:IResultHandler):QueryToken;
         /**
          * Close the connection. This cleans up any outstanding resources related
