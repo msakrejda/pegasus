@@ -67,9 +67,8 @@ package org.postgresql.db {
 				onQueryResult(_columns, _data);
 				_columns = null;
 				_data = null;
-			} else {
-				onUpdateResult(command, rows);
 			}
+			onUpdateResult(command, rows);
 		}
 
 		protected function onQueryResult(columns:Array, data:Array):void {
