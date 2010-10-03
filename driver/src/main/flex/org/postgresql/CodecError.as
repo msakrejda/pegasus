@@ -40,6 +40,11 @@ package org.postgresql {
          */
         public var as3Type:Class;
 
+        /**
+         * Original Error causing this codec error, if applicable
+         */
+        public var error:Error;
+
         public function CodecError(message:String, direction:String, oid:int=Oid.UNSPECIFIED, as3Type:Class=null) {
             super(message);
             this.direction = direction;

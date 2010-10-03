@@ -259,7 +259,7 @@ package org.postgresql.febe {
                     _currResults = [];
                 } catch (e:CodecError) {
                      onCodecError(e);
-                 }
+                }
             }
         }
 
