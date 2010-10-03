@@ -3,7 +3,7 @@ package org.postgresql.febe {
     public interface IQueryHandler {
         /**
          * Handle the FieldDescription metadata relating to this query.
-         * This will be called before handleMetadata or handleCompletion.
+         * This will be called before handleData or handleCompletion.
          *
          * @param fields an array of FieldDescription objects.
          */
