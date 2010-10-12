@@ -59,7 +59,7 @@ package org.postgresql.db {
         }
 
         public function handleError(fields:Object):void {
-            LOGGER.warn("Notice:");
+            LOGGER.warn("Error:");
             for (var key:String in fields) {
                 LOGGER.warn("\t{0}: {1}", key, fields[key]);
             }
