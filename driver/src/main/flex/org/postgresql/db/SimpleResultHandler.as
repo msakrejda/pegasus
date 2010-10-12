@@ -11,34 +11,17 @@ package org.postgresql.db {
         private var _columns:Array;
         private var _data:Array;
 
-        private var _queryResult:Function;
-        private var _updateResult:Function;
-        private var _errorResult:Function;
+        private var _onCompletion:Function;
+        private var _onQueryResult:Function;
 
-        public function SimpleResultHandler(queryResult:Function, updateResult:Function, errorResult:Function=null) {
-            if (queryResult == null || updateResult == null) {
-                throw new ArgumentError("Query and result handlers cannot be null");
+        public function SimpleResultHandler(onCompletion:Function, onQueryResult:Function=null) {
+            if (!onCompletion) {
+                throw new ArgumentError("Completion handler cannot be null");
             }
-            _queryResult = queryResult;
-            _updateResult = updateResult;
-            _errorResult = errorResult;
+            _onQueryResult = onQueryResult;
+            _onCompletion = onCompletion;
         }
 
-        public function handleNotice(fields:Object):void {
-            LOGGER.info("Query notice:");
-            for (var key:String in fields) {
-                LOGGER.info("\t{0}: {1}", key, fields[key]);
-            }
-        }
-        
-        public function handleError(fields:Object):void {
-            if (_errorResult != null) {
-                _errorResult(fields);
-            } else {
-                onError(fields);
-            }
-        }
-        
         public function handleColumns(columns:Array):void {
             _columns = columns;
             _data = [];
@@ -68,23 +51,20 @@ package org.postgresql.db {
                 _columns = null;
                 _data = null;
             }
-            onUpdateResult(command, rows);
+            onCompletion(command, rows);
         }
 
         protected function onQueryResult(columns:Array, data:Array):void {
-            _queryResult(columns, data);
-        }
-
-        protected function onUpdateResult(command:String, rows:int):void {
-            _updateResult(command, rows);
-        }
-
-        protected function onError(fields:Object):void {
-            LOGGER.error("Query error:");
-            for (var key:String in fields) {
-                LOGGER.error("{0}: {1}", key, fields[key]);
+        	if (_onQueryResult) {
+                _onQueryResult(columns, data);
             }
         }
+
+        protected function onCompletion(command:String, rows:int):void {
+            _onCompletion(command, rows);
+        }
+
+        
 
     }
 }

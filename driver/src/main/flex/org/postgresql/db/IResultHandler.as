@@ -2,14 +2,6 @@ package org.postgresql.db {
 
     public interface IResultHandler {
         /**
-         * @param fields map of NoticeField code to detail text for that field. 
-         */
-        function handleNotice(fields:Object):void;
-        /**
-         * @param fields map of NoticeField code to detail text for that field. 
-         */        
-        function handleError(fields:Object):void;
-        /**
          * @param columns Array of IColumn objects describing the data.
          */
         function handleColumns(columns:Array):void;
@@ -24,5 +16,9 @@ package org.postgresql.db {
          *                 the insert is a single row, 0 on other INSERT, -1 otherwise 
          */
         function handleCompletion(command:String, rows:int, oid:int):void;
+        /**
+         * Clean up resources associated with this result handler.
+         */
+        function dispose():void;
     }
 }

@@ -64,12 +64,8 @@ package org.postgresql.db {
             _resultHandler.handleCompletion(command, rows, oid);
         }
     
-        public function handleNotice(fields:Object):void {
-            _resultHandler.handleNotice(fields);
-        }
-
-        public function handleError(fields:Object):void {
-            _resultHandler.handleError(fields);
+        public function dispose():void {
+        	_resultHandler.dispose();
         }
 
     }

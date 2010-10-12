@@ -14,8 +14,12 @@ package org.postgresql.db {
     import org.postgresql.febe.IConnectionHandler;
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.febe.MessageBroker;
+    import org.postgresql.log.ILogger;
+    import org.postgresql.log.Log;
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
+
+        private static const LOGGER:ILogger = Log.getLogger(Connection);
 
         private var _baseConn:FEBEConnection;
         private var _queryHandlerFactory:QueryHandlerFactory;
@@ -55,10 +59,18 @@ package org.postgresql.db {
         }
 
         public function handleError(fields:Object):void {
+            LOGGER.warn("Notice:");
+            for (var key:String in fields) {
+                LOGGER.warn("\t{0}: {1}", key, fields[key]);
+            }
             dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
         }
 
         public function handleNotice(fields:Object):void {
+            LOGGER.info("Notice:");
+            for (var key:String in fields) {
+                LOGGER.info("\t{0}: {1}", key, fields[key]);
+            }
             dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, fields));
         }
 
@@ -118,6 +130,5 @@ package org.postgresql.db {
             }
             return token;
         }
-
     }
 }

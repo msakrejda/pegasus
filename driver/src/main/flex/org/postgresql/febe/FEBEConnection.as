@@ -184,29 +184,15 @@ package org.postgresql.febe {
         }
     
         private function handleNotice(msg:ResponseMessageBase):void {
-            if (_queryHandler) {
-                _queryHandler.handleNotice(msg.fields);
-            } else {
-                _connHandler.handleNotice(msg.fields);
-            }
+            _connHandler.handleNotice(msg.fields);
         }
 
         private function handleError(msg:ErrorResponse):void {
-            // This approach (and the above for handleNotice) mean that there
-            // is no good way to hand query-related errors back to the connection;
-            // we'll live with this for now. The other approach is to always pass
-            // the errors to the connection, whether or not there is an active query,
-            // but this way there's no way to tell whether the query handler
-            // already "took care of" the error when the connection sees it.  
+            _connHandler.handleError(msg.fields);
             if (_queryHandler) {
-                _queryHandler.handleError(msg.fields);
-            } else {
-                LOGGER.debug("Non-query error:");
-                for (var key:String in msg.fields) {
-                    LOGGER.debug(key, msg.fields[key]);
-                }
-                _connHandler.handleError(msg.fields);
-            }            
+            	_queryHandler.dispose();
+            	_queryHandler = null;
+            }
         }
     
         private function handleMetadata(msg:RowDescription):void {
@@ -234,6 +220,7 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 flushPendingResults();
                 _queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
+                _queryHandler.dispose();
                 _queryHandler = null;
             } else {
                 onProtocolError(new ProtocolError("Unexpected CommandComplete")); 
@@ -331,14 +318,16 @@ package org.postgresql.febe {
         }
 
         private function onProtocolError(error:ProtocolError):void {
+        	// We don't know what the heck is going on. Bail.
             close();
             _connHandler.handleProtocolError(error);
         }
 
         private function onCodecError(error:CodecError):void {
             // The query dies, but the connection is fine
-            _queryHandler = null;
             _connHandler.handleCodecError(error);
+            _queryHandler.dispose();
+            _queryHandler = null;
         }
 
     }
