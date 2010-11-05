@@ -1,6 +1,8 @@
 package org.postgresql.codec {
 
     import flash.utils.Dictionary;
+    
+    import org.postgresql.CodecError;
 
     public class CodecFactory {
 
@@ -31,11 +33,16 @@ package org.postgresql.codec {
             _oidToType[outOid] = outType;
         }
 
+        /**
+         * Return the decoder for the given oid
+         * @return registered decoder
+         * @throws org.postgresql.CodecError if no suitable decoder can be found
+         */
         public function getDecoder(oid:int):IPGTypeDecoder {
             if (oid in _decoders) {
                 return _decoders[oid];
             } else {
-                throw new ArgumentError("No decoder found for oid: " + oid);
+                throw new CodecError("Could not find suitable decoder", CodecError.DECODE, oid);
             }
             
         }
@@ -45,6 +52,8 @@ package org.postgresql.codec {
         }
 
         public function getEncoder(value:Object):IPGTypeEncoder {
+            // TODO: This logic is wrong; see the SmartyPants IOC for a correct implementation. Also,
+            // this should take the class of the value to encoded, not the instance itself
             if (value is int) {
                 return _encoders[int];
             } else if (value is uint) {

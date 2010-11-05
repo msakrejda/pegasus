@@ -4,7 +4,7 @@ package org.postgresql.codec.decode {
     import org.postgresql.EncodingFormat;
     import org.postgresql.codec.IPGTypeDecoder;
     import org.postgresql.febe.IFieldInfo;
-    import org.postgresql.febe.UnsupportedProtocolFeatureError;
+    import org.postgresql.UnsupportedProtocolFeatureError;
     import org.postgresql.io.ICDataInput;
     import org.postgresql.util.DateUtil;
 

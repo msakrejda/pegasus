@@ -2,6 +2,9 @@ package org.postgresql.febe {
 
     import flash.events.Event;
     
+    import org.postgresql.CodecError;
+    import org.postgresql.ProtocolError;
+    import org.postgresql.UnsupportedProtocolFeatureError;
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.CancelRequest;
@@ -22,6 +25,7 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.Terminate;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
+    import org.postgresql.util.assert;
 
     // A FEBEConnection can execute one statement at a time (when it is rfq).
     // It does not do any parameter encoding or result set decoding: these
@@ -114,14 +118,11 @@ package org.postgresql.febe {
             _messageHandler.setMessageListener(ErrorResponse, handleError);
             _messageHandler.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-
             _broker.send(new StartupMessage(_params));
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
-            // TODO: this should probably be an error event since it's happening asynchronously,
-            // or just hand it off to the connection handler
-            throw new ProtocolError("Unexpected message: " + msg.type);
+            onProtocolError(new ProtocolError("Unexpected message: " + msg.type));
         }
     
         private function handleAuth(msg:AuthenticationRequest):void {
@@ -131,8 +132,8 @@ package org.postgresql.febe {
             } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
                 _broker.send(new PasswordMessage(_password));
             } else {
-                // TODO: see above
-                throw new UnsupportedProtocolFeatureError("Unsupported authentication type requested: " + msg.subtype);                   
+                onProtocolError(new UnsupportedProtocolFeatureError(
+                    "Unsupported authentication type requested: " + msg.subtype));                   
             }
         }
 
@@ -140,8 +141,6 @@ package org.postgresql.febe {
             if (_authenticated) {
                 _connecting = false;
                 _connected = true;
-                _rfq = true;
-                _status = msg.status;
 
                 _messageHandler.setMessageListener(ReadyForQuery, handleRfq);
                 _messageHandler.setMessageListener(AuthenticationRequest, handleUnexpectedMessage);
@@ -155,10 +154,10 @@ package org.postgresql.febe {
                 _messageHandler.setMessageListener(CommandComplete, handleComplete);
                 _messageHandler.setMessageListener(EmptyQueryResponse, handleEmpty);
 
-                _connHandler.handleRfq();
                 _connHandler.handleConnected();
+                handleRfq(msg);
             } else {
-                throw new ProtocolError("Unexpected ReadyForQuery without AuthenticationOK"); 
+                onProtocolError(new ProtocolError("Unexpected ReadyForQuery without AuthenticationOK")); 
             }
         }
     
@@ -185,30 +184,27 @@ package org.postgresql.febe {
         }
     
         private function handleNotice(msg:ResponseMessageBase):void {
-            if (_queryHandler) {
-                _queryHandler.handleNotice(msg.fields);
-            } else {
-                _connHandler.handleNotice(msg.fields);
-            }
+            _connHandler.handleNotice(msg.fields);
         }
 
         private function handleError(msg:ErrorResponse):void {
+            _connHandler.handleError(msg.fields);
             if (_queryHandler) {
-                _queryHandler.handleError(msg.fields);
-            } else {
-                LOGGER.debug("Non-query error:");
-                for (var key:String in msg.fields) {
-                    LOGGER.debug(key, msg.fields[key]);
-                }
-                _connHandler.handleError(msg.fields);
-            }            
+            	_queryHandler.dispose();
+            	_queryHandler = null;
+            }
         }
     
         private function handleMetadata(msg:RowDescription):void {
             if (_queryHandler) {
-                _queryHandler.handleMetadata(msg.fields);
+                assert("Unexpected data remaining in result buffer", _currResults.length == 0);
+                   try {
+                    _queryHandler.handleMetadata(msg.fields);
+                 } catch (e:CodecError) {
+                     onCodecError(e);
+                 }
             } else {
-                throw new ProtocolError('Unexpected RowDescription message');
+                onProtocolError(new ProtocolError('Unexpected RowDescription message'));
             }
         }
     
@@ -216,7 +212,7 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 _currResults.push(msg.rowBytes);
             } else {
-                throw new ProtocolError('Unexpected DataRow message');
+                onProtocolError(new ProtocolError('Unexpected DataRow message'));
             }
         }
     
@@ -224,9 +220,10 @@ package org.postgresql.febe {
             if (_queryHandler) {
                 flushPendingResults();
                 _queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
+                _queryHandler.dispose();
                 _queryHandler = null;
             } else {
-                throw new ProtocolError("Unexpected CommandComplete"); 
+                onProtocolError(new ProtocolError("Unexpected CommandComplete")); 
             }
         }
     
@@ -236,17 +233,20 @@ package org.postgresql.febe {
             // to handle this differently, but there's little practical use for that.
             if (_queryHandler) {
                 _queryHandler.handleCompletion('EMPTY QUERY');
-                _currResults = [];
                 _queryHandler = null;
             } else {
-                throw new ProtocolError("Unexpected EmptyQueryResponse");
+                onProtocolError(new ProtocolError("Unexpected EmptyQueryResponse"));
             }
         }
 
         private function flushPendingResults():void {
             if (_queryHandler && _currResults.length > 0) {
-                _queryHandler.handleData(_currResults, serverParams);
-                _currResults = [];
+                try {
+                    _queryHandler.handleData(_currResults, serverParams);
+                    _currResults = [];
+                } catch (e:CodecError) {
+                     onCodecError(e);
+                }
             }
         }
 
@@ -302,6 +302,10 @@ package org.postgresql.febe {
         }
 
         private function handleDisconnected(e:MessageStreamEvent):void {
+            // In normal operation, this will be called as a response to close, so this
+            // flag will already have been flipped; on errors, we want to ensure it is
+            // set properly
+            _connected = false;
             _connHandler.handleDisconnected();
         }
 
@@ -311,6 +315,19 @@ package org.postgresql.febe {
                 _broker.close();
                 _connected = false;
             }
+        }
+
+        private function onProtocolError(error:ProtocolError):void {
+        	// We don't know what the heck is going on. Bail.
+            close();
+            _connHandler.handleProtocolError(error);
+        }
+
+        private function onCodecError(error:CodecError):void {
+            // The query dies, but the connection is fine
+            _connHandler.handleCodecError(error);
+            _queryHandler.dispose();
+            _queryHandler = null;
         }
 
     }

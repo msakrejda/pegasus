@@ -44,8 +44,6 @@ package org.postgresql.febe {
         function send(message:IFEMessage):void;
         /**
          * Close underlying connection to the backend.
-         *
-         * TODO: what happens if called multiple times? Errors?
          */
         function close():void;
     }

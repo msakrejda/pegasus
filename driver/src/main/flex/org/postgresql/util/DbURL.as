@@ -11,6 +11,7 @@ package org.postgresql.util {
          * <code>as3dbc://localhost:5432/mydb?param1=val1&param2val2</code>.
          */ 
         public function DbURL(url:String) {
+            // TODO: Throw InvalidArgumentException if url does not match expected syntax
             _url = url;
             var urlParts:Array = url.split('?');
             var root:String = urlParts[0];

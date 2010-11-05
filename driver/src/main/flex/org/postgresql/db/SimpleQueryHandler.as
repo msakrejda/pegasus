@@ -2,6 +2,7 @@ package org.postgresql.db {
 
     import flash.events.EventDispatcher;
     
+    import org.postgresql.CodecError;
     import org.postgresql.codec.CodecFactory;
     import org.postgresql.codec.IPGTypeDecoder;
     import org.postgresql.febe.FieldDescription;
@@ -36,13 +37,21 @@ package org.postgresql.db {
             LOGGER.debug("Got fields: {0}", fields.join(' '));
             _resultHandler.handleColumns(columns);
         }
-    
+
         public function handleData(rows:Array, serverParams:Object):void {
             for each (var row:Array in rows) {
                 var decodedRow:Array = [];
                 for (var i:int = 0; i < row.length; i++) { 
                     if (row[i]) {
-                        decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
+                        try {
+                               decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
+                           } catch (e:Error) {
+                               var oid:int = _fields[i].typeOid;
+                               var codecErr:CodecError = new CodecError("Error decoding", CodecError.DECODE, oid,
+                                   _codecFactory.getOutputClass(oid));
+                               codecErr.error = e;
+                               throw codecErr;
+                           }
                     } else {
                         decodedRow.push(null);
                     }
@@ -55,16 +64,8 @@ package org.postgresql.db {
             _resultHandler.handleCompletion(command, rows, oid);
         }
     
-        public function handleNotice(fields:Object):void {
-            _resultHandler.handleNotice(fields);
-        }
-
-        public function get statement():IStatement {
-            return _resultHandler.statement;
-        }
-    
-        public function handleError(fields:Object):void {
-            _resultHandler.handleError(fields);
+        public function dispose():void {
+        	_resultHandler.dispose();
         }
 
     }

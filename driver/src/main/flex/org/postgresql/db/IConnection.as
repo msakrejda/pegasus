@@ -29,11 +29,11 @@ package org.postgresql.db {
      * Represents a single connection to a PostgreSQL backend.
      */
     public interface IConnection {
+
         /**
-         * Create a simple (unparameterizable) statement tied to this connection.
-         * Execution of multiple statements tied to the same connection is queued.
+         * Execute a query with the given handler.
          */
-        function createStatement():IStatement;
+        function execute(sql:String, handler:IResultHandler):QueryToken;
         /**
          * Close the connection. This cleans up any outstanding resources related
          * to the connection. Note that a closed connection cannot be reopened.
