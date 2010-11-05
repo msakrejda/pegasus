@@ -65,7 +65,7 @@ package org.postgresql.db {
         }
     
         public function dispose():void {
-        	_resultHandler.dispose();
+            _resultHandler.dispose();
         }
 
     }

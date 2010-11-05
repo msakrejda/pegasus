@@ -55,7 +55,7 @@ package org.postgresql.db {
         }
 
         protected function onQueryResult(columns:Array, data:Array):void {
-        	if (_onQueryResult) {
+            if (_onQueryResult) {
                 _onQueryResult(columns, data);
             }
         }
@@ -64,7 +64,9 @@ package org.postgresql.db {
             _onCompletion(command, rows);
         }
 
-        
+        public function dispose() : void {
+            /* do nothing */
+        }
 
     }
 }

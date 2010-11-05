@@ -12,7 +12,6 @@ package org.postgresql.febe.message {
         public var oid:int;
         public var affectedRows:int;
 
-        private static const SELECT_CMD:RegExp = /SELECT/;
         private static const INSERT_CMD:RegExp = /INSERT (\d+) (\d+)/;
         private static const COPY_CMD:RegExp = /COPY (\d+)?/;
         private static const OTHER_ROW_CMD:RegExp = /(DELETE|UPDATE|MOVE|FETCH) (\d+)/;

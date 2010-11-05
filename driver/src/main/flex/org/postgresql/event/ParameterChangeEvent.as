@@ -21,7 +21,7 @@ package org.postgresql.event {
          * New value for the parameter. Note that this is a string representation
          * of the value, even for numeric parameters.
          */
-        public var value:String
+        public var value:String;
 
         public function ParameterChangeEvent(name:String, newValue:String) {
             super(PARAMETER_CHANGE);

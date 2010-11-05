@@ -190,8 +190,8 @@ package org.postgresql.febe {
         private function handleError(msg:ErrorResponse):void {
             _connHandler.handleError(msg.fields);
             if (_queryHandler) {
-            	_queryHandler.dispose();
-            	_queryHandler = null;
+                _queryHandler.dispose();
+                _queryHandler = null;
             }
         }
     
@@ -318,7 +318,7 @@ package org.postgresql.febe {
         }
 
         private function onProtocolError(error:ProtocolError):void {
-        	// We don't know what the heck is going on. Bail.
+            // We don't know what the heck is going on. Bail.
             close();
             _connHandler.handleProtocolError(error);
         }
