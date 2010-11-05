@@ -1,7 +1,6 @@
 package org.postgresql.db {
 
     import org.postgresql.event.MetadataEvent;
-    import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.ResultSetEvent;
 
     public class ResultSet extends ResultBase implements IResultSet, IResultHandler {

@@ -55,7 +55,7 @@ package org.postgresql.febe {
             's': PortalSuspended,
             'Z': ReadyForQuery,
             'T': RowDescription
-        }
+        };
 
         private var _dataStream:IDataStream;
         private var _onDisconnected:Function;

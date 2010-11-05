@@ -18,15 +18,15 @@ package org.postgresql.febe.message {
         public var subtype:int;
 
         public static const subtypes:Object = {
-            (int.MIN_VALUE): 'Abstract',
-            0: 'Ok',
-            2: 'KerberosV5',
-            3: 'CleartextPassword',
-            5: 'MD5Password',
-            6: 'SCMCredential',
-            7: 'GSS',
-            9: 'SSPI',
-            8: 'GSSContinue'
+            '-1': 'Abstract',
+            '0': 'Ok',
+            '2': 'KerberosV5',
+            '3': 'CleartextPassword',
+            '5': 'MD5Password',
+            '6': 'SCMCredential',
+            '7': 'GSS',
+            '9': 'SSPI',
+            '8': 'GSSContinue'
         };
 
         public static const OK:int = 0;

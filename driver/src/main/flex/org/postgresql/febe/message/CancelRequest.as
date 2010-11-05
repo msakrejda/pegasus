@@ -9,7 +9,7 @@ package org.postgresql.febe.message {
         private static const CANCEL_CODE:int = 80877102;
 
         private var _pid:int;
-        private var _key:int
+        private var _key:int;
 
         public function CancelRequest(pid:int, key:int) {
             _pid = pid;

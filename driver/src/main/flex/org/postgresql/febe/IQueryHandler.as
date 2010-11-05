@@ -1,6 +1,4 @@
 package org.postgresql.febe {
-    import org.postgresql.db.IStatement;
-    
 
     public interface IQueryHandler {
         /**

@@ -10,6 +10,7 @@ package org.postgresql.febe.message {
         public function write(out:ICDataOutput):void {
             out.writeByte(code('E'));
             var len:int = 4 + portal.length + 1 + 4;
+            out.writeInt(len);
             out.writeCString(portal);
             out.writeInt(limit);
         }

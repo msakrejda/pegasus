@@ -4,7 +4,7 @@ package org.postgresql.db {
     import org.postgresql.event.NoticeEvent;
 
     internal class ResultBase extends EventDispatcher {
-        private var _stmt:IStatement
+        private var _stmt:IStatement;
 
         public function ResultBase(stmt:IStatement) {
             _stmt = stmt;

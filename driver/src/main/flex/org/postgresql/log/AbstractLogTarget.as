@@ -89,7 +89,7 @@ package org.postgresql.log {
                         ));
                         if (match) {
                             var packageStr:String = (match[1] || '');
-                            var classStr:String
+                            var classStr:String;
                             if (packageStr) {
                                 classStr = packageStr + '.';
                             } else {

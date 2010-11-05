@@ -1,8 +1,5 @@
 package org.postgresql.febe.message {
 
-    import flash.utils.IDataInput;
-    import flash.utils.IDataOutput;
-
     public class AbstractMessage implements IMessage {
 
         /**

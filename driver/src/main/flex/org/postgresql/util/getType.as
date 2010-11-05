@@ -9,7 +9,7 @@ package org.postgresql.util {
         } else if (value is uint) {
             return uint;
         } else {
-            return value.constructor;
+            return Class(value.constructor);
         }
     }
 

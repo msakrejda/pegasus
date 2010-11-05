@@ -1,5 +1,4 @@
 package org.postgresql.db {
-    import org.postgresql.event.ParameterChangeEvent;
 
     /**
      * @eventType org.postgresql.event.ConnectionEvent.DISCONNECTED

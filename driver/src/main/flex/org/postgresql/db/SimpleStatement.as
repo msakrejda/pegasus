@@ -6,7 +6,6 @@ package org.postgresql.db {
 
         private var _conn:Connection;
         private var _queryHandlerFactory:QueryHandlerFactory;
-        private var _columns:Array;
 
         public function SimpleStatement(conn:Connection, queryHandlerFactory:QueryHandlerFactory) {
             _conn = conn;

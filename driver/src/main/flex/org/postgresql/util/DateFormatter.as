@@ -1,7 +1,6 @@
 package org.postgresql.util
 {
-    import flash.utils.Dictionary;
-    
+
     /**
      * Attempts to closely mirror the API of the Flex DateFormatter, though also supports
      * escaping the pattern letters (precede with a backslash). The Flex DateFormatter API
@@ -13,11 +12,11 @@ package org.postgresql.util
      * E{1,4}:    Day of week (single number / padded to two digits / three-letter abbreviation / full name)
      * A:        AM / PM indicator
      * J{1,2}:    Hour in day (0-23), padded to two digits if necessary
-      * H{1,2}:    Hour in day (1-24), padded to two digits if necessary
-        * K{1,2}:    Hour in day (0-11), padded to two digits if necessary
-      * L{1,2}:    Hour in day (1-12), padded to two digits if necessary
-      * N{1,2}:    Minute in hour, padded to two digits if necessary
-      * S{1,2}:    Second in hour, padded to two digits if necessary
+     * H{1,2}:    Hour in day (1-24), padded to two digits if necessary
+     * K{1,2}:    Hour in day (0-11), padded to two digits if necessary
+     * L{1,2}:    Hour in day (1-12), padded to two digits if necessary
+     * N{1,2}:    Minute in hour, padded to two digits if necessary
+     * S{1,2}:    Second in hour, padded to two digits if necessary
      *
      * Note that, unlike internally, months are one-indexed. Date formatting is not currently localizable.
      */

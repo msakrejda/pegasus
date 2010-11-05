@@ -10,15 +10,11 @@ package org.postgresql.db {
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
     import org.postgresql.febe.IQueryHandler;
-    import org.postgresql.febe.MessageBroker;
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
         private var _queryHandlerFactory:QueryHandlerFactory;
         private var _baseConn:FEBEConnection;
-
-        private var _params:Object;
-        private var _broker:MessageBroker;
 
         private var _active:Dictionary;
         private var _pendingExecution:Array;
