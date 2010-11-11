@@ -35,6 +35,11 @@ package org.postgresql.db {
             _codecFactory.registerDecoder(Oid.VARCHAR, String, new TextOut());
             _codecFactory.registerDecoder(Oid.CHAR, String, new TextOut());
             _codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
+            // Technically, this isn't right, especially for binary, but
+            // it's at least moderately useful and better than the alternative of
+            // CodecErrors everywhere. This typically occurs if someone is selecting
+            // text literals: e.g., "SELECT 'foo'". 
+            _codecFactory.registerDecoder(Oid.UNKNOWN, String, new TextOut());
         }
 
         public function createConnection(url:String, user:String, password:String):IConnection {
