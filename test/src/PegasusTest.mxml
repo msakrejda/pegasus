@@ -5,23 +5,28 @@
     
     <mx:Script>
         <![CDATA[
+            import org.postgresql.log.TraceTarget;
+            import org.postgresql.log.ILogTarget;
+            import org.postgresql.log.LogLevel;
+            import org.postgresql.log.Log;
+            import org.postgresql.pegasus.functional.SimpleQuerySuite;
             import org.postgresql.pegasus.codec.CodecSuite;
 
-            import org.flexunit.assertThat;
-            import org.flexunit.asserts.*;
             import org.flexunit.listeners.UIListener;
             import org.flexunit.runner.FlexUnitCore;
-            import org.flexunit.runner.Request;
-            import org.flexunit.runner.notification.async.XMLListener;
 
             private var _core:FlexUnitCore;
 
             private function handleInit(event:Event):void {
+                var target:ILogTarget = new TraceTarget();
+                target.format = '%d %f [%l] %c %m(%n): %s';
+                Log.addTarget(target, LogLevel.DEBUG);
+                
                 _core = new FlexUnitCore();
 
                 _core.addListener( new UIListener( uiListener ));
                 
-                _core.run( CodecSuite );
+                _core.run( CodecSuite, SimpleQuerySuite );
             }
         ]]>
     </mx:Script>

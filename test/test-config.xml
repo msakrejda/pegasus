@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <user>pegasus</user>
+  <password>pegasus</password>
+  <url>as3dbc:postgresql://localhost/pegasus</url>
+</config>
