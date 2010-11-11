@@ -3,9 +3,9 @@
     xmlns:debug="org.postgresql.debug.*">
 <mx:Script>
     <![CDATA[
-    	import org.postgresql.db.IResultHandler;
-    	import org.postgresql.db.SimpleResultHandler;
-    	import org.postgresql.db.SimpleQueryHandler;
+        import org.postgresql.db.IResultHandler;
+        import org.postgresql.db.SimpleResultHandler;
+        import org.postgresql.db.SimpleQueryHandler;
         import org.postgresql.db.IColumn;
         import org.postgresql.codec.decode.FloatOut;
         import org.postgresql.codec.decode.TextOut;
@@ -75,7 +75,7 @@
             conn.execute("insert into test(a) (values(1),(2),(3))", traceHandler);
 
             var closeFn:Function = function(command:String, affectedRows:int):void {
-            	handleResult(command, affectedRows);
+                handleResult(command, affectedRows);
                 conn.close();
             };
             var closeHandler:IResultHandler = new SimpleResultHandler(handleData, closeFn);
