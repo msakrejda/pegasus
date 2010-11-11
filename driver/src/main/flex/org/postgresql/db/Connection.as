@@ -47,10 +47,12 @@ package org.postgresql.db {
         }
 
         public function handleProtocolError(error:ProtocolError):void {
+            LOGGER.error("Protocol error: " + error.message);
             dispatchEvent(new ProtocolErrorEvent(ProtocolErrorEvent.PROTOCOL_ERROR, error));
         }
 
         public function handleCodecError(error:CodecError):void {
+            LOGGER.warn("Codec error: " + error.message);
             dispatchEvent(new CodecErrorEvent(CodecErrorEvent.CODEC_ERROR, error));
         }
 
