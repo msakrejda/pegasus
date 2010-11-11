@@ -1,4 +1,5 @@
 package org.postgresql.db {
+    import flash.events.IEventDispatcher;
 
     /**
      * @eventType org.postgresql.event.ConnectionEvent.DISCONNECTED
@@ -28,7 +29,7 @@ package org.postgresql.db {
     /**
      * Represents a single connection to a PostgreSQL backend.
      */
-    public interface IConnection {
+    public interface IConnection extends IEventDispatcher {
 
         /**
          * Execute a query with the given handler.
