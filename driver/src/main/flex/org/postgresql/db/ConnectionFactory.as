@@ -37,7 +37,7 @@ package org.postgresql.db {
             _codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
         }
 
-        public function createConnection(url:String, username:String, password:String):IConnection {
+        public function createConnection(url:String, user:String, password:String):IConnection {
             var pegasusUrl:DbURL = new DbURL(url);
 
             var brokerFactory:MessageBrokerFactory =
@@ -47,7 +47,7 @@ package org.postgresql.db {
             for (var key:String in pegasusUrl.parameters) {
                 params[key] = pegasusUrl.parameters[key];
             }
-            params.username = username;
+            params.user = user;
             var febeConn:FEBEConnection = new FEBEConnection(params, password, brokerFactory);
             var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(_codecFactory));
             return conn;
