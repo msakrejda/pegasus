@@ -29,5 +29,6 @@ package org.postgresql {
         public static const INTERVAL:int = 1186;
         public static const CHAR:int = 18; // (single char)
         public static const VARBIT:int = 1562;
+        public static const UNKNOWN:int = 705;
     }
 }
