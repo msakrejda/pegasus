@@ -22,6 +22,14 @@ package org.postgresql.db {
             _onCompletion = onCompletion;
         }
 
+        public function get columns():Array {
+            return _columns;
+        }
+        
+        public function get data():Array {
+            return _data;
+        }
+
         public function handleColumns(columns:Array):void {
             _columns = columns;
             _data = [];
@@ -48,8 +56,6 @@ package org.postgresql.db {
         public function handleCompletion(command:String, rows:int, oid:int):void {
             if (_columns) {
                 onQueryResult(_columns, _data);
-                _columns = null;
-                _data = null;
             }
             onCompletion(command, rows);
         }
@@ -65,7 +71,8 @@ package org.postgresql.db {
         }
 
         public function dispose() : void {
-            /* do nothing */
+            _columns = null;
+            _data = null;
         }
 
     }
