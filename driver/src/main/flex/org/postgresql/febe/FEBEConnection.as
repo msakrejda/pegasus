@@ -50,6 +50,7 @@ package org.postgresql.febe {
 
         private var _queryHandler:IQueryHandler;
         private var _currResults:Array;
+        private var _hasCodecError:Boolean;
 
         private var _password:String;
         
@@ -82,6 +83,7 @@ package org.postgresql.febe {
             _authenticated = false;
 
             _queryHandler = null;
+            _hasCodecError = false;
             _currResults = [];
             
             _password = password;
@@ -211,6 +213,8 @@ package org.postgresql.febe {
         private function handleData(msg:DataRow):void {
             if (_queryHandler) {
                 _currResults.push(msg.rowBytes);
+            } else if (_hasCodecError) {
+                /* do nothing; just drop */
             } else {
                 onProtocolError(new ProtocolError('Unexpected DataRow message'));
             }
@@ -222,6 +226,8 @@ package org.postgresql.febe {
                 _queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
                 _queryHandler.dispose();
                 _queryHandler = null;
+            } else if (_hasCodecError) {
+                _hasCodecError = false;
             } else {
                 onProtocolError(new ProtocolError("Unexpected CommandComplete")); 
             }
@@ -328,6 +334,8 @@ package org.postgresql.febe {
             _connHandler.handleCodecError(error);
             _queryHandler.dispose();
             _queryHandler = null;
+            // Note that we still may need to throw away any number of DataRow messages
+            _hasCodecError = true; 
         }
 
     }
