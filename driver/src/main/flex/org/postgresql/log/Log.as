@@ -96,7 +96,7 @@ class Logger implements ILogger {
         doLog(level, message, rest);
     }
     private function doLog(level:int, message:String, rest:Array):void {
-        var result:String = message.replace(/{(\d+)}/, function():String {
+        var result:String = message.replace(/{(\d+)}/g, function():String {
             var idx:int = int(arguments[1]);
             if (idx > rest.length || idx < 0) {
                 throw new ArgumentError("Invalid log argument index: " + idx);
