@@ -1,27 +1,19 @@
 package org.postgresql.db {
+
+    import org.postgresql.util.AbstractMethodError;
+    import org.postgresql.util.assert;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
-    import org.postgresql.util.assert;
-    
 
-    public class SimpleResultHandler implements IResultHandler {
+	/**
+	 * A simple handler 
+	 */
+    public class ResultHandlerBase implements IResultHandler {
 
-        private static const LOGGER:ILogger = Log.getLogger(SimpleResultHandler);
+        private static const LOGGER:ILogger = Log.getLogger(ResultHandlerBase);
         
         private var _columns:Array;
         private var _data:Array;
-
-        private var _onCompletion:Function;
-        private var _onQueryResult:Function;
-
-        public function SimpleResultHandler(onCompletion:Function, onQueryResult:Function=null) {
-            if (!onCompletion) {
-                throw new ArgumentError("Completion handler cannot be null");
-            }
-            _onQueryResult = onQueryResult;
-            _onCompletion = onCompletion;
-        }
-
         public function get columns():Array {
             return _columns;
         }
@@ -53,27 +45,13 @@ package org.postgresql.db {
             _data.push(row);
         }
         
-        public function handleCompletion(command:String, rows:int, oid:int):void {
-            if (_columns) {
-                onQueryResult(_columns, _data);
-            }
-            onCompletion(command, rows);
-        }
-
-        protected function onQueryResult(columns:Array, data:Array):void {
-            if (_onQueryResult) {
-                _onQueryResult(columns, data);
-            }
-        }
-
-        protected function onCompletion(command:String, rows:int):void {
-            _onCompletion(command, rows);
+        public /* abstract */ function handleCompletion(command:String, rows:int, oid:int):void {
+        	throw new AbstractMethodError();
         }
 
         public function dispose() : void {
             _columns = null;
             _data = null;
         }
-
     }
 }
