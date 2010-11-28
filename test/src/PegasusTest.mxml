@@ -19,7 +19,7 @@
 
             private function handleInit(event:Event):void {
                 var target:ILogTarget = new TraceTarget();
-                target.format = '%d %f [%l] %c %m(%n): %s';
+                target.format = '%d %t [%l] %c %m(%n): %s';
                 Log.addTarget(target, LogLevel.DEBUG);
                 
                 _core = new FlexUnitCore();
