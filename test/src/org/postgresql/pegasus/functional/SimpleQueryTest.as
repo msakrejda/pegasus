@@ -19,12 +19,12 @@ package org.postgresql.pegasus.functional {
             var handler:EventResultHandler = new EventResultHandler();
             Async.proceedOnEvent(this, handler, QueryCompletionEvent.COMPLETE, 1000);
 
-			handler.addEventListener(QueryResultEvent.RESULT, function(e:QueryResultEvent) : void {
+            handler.addEventListener(QueryResultEvent.RESULT, function(e:QueryResultEvent) : void {
                     // Note that rowCount for a SELECT does *not* reflect the number of affected rows
                     assertEquals(3, e.columns.length);
                     assertEquals('empty', IColumn(e.columns[0]).name);
                     assertEquals('one_char', IColumn(e.columns[1]).name);
-					assertEquals('text', IColumn(e.columns[2]).name);
+                    assertEquals('text', IColumn(e.columns[2]).name);
 
                     assertEquals(1, e.data.length);
                     assertEquals('', e.data[0]['empty']);

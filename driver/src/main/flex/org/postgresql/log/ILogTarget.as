@@ -11,7 +11,7 @@ package org.postgresql.log
          *    %c    category
          *    %m    method
          *    %n    line number
-         *     %s    message
+         *    %s    message
          *
          * All other characters are printed literally. These format
          * specifications cannot be escaped.

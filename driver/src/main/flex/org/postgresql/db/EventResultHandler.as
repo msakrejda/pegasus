@@ -8,11 +8,11 @@ package org.postgresql.db {
 
     public class EventResultHandler extends ResultHandlerBase implements IEventDispatcher {
 
-		private var _dispatcher:IEventDispatcher;
+        private var _dispatcher:IEventDispatcher;
 
-		public function EventResultHandler() {
-			_dispatcher = new EventDispatcher();
-		}
+        public function EventResultHandler() {
+            _dispatcher = new EventDispatcher();
+        }
 
         public override function handleCompletion(command:String, rows:int, oid:int):void {
             if (columns) {

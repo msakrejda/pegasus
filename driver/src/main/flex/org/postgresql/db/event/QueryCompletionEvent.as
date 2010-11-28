@@ -1,14 +1,14 @@
 package org.postgresql.db.event {
 
-	import flash.events.Event;
+    import flash.events.Event;
 
     public class QueryCompletionEvent extends Event {
-    	
-    	public static const COMPLETE:String = 'queryComplete';
+        
+        public static const COMPLETE:String = 'queryComplete';
 
-    	private var _tag:String;    	
-    	private var _rows:int;
-    	private var _oid:int;
+        private var _tag:String;        
+        private var _rows:int;
+        private var _oid:int;
 
         public function QueryCompletionEvent(type:String, tag:String, rows:int, oid:int) {
             super(type, false, false);

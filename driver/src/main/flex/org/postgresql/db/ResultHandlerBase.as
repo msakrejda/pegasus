@@ -5,9 +5,9 @@ package org.postgresql.db {
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
 
-	/**
-	 * A simple handler 
-	 */
+    /**
+     * A simple handler 
+     */
     public class ResultHandlerBase implements IResultHandler {
 
         private static const LOGGER:ILogger = Log.getLogger(ResultHandlerBase);
@@ -46,7 +46,7 @@ package org.postgresql.db {
         }
         
         public /* abstract */ function handleCompletion(command:String, rows:int, oid:int):void {
-        	throw new AbstractMethodError();
+            throw new AbstractMethodError();
         }
 
         public function dispose() : void {

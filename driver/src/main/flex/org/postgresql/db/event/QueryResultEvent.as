@@ -1,6 +1,6 @@
 package org.postgresql.db.event {
 
-	import flash.events.Event;
+    import flash.events.Event;
 
     public class QueryResultEvent extends Event {
 
