@@ -8,18 +8,39 @@ package org.postgresql.pegasus.functional {
      * @author maciek
      */
     public /* abstract */ class ConnectedTestBase {
-        
-        protected var connection:IConnection;
+
+        protected static var connectionFactory:ConnectionFactory;
+        protected static var connection:IConnection;
+        protected static var setupCount:int;
+
+        protected function createConnection():IConnection {
+        	// We can't really create the connection factory (or connection, for that matter)
+        	// in a [BeforeClass] method, because that does not play well with inheritance.
+            if (!connectionFactory) {
+            	connectionFactory = new ConnectionFactory();
+            }
+        	var conn:IConnection = new ConnectionFactory().createConnection(Credentials.url, Credentials.user, Credentials.password);
+        	// TODO: register failure event on Connection error, once we broadcast
+        	// connection errors.
+        	Async.proceedOnEvent(this, conn, ConnectionEvent.CONNECTED);
+        	return conn;
+        }
         
         [Before(async,timeout=1000)]
         public function setup():void {
-            var connFactory:ConnectionFactory = new ConnectionFactory();
-            connection = connFactory.createConnection(Credentials.url, Credentials.user, Credentials.password);
-            Async.proceedOnEvent(this, connection, ConnectionEvent.CONNECTED);
+            if (!connection) {
+            	connection = createConnection();
+            }
+            setupCount++;
         }
+
         [After(async,timeout=1000)]
         public function tearDown():void {
-            connection.close();
+        	setupCount--;
+        	if (setupCount == 0) {
+                connection.close();
+                connection = null;
+        	}
         }
     }
 }
