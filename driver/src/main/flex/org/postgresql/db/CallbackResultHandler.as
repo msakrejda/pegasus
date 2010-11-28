@@ -1,7 +1,6 @@
 package org.postgresql.db {
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
-    import org.postgresql.util.assert;
 
     public class CallbackResultHandler extends ResultHandlerBase {
 

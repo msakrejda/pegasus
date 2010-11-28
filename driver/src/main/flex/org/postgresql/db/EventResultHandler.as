@@ -33,11 +33,11 @@ package org.postgresql.db {
             return _dispatcher.willTrigger(type);
         }
 
-        public function removeEventListener(type:String, listener:Function, useCapture:Boolean):void {
+        public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void {
             _dispatcher.removeEventListener(type, listener, useCapture);
         }
 
-        public function addEventListener(type:String, listener:Function, useCapture:Boolean, priority:int, useWeakReference:Boolean):void {
+        public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
             _dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
         }
     }
