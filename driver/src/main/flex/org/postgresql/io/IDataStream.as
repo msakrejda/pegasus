@@ -3,21 +3,17 @@ package org.postgresql.io {
     import flash.events.IEventDispatcher;
 
     /**
-     * Dispatched when progress is made on the connection and new data is
-     * available.
+     * Dispatched when new data is available in the stream.
      *
      * @eventType org.postgresql.io.DataStreamEvent.PROGRESS
      */
     [Event(name="progress", type="org.postgresql.io.DataStreamEvent")]
+
     /**
-     * Dispatched once the stream is disconnected successfully after the
-     * client requests a disconnection.
-     *
-     * @eventType org.postgresql.io.DataStreamEvent.DISCONNECTED
-     */
-    [Event(name="disconnected", type="org.postgresql.io.DataStreamEvent")]
-    /**
-     * Dispatched when an error occurs in the stream
+     * Dispatched when an error occurs in the stream. After an error occurs,
+     * the stream is in a disconnected state (and cannot be reconnected).
+     * If ability to reconnect is integral to a client of an <code>IDataStream</code>,
+     * an <code>IDataStream</code> factory should be used instead.
      *
      * @eventType org.postgresql.io.DataStreamErrorEvent.ERROR
      */

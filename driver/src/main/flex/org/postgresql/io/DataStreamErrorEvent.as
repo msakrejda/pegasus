@@ -14,8 +14,11 @@ package org.postgresql.io {
          *
          * @eventType dataStreamError
          */
-        public static const ERROR:String = "dataStreamError";
+        public static const ERROR:String = 'dataStreamError';
 
+        /**
+         * @inheritDoc
+         */
         public function DataStreamErrorEvent(type:String, text:String = "") {
             super(type, false, false, text);
         }

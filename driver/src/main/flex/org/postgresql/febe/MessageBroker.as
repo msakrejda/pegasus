@@ -21,6 +21,7 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.ReadyForQuery;
     import org.postgresql.febe.message.RowDescription;
     import org.postgresql.io.ByteDataStream;
+    import org.postgresql.io.DataStreamErrorEvent;
     import org.postgresql.io.DataStreamEvent;
     import org.postgresql.io.IDataStream;
     import org.postgresql.log.ILogger;
@@ -66,7 +67,7 @@ package org.postgresql.febe {
         public function MessageBroker(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(DataStreamEvent.PROGRESS, handleStreamData);
-            _dataStream.addEventListener(DataStreamEvent.DISCONNECTED, handleDisconnected);
+            _dataStream.addEventListener(DataStreamErrorEvent.ERROR, handleError);
 
             _nextMessageType = -1;
             _nextMessageLen = -1;
@@ -114,7 +115,8 @@ package org.postgresql.febe {
             dispatchEvent(new MessageStreamEvent(MessageStreamEvent.BATCH_COMPLETE));
         }
 
-        private function handleDisconnected(e:DataStreamEvent):void {
+        private function handleError(e:DataStreamEvent):void {
+        	// TODO: review this event
             dispatchEvent(new MessageStreamEvent(MessageStreamEvent.DISCONNECTED));
         }
 

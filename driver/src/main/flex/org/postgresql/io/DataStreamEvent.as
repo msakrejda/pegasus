@@ -1,4 +1,5 @@
 package org.postgresql.io {
+
     import flash.events.Event;
 
     /**
@@ -16,13 +17,6 @@ package org.postgresql.io {
          * @eventType progress
          */
         public static const PROGRESS:String = 'progress';
-
-        /**
-         * A disconnection attempt has completed successfully
-         *
-         * @eventType disconnected
-         */
-        public static const DISCONNECTED:String = 'disconnected';
 
         /**
          * @inheritDoc
