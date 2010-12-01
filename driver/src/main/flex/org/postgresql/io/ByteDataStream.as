@@ -14,7 +14,7 @@ package org.postgresql.io {
         private var _connected:Boolean;
 
         public function ByteDataStream() {
-        	_dispatcher = new EventDispatcher();
+            _dispatcher = new EventDispatcher();
         }
 
         /**
@@ -35,35 +35,35 @@ package org.postgresql.io {
          * @inheritDoc
          */
         public function dispatchEvent(event:Event):Boolean {
-        	return _dispatcher.dispatchEvent(event);
+            return _dispatcher.dispatchEvent(event);
         }
 
         /**
          * @inheritDoc
          */
         public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void {
-        	_dispatcher.removeEventListener(type, listener, useCapture);
+            _dispatcher.removeEventListener(type, listener, useCapture);
         }
 
         /**
          * @inheritDoc
          */
         public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
-        	_dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+            _dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
         }
 
         /**
          * @inheritDoc
          */
         public function hasEventListener(type:String):Boolean {
-        	return _dispatcher.hasEventListener(type);
+            return _dispatcher.hasEventListener(type);
         }
 
         /**
          * @inheritDoc
          */
         public function willTrigger(type:String):Boolean {
-        	return _dispatcher.willTrigger(type);
+            return _dispatcher.willTrigger(type);
         }
 
         /**
@@ -85,7 +85,7 @@ package org.postgresql.io {
          * @inheritDoc
          */
         public function get connected():Boolean {
-        	return _connected;
+            return _connected;
         }
 
     }

@@ -127,15 +127,15 @@ package org.postgresql.febe {
         }
         
         private function send(msg:IFEMessage):void {
-        	if (_connected || (_connecting && msg is StartupMessage)) {
-        		try {
+            if (_connected || (_connecting && msg is StartupMessage)) {
+                try {
                     _broker.send(msg);
-        		} catch (e:Error) {
-        			_connHandler.handleStreamError(e);
-        		}
-        	} else {
-        		_connHandler.handleStreamError(new InvalidStateError("Connection closed"));
-        	}
+                } catch (e:Error) {
+                    _connHandler.handleStreamError(e);
+                }
+            } else {
+                _connHandler.handleStreamError(new InvalidStateError("Connection closed"));
+            }
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
@@ -330,16 +330,16 @@ package org.postgresql.febe {
 
         public function close():void {
             if (_connected) {
-            	try {
-            		if (_broker.connected) {
+                try {
+                    if (_broker.connected) {
                         _broker.send(new Terminate());
                         _broker.close();
                     }
                 } catch (e:Error) {
-                	LOGGER.warn("Could not shut down cleanly: " + e.message);
+                    LOGGER.warn("Could not shut down cleanly: " + e.message);
                 }
                 _connected = false;
-            }        	
+            }            
         }
 
         private function onProtocolError(error:ProtocolError):void {

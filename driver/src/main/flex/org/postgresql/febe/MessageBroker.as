@@ -131,7 +131,7 @@ package org.postgresql.febe {
         }
 
         public function get connected():Boolean {
-        	return _dataStream.connected;
+            return _dataStream.connected;
         }
 
         public function close():void {

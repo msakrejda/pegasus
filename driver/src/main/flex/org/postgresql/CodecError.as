@@ -40,7 +40,7 @@ package org.postgresql {
          * @return cause, or <code>null</code> if no nested cause
          */
         public function get cause():Error {
-        	return _cause;
+            return _cause;
         }
  
         /**
@@ -48,7 +48,7 @@ package org.postgresql {
          * decoding) or the source type (when encoding).
          */
         public function get as3Type():Class {
-        	return _as3Type;
+            return _as3Type;
         }
 
         /**

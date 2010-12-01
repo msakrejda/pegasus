@@ -29,7 +29,7 @@ package org.postgresql.io {
         }
 
         private function handleSocketData(e:ProgressEvent):void {
-        	if (connected) {
+            if (connected) {
                 dispatchEvent(new DataStreamEvent(DataStreamEvent.PROGRESS));
             }
         }
@@ -62,8 +62,8 @@ package org.postgresql.io {
          * @inheritDoc
          */
         public override function close():void {
-        	_clientDisconnect = true;
-        	super.close();
+            _clientDisconnect = true;
+            super.close();
         }
     }
 }

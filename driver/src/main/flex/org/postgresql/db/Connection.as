@@ -41,7 +41,7 @@ package org.postgresql.db {
         }
         
         public function handleStreamError(error:Error):void {
-        	LOGGER.error("Stream error: " + error.message);
+            LOGGER.error("Stream error: " + error.message);
             dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CONNECTIVITY_ERROR, error));
         }
 
@@ -103,8 +103,8 @@ package org.postgresql.db {
                 }
             }
             if (!found) {
-            	// TODO: this is probably wrong: we should allow cancellation
-            	// attempts on old queries
+                // TODO: this is probably wrong: we should allow cancellation
+                // attempts on old queries
                 throw new ArgumentError("Attempting to cancel unknown query");
             }
         }
