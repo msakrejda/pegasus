@@ -42,7 +42,7 @@ package org.postgresql.codec {
             if (oid in _decoders) {
                 return _decoders[oid];
             } else {
-                throw new CodecError("Could not find suitable decoder", CodecError.DECODE, oid);
+                throw new CodecError("Could not find suitable decoder", CodecError.DECODE, null, oid);
             }
             
         }

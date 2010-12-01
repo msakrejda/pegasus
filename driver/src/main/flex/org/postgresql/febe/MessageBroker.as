@@ -26,6 +26,7 @@ package org.postgresql.febe {
     import org.postgresql.io.IDataStream;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
+    import org.postgresql.util.format;
 
     public class MessageBroker extends EventDispatcher implements IMessageBroker {
 
@@ -93,8 +94,8 @@ package org.postgresql.febe {
                     var nextTypeCode:String = String.fromCharCode(_nextMessageType);
                     var nextMessageClass:Class = backendMessageTypes[nextTypeCode];
                     if (!nextMessageClass) {
-                        LOGGER.error("No message class found for message type {0}", nextTypeCode);
-                        dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                        var msg:String = format("No message class found for message type {0}", nextTypeCode);
+                        dispatchEvent(new MessageStreamErrorEvent(MessageStreamErrorEvent.ERROR, msg));
                     } else {
                         try {
                             var nextMessage:IBEMessage = new nextMessageClass();
@@ -102,7 +103,7 @@ package org.postgresql.febe {
                             LOGGER.debug('<= {0}', nextMessage);
                             dispatchEvent(new MessageEvent(MessageEvent.RECEIVED, nextMessage));
                         } catch (e:Error) {
-                            dispatchEvent(new MessageStreamEvent(MessageStreamEvent.ERROR));
+                            dispatchEvent(new MessageStreamErrorEvent(MessageStreamErrorEvent.ERROR, e.message));
                         } finally {
                             // TODO: we should probably try sync in the catch or something: it's rather
                             // optimistic to assume that this finally clause will work for the failure case
@@ -115,16 +116,22 @@ package org.postgresql.febe {
             dispatchEvent(new MessageStreamEvent(MessageStreamEvent.BATCH_COMPLETE));
         }
 
-        private function handleError(e:DataStreamEvent):void {
-        	// TODO: review this event
-            dispatchEvent(new MessageStreamEvent(MessageStreamEvent.DISCONNECTED));
+        private function handleError(e:DataStreamErrorEvent):void {
+            dispatchEvent(new MessageStreamErrorEvent(MessageStreamErrorEvent.ERROR, e.text));
         }
 
         public function send(message:IFEMessage):void {
             LOGGER.debug('=> {0}', message);
-            // TODO: handle write errors here (or in FEBEConnection)
             message.write(_dataStream);
+            // TODO: we can eventually expose flush() in the IMessageBroker interface
+            // to support flushing a batch of message instead of each individual message.
+            // For now, we just keep this simple.
+            _dataStream.flush();
             dispatchEvent(new MessageEvent(MessageEvent.SENT, message));
+        }
+
+        public function get connected():Boolean {
+        	return _dataStream.connected;
         }
 
         public function close():void {

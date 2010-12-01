@@ -4,12 +4,11 @@ package org.postgresql.db {
     
     import org.postgresql.CodecError;
     import org.postgresql.ProtocolError;
-    import org.postgresql.event.CodecErrorEvent;
+    import org.postgresql.event.ConnectionErrorEvent;
     import org.postgresql.event.ConnectionEvent;
     import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.NotificationEvent;
     import org.postgresql.event.ParameterChangeEvent;
-    import org.postgresql.event.ProtocolErrorEvent;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
     import org.postgresql.febe.IQueryHandler;
@@ -41,22 +40,22 @@ package org.postgresql.db {
             dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
         }
         
-        public function handleDisconnected():void {
-            // TODO: error out on activity after disconnection
-            dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+        public function handleStreamError(error:Error):void {
+        	LOGGER.error("Stream error: " + error.message);
+            dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CONNECTIVITY_ERROR, error));
         }
 
         public function handleProtocolError(error:ProtocolError):void {
             LOGGER.error("Protocol error: " + error.message);
-            dispatchEvent(new ProtocolErrorEvent(ProtocolErrorEvent.PROTOCOL_ERROR, error));
+            dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.PROTOCOL_ERROR, error));
         }
 
         public function handleCodecError(error:CodecError):void {
             LOGGER.warn("Codec error: " + error.message);
-            dispatchEvent(new CodecErrorEvent(CodecErrorEvent.CODEC_ERROR, error));
+            dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CODEC_ERROR, error));
         }
 
-        public function handleError(fields:Object):void {
+        public function handleSQLError(fields:Object):void {
             LOGGER.warn("Error:");
             for (var key:String in fields) {
                 LOGGER.warn("\t{0}: {1}", key, fields[key]);
@@ -80,7 +79,7 @@ package org.postgresql.db {
             dispatchEvent(new ParameterChangeEvent(name, newValue));
         }
 
-        public function handleRfq():void {
+        public function handleReady(status:String):void {
             if (_pendingExecution.length > 0) {
                 var nextQuery:Object = _pendingExecution.shift();
                 doExecute(nextQuery.sql, nextQuery.token, nextQuery.handler);
@@ -104,6 +103,8 @@ package org.postgresql.db {
                 }
             }
             if (!found) {
+            	// TODO: this is probably wrong: we should allow cancellation
+            	// attempts on old queries
                 throw new ArgumentError("Attempting to cancel unknown query");
             }
         }

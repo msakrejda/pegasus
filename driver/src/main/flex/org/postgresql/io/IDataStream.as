@@ -40,16 +40,14 @@ package org.postgresql.io {
     public interface IDataStream extends ICDataInput, ICDataOutput, IEventDispatcher {
 
         /**
-         * Flush all pending client writes to the backend.
+         * Flush all pending client writes to the server.
          *
          * @throws flash.utils.Error if the connection is closed or broken
          */
         function flush():void;
 
         /**
-         * Close the connection to the backend. Note that this eventually causes
-         * the stream to dispatch the <code>DataStreamEvent.DISCONNECTED</code> event
-         * unless an error occurs.
+         * Close the connection to the backend.
          *
          * @throws flash.utils.Error if the connection is already closed or broken
          */

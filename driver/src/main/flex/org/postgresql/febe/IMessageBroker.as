@@ -4,23 +4,13 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.IFEMessage;
 
     /**
-     * @eventType org.postgresql.febe.MessageEvent.ERROR
+     * @eventType org.postgresql.febe.MessageStreamErrorEvent.ERROR
      */
-    [Event(name="error", type="org.postgresql.febe.MessageStreamEvent")]
+    [Event(name="error", type="org.postgresql.febe.MessageStreamErrorEvent")]
     /**
      * @eventType org.postgresql.febe.MessageStreamEvent.BATCH_COMPLETE
      */    
     [Event(name="batchComplete", type="org.postgresql.febe.MessageStreamEvent")]
-
-    /**
-     * @eventType org.postgresql.febe.MessageStreamEvent.DISCONNECTED
-     */
-    [Event(name="disconnected", type="org.postgresql.febe.MessageStreamEvent")]
-    // TODO: provide a way to distinguish the three types of connection drops.
-    // For the first case, we expect the disconnect, and for the second, we'll
-    // typically get error messages from the server before the connection drops,
-    // but it would still be nice to deal more elegantly with this at the broker
-    // level (e.g., propagate connectivity errors).
     /**
      * @eventType org.postgresql.febe.MessageEvent.SENT
      */
@@ -35,16 +25,20 @@ package org.postgresql.febe {
      */
     public interface IMessageBroker extends IEventDispatcher {
         /**
-         * Send given message to the backend.
+         * Send message to the backend.
          *
          * @param message IFEMessage to send
-         * @throws Error if message cannot be sent (typically due to problems
-         *         in underlying connection)
+         * @throws <code>Error</code> if message cannot be sent due to errors in the
+         *  underlying connection
          */
         function send(message:IFEMessage):void;
         /**
          * Close underlying connection to the backend.
          */
         function close():void;
+        /**
+         * True if this broker is connected; false otherwise.
+         */
+        function get connected():Boolean;
     }
 }

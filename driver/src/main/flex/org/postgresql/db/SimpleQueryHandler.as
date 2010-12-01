@@ -44,14 +44,13 @@ package org.postgresql.db {
                 for (var i:int = 0; i < row.length; i++) { 
                     if (row[i]) {
                         try {
-                               decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
-                           } catch (e:Error) {
-                               var oid:int = _fields[i].typeOid;
-                               var codecErr:CodecError = new CodecError("Error decoding", CodecError.DECODE, oid,
-                                   _codecFactory.getOutputClass(oid));
-                               codecErr.error = e;
-                               throw codecErr;
-                           }
+                            decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
+                        } catch (e:Error) {
+                            var oid:int = _fields[i].typeOid;
+                            var outClass:Class = _codecFactory.getOutputClass(oid);
+                            var codecErr:CodecError = new CodecError("Error decoding", CodecError.DECODE, e, oid, outClass);
+                            throw codecErr;
+                        }
                     } else {
                         decodedRow.push(null);
                     }

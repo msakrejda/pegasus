@@ -3,6 +3,7 @@ package org.postgresql.febe {
     import flash.events.Event;
     
     import org.postgresql.CodecError;
+    import org.postgresql.InvalidStateError;
     import org.postgresql.ProtocolError;
     import org.postgresql.UnsupportedProtocolFeatureError;
     import org.postgresql.febe.message.AuthenticationRequest;
@@ -13,6 +14,7 @@ package org.postgresql.febe {
     import org.postgresql.febe.message.EmptyQueryResponse;
     import org.postgresql.febe.message.ErrorResponse;
     import org.postgresql.febe.message.IBEMessage;
+    import org.postgresql.febe.message.IFEMessage;
     import org.postgresql.febe.message.NoticeResponse;
     import org.postgresql.febe.message.NotificationResponse;
     import org.postgresql.febe.message.ParameterStatus;
@@ -79,7 +81,7 @@ package org.postgresql.febe {
             _brokerFactory = brokerFactory;
 
             _connected = false;
-            _connecting = false;
+            _connecting = true;
             _authenticated = false;
 
             _queryHandler = null;
@@ -103,6 +105,7 @@ package org.postgresql.febe {
 
         public function connect(handler:IConnectionHandler):void {
             _connHandler = handler;
+            _connecting = true;
 
             _broker = _brokerFactory.create();
             _messageHandler = new MessageHandler(_broker);
@@ -110,7 +113,7 @@ package org.postgresql.febe {
             // data stream can theoretically give up the ghost before this
             // step happens. In practice, that's not likely due to Flash
             // Player's asynchronous execution model, but it'd be nice to fix.
-            _broker.addEventListener(MessageStreamEvent.DISCONNECTED, handleDisconnected);
+            _broker.addEventListener(MessageStreamErrorEvent.ERROR, handleStreamError);
             _broker.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
 
             _messageHandler.setMessageListener(AuthenticationRequest, handleAuth);
@@ -120,7 +123,19 @@ package org.postgresql.febe {
             _messageHandler.setMessageListener(ErrorResponse, handleError);
             _messageHandler.setMessageListener(ReadyForQuery, handleFirstRfq);
 
-            _broker.send(new StartupMessage(_params));
+            send(new StartupMessage(_params));
+        }
+        
+        private function send(msg:IFEMessage):void {
+        	if (_connected || (_connecting && msg is StartupMessage)) {
+        		try {
+                    _broker.send(msg);
+        		} catch (e:Error) {
+        			_connHandler.handleStreamError(e);
+        		}
+        	} else {
+        		_connHandler.handleStreamError(new InvalidStateError("Connection closed"));
+        	}
         }
 
         private function handleUnexpectedMessage(msg:IBEMessage):void {
@@ -132,7 +147,7 @@ package org.postgresql.febe {
             if (msg.subtype == AuthenticationRequest.OK) {
                 _authenticated = true;
             } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
-                _broker.send(new PasswordMessage(_password));
+                send(new PasswordMessage(_password));
             } else {
                 onProtocolError(new UnsupportedProtocolFeatureError(
                     "Unsupported authentication type requested: " + msg.subtype));                   
@@ -178,7 +193,7 @@ package org.postgresql.febe {
         private function handleRfq(msg:ReadyForQuery):void {
             _rfq = true;
             _status = msg.status;
-            _connHandler.handleRfq();
+            _connHandler.handleReady(_status);
         }
     
         private function handleNotification(msg:NotificationResponse):void {
@@ -190,7 +205,7 @@ package org.postgresql.febe {
         }
 
         private function handleError(msg:ErrorResponse):void {
-            _connHandler.handleError(msg.fields);
+            _connHandler.handleSQLError(msg.fields);
             if (_queryHandler) {
                 _queryHandler.dispose();
                 _queryHandler = null;
@@ -200,11 +215,11 @@ package org.postgresql.febe {
         private function handleMetadata(msg:RowDescription):void {
             if (_queryHandler) {
                 assert("Unexpected data remaining in result buffer", _currResults.length == 0);
-                   try {
+                try {
                     _queryHandler.handleMetadata(msg.fields);
-                 } catch (e:CodecError) {
-                     onCodecError(e);
-                 }
+                } catch (e:CodecError) {
+                    onCodecError(e);
+                }
             } else {
                 onProtocolError(new ProtocolError('Unexpected RowDescription message'));
             }
@@ -277,8 +292,9 @@ package org.postgresql.febe {
             if (!_rfq) {
                 throw new ArgumentError("FEBEConnection is not ready for query");
             }
+            _rfq = false;
             _queryHandler = handler;
-            _broker.send(new Query(sql));
+            send(new Query(sql));
         }
 
         public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
@@ -307,20 +323,23 @@ package org.postgresql.febe {
             cancelBroker.close();
         }
 
-        private function handleDisconnected(e:MessageStreamEvent):void {
-            // In normal operation, this will be called as a response to close, so this
-            // flag will already have been flipped; on errors, we want to ensure it is
-            // set properly
+        private function handleStreamError(e:MessageStreamErrorEvent):void {
             _connected = false;
-            _connHandler.handleDisconnected();
+            _connHandler.handleStreamError(new Error("Error event: " + e.text));
         }
 
         public function close():void {
             if (_connected) {
-                _broker.send(new Terminate());
-                _broker.close();
+            	try {
+            		if (_broker.connected) {
+                        _broker.send(new Terminate());
+                        _broker.close();
+                    }
+                } catch (e:Error) {
+                	LOGGER.warn("Could not shut down cleanly: " + e.message);
+                }
                 _connected = false;
-            }
+            }        	
         }
 
         private function onProtocolError(error:ProtocolError):void {

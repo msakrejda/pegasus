@@ -21,36 +21,51 @@ package org.postgresql {
          */
         public static const DECODE:String = 'decode';
 
+        private var _direction:String;
+        private var _oid:int;
+        private var _as3Type:Class;
+        private var _cause:Error;
+
+        public function CodecError(message:String, direction:String, cause:Error, oid:int=Oid.UNSPECIFIED, as3Type:Class=null) {
+            super(message);
+            _direction = direction;
+            _cause = cause;
+            _oid = oid;
+            _as3Type = as3Type;
+        }
+
         /**
-         * Whether encoding or decoding caused the error.
-         * @see #ENCODE
-         * @see #DECODE
+         * Original Error causing this codec error, if any
+         *
+         * @return cause, or <code>null</code> if no nested cause
          */
-        public var direction:String;
+        public function get cause():Error {
+        	return _cause;
+        }
+ 
+        /**
+         * If applicable, the ActionScript Class of the destination type (when
+         * decoding) or the source type (when encoding).
+         */
+        public function get as3Type():Class {
+        	return _as3Type;
+        }
 
         /**
          * If applicable, the oid of the destination type (when encoding) or
          * the source type (when decoding).
          */
-        public var oid:int;
-
-        /**
-         * If applicable, the ActionScript Class of the destination type (when
-         * decoding) or the source type (when encoding).
-         */
-        public var as3Type:Class;
-
-        /**
-         * Original Error causing this codec error, if applicable
-         */
-        public var error:Error;
-
-        public function CodecError(message:String, direction:String, oid:int=Oid.UNSPECIFIED, as3Type:Class=null) {
-            super(message);
-            this.direction = direction;
-            this.oid = oid;
-            this.as3Type = as3Type;
+        public function get oid():int {
+            return _oid;
         }
-        
+
+        /**
+         * Whether encoding or decoding caused the error.
+         * @see #ENCODE
+         * @see #DECODE
+         */
+        public function get direction():String {
+            return _direction;
+        }
     }
 }
