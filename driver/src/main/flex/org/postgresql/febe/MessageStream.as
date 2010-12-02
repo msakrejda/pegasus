@@ -28,9 +28,9 @@ package org.postgresql.febe {
     import org.postgresql.log.Log;
     import org.postgresql.util.format;
 
-    public class MessageBroker extends EventDispatcher implements IMessageBroker {
+    public class MessageStream extends EventDispatcher implements IMessageStream {
 
-        private static const LOGGER:ILogger = Log.getLogger(MessageBroker); 
+        private static const LOGGER:ILogger = Log.getLogger(MessageStream); 
 
         // Commented-out messages are part of the protocol but unimplemented. COPY
         // will probably be implemented at some point; the function call (fastpath)
@@ -65,7 +65,7 @@ package org.postgresql.febe {
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
         
-        public function MessageBroker(stream:IDataStream) {
+        public function MessageStream(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(DataStreamEvent.PROGRESS, handleStreamData);
             _dataStream.addEventListener(DataStreamErrorEvent.ERROR, handleError);

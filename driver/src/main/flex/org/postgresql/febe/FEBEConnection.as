@@ -39,8 +39,8 @@ package org.postgresql.febe {
 
         private var _params:Object;
 
-        private var _brokerFactory:MessageBrokerFactory;
-        private var _broker:IMessageBroker;
+        private var _streamFactory:MessageStreamFactory;
+        private var _stream:IMessageStream;
         private var _messageHandler:MessageHandler;
 
         private var _authenticated:Boolean;
@@ -76,9 +76,9 @@ package org.postgresql.febe {
         // involves a password. Jdbc also passes in a flag to use SSL here, but
         // it could be handy to handle that in the message broker factory
 
-        public function FEBEConnection(params:Object, password:String, brokerFactory:MessageBrokerFactory) {
+        public function FEBEConnection(params:Object, password:String, streamFactory:MessageStreamFactory) {
             _params = params;
-            _brokerFactory = brokerFactory;
+            _streamFactory = streamFactory;
 
             _connected = false;
             _connecting = true;
@@ -110,14 +110,14 @@ package org.postgresql.febe {
             _connHandler = handler;
             _connecting = true;
 
-            _broker = _brokerFactory.create();
-            _messageHandler = new MessageHandler(_broker);
+            _stream = _streamFactory.create();
+            _messageHandler = new MessageHandler(_stream);
             // TODO: This is a little ugly, especially since the underlying
             // data stream can theoretically give up the ghost before this
             // step happens. In practice, that's not likely due to Flash
             // Player's asynchronous execution model, but it'd be nice to fix.
-            _broker.addEventListener(MessageStreamErrorEvent.ERROR, handleStreamError);
-            _broker.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
+            _stream.addEventListener(MessageStreamErrorEvent.ERROR, handleStreamError);
+            _stream.addEventListener(MessageStreamEvent.BATCH_COMPLETE, handleBatchComplete);
 
             _messageHandler.setMessageListener(AuthenticationRequest, handleAuth);
             _messageHandler.setMessageListener(BackendKeyData, handleKeyData);
@@ -132,7 +132,7 @@ package org.postgresql.febe {
         private function send(msg:IFEMessage):void {
             if (_connected || (_connecting && msg is StartupMessage)) {
                 try {
-                    _broker.send(msg);
+                    _stream.send(msg);
                 } catch (e:Error) {
                     _connHandler.handleStreamError(e);
                 }
@@ -325,10 +325,10 @@ package org.postgresql.febe {
             // before GC. To do this right, we'd probably have to keep a reference to this
             // broker and listen for close (or error) and only remove the reference then
             try {
-                var cancelBroker:IMessageBroker = _brokerFactory.create();
-                cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
+                var cancelStream:IMessageStream = _streamFactory.create();
+                cancelStream.send(new CancelRequest(_backendPid, _backendKey));
                 try {
-                    cancelBroker.close();
+                    cancelStream.close();
                 } catch (e:Error) {
                     LOGGER.warn("Could not close cancel broker: " + e.message);
                 }
@@ -344,10 +344,10 @@ package org.postgresql.febe {
 
         public function close():void {
             if (_connected) {
-                if (_broker.connected) {
+                if (_stream.connected) {
                     try {
-                        _broker.send(new Terminate());
-                        _broker.close();
+                        _stream.send(new Terminate());
+                        _stream.close();
                     } catch (e:Error) {
                         LOGGER.warn("Could not shut down cleanly: " + e.message);
                     }
@@ -387,12 +387,13 @@ package org.postgresql.febe {
 }
 
 import flash.utils.Dictionary;
-import org.postgresql.febe.IMessageBroker;
+import org.postgresql.febe.IMessageStream;
 import org.postgresql.febe.MessageEvent;
 import org.postgresql.febe.message.IBEMessage;
 import org.postgresql.util.assert;
 import org.postgresql.log.ILogger;
 import org.postgresql.log.Log;
+import org.postgresql.febe.IMessageStream;
 
 /**
  * Helper class for reading messages. Note that this is not a full wrapper
@@ -404,12 +405,12 @@ class MessageHandler {
     private static const LOGGER:ILogger = Log.getLogger(MessageHandler);
 
     private var _msgListeners:Dictionary;
-    private var _broker:IMessageBroker;
+    private var _stream:IMessageStream;
             
-    public function MessageHandler(broker:IMessageBroker) {
+    public function MessageHandler(stream:IMessageStream) {
         _msgListeners = new Dictionary();
-        _broker = broker;
-        _broker.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
+        _stream = stream;
+        _stream.addEventListener(MessageEvent.RECEIVED, handleMessageReceived);
     }
     
     private function handleMessageReceived(e:MessageEvent):void {

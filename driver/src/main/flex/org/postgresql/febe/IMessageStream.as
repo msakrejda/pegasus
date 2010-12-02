@@ -20,10 +20,19 @@ package org.postgresql.febe {
      */
     [Event(name="messageReceived", type="org.postgresql.febe.MessageEvent")]
     /**
-     * The IMessageBroker interface provides a message-level view of the
-     * PostgreSQL FEBE protocol.
+     * The <code>IMessageStream</code> interface provides a message-level view of
+     * a message-oriented application protocol (e.g., FEBE in the case of PostgreSQL).
+     * A client sends <code>IFEMessage</code> to the server, and the server replies
+     * with <code>IBEMessage</code>s.
+     * <br/>
+     * A message stream can be considered connected immediately, and stays connected
+     * until the user calls <code>close()</code>. As with <code>IDataStream</code>, a
+     * server never initiates a normal disconnect.
+     *
+     * @see org.postgresq.febe.message.IFEMessage
+     * @see org.postgresq.febe.message.IBEMEssage
      */
-    public interface IMessageBroker extends IEventDispatcher {
+    public interface IMessageStream extends IEventDispatcher {
         /**
          * Send message to the backend.
          *
@@ -37,7 +46,7 @@ package org.postgresql.febe {
          */
         function close():void;
         /**
-         * True if this broker is connected; false otherwise.
+         * True if this stream is connected; false otherwise.
          */
         function get connected():Boolean;
     }
