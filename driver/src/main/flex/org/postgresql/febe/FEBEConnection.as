@@ -104,6 +104,9 @@ package org.postgresql.febe {
         }
 
         public function connect(handler:IConnectionHandler):void {
+            if (_connected) {
+                onProtocolError(new ProtocolError("Already connected"));
+            }
             _connHandler = handler;
             _connecting = true;
 
@@ -289,15 +292,16 @@ package org.postgresql.febe {
         // query-data-available and statement-complete messages. We should also batch
         // the data-available messages--dispatching an event per-DataRow would be silly.
         public function executeSimpleQuery(sql:String, handler:IQueryHandler):void {
-            if (!_rfq) {
-                throw new ArgumentError("FEBEConnection is not ready for query");
-            }
+            ensureConnected();
+            ensureReady();
             _rfq = false;
             _queryHandler = handler;
             send(new Query(sql));
         }
 
         public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
+            ensureConnected();
+            ensureReady();
             // > parse(statement)
             // < parseComplete | errorResponse
             // > bind(portal)
@@ -313,14 +317,24 @@ package org.postgresql.febe {
         // support a structured explain
 
         public function cancel():void {
+            ensureConnected();
             // Note that cancel needs to happen in a separate connection to make any sense.
             // Since the broker goes out of scope here as soon as the method body ends,
             // there may be some issues with GC (since socket communication is asynchronous),
             // but Flash Player *should* queue everything it needs to do the physical send
-            // before GC.
-            var cancelBroker:IMessageBroker = _brokerFactory.create();
-            cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
-            cancelBroker.close();
+            // before GC. To do this right, we'd probably have to keep a reference to this
+            // broker and listen for close (or error) and only remove the reference then
+            try {
+                var cancelBroker:IMessageBroker = _brokerFactory.create();
+                cancelBroker.send(new CancelRequest(_backendPid, _backendKey));
+                try {
+                    cancelBroker.close();
+                } catch (e:Error) {
+                    LOGGER.warn("Could not close cancel broker: " + e.message);
+                }
+            } catch (e:Error) {
+                LOGGER.warn("Could not cancel statement: " + e.message);
+            }
         }
 
         private function handleStreamError(e:MessageStreamErrorEvent):void {
@@ -330,13 +344,13 @@ package org.postgresql.febe {
 
         public function close():void {
             if (_connected) {
-                try {
-                    if (_broker.connected) {
+                if (_broker.connected) {
+                    try {
                         _broker.send(new Terminate());
                         _broker.close();
+                    } catch (e:Error) {
+                        LOGGER.warn("Could not shut down cleanly: " + e.message);
                     }
-                } catch (e:Error) {
-                    LOGGER.warn("Could not shut down cleanly: " + e.message);
                 }
                 _connected = false;
             }            
@@ -355,6 +369,18 @@ package org.postgresql.febe {
             _queryHandler = null;
             // Note that we still may need to throw away any number of DataRow messages
             _hasCodecError = true; 
+        }
+
+        private function ensureConnected():void {
+            if (!_connected) {
+                _connHandler.handleStreamError(new Error("Not connected"));
+            }
+        }
+
+        private function ensureReady():void {
+            if (!_rfq) {
+                onProtocolError(new ProtocolError("FEBEConnection is not ready for query"));
+            }
         }
 
     }
