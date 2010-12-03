@@ -7,7 +7,7 @@ package org.postgresql.db {
     import org.postgresql.codec.decode.IntOut;
     import org.postgresql.codec.decode.TextOut;
     import org.postgresql.febe.FEBEConnection;
-    import org.postgresql.febe.MessageBrokerFactory;
+    import org.postgresql.febe.MessageStreamFactory;
     import org.postgresql.io.SocketDataStreamFactory;
     import org.postgresql.util.DbURL;
 
@@ -45,8 +45,8 @@ package org.postgresql.db {
         public function createConnection(url:String, user:String, password:String):IConnection {
             var pegasusUrl:DbURL = new DbURL(url);
 
-            var brokerFactory:MessageBrokerFactory =
-                new MessageBrokerFactory(
+            var brokerFactory:MessageStreamFactory =
+                new MessageStreamFactory(
                     new SocketDataStreamFactory(pegasusUrl.host, pegasusUrl.port));
             var params:Object = {};
             for (var key:String in pegasusUrl.parameters) {
