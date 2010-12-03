@@ -5,38 +5,42 @@ package org.postgresql.log {
     import org.postgresql.util.DateFormatter;
     import org.postgresql.util.assert;
 
+    /**
+     * A base class for <code>ILogTarget</code> implementations which provides message formatting.
+     */
     public class AbstractLogTarget implements ILogTarget {
+
+        public static const DEFAULT_FORMAT:String = '%d %t [%l]: %c - %m (%n): %s';
         
         private var _format:String;
-/*
-         *    %d    date in YYYY-MM-DD format
-         *    %t    time in HH:MM:SS format
-         *    %l    log level
-         *    %c    class
-         *    %m    method
-         *    %n    line number
-         *     %s    message
-         *
- */
-
         private var _timeFormatter:DateFormatter;
         private var _dateFormatter:DateFormatter;
 
-         private var _getStack:Boolean;
+        private var _getStack:Boolean;
 
-         public function AbstractLogTarget() {
-            format = '%d %t [%l]: %c - %m (%n): %s';
+        /**
+         * Create a new AbstractLogTarget with a default format.
+         */
+        public function AbstractLogTarget() {
+            format = DEFAULT_FORMAT;
 
-             _dateFormatter = new DateFormatter();
-             _dateFormatter.formatString = 'YYYY-MM-DD';
+            _dateFormatter = new DateFormatter();
+            _dateFormatter.formatString = 'YYYY-MM-DD';
 
-             _timeFormatter = new DateFormatter();
-             _timeFormatter.formatString = 'JJ:NN:SS';
-         }
+            _timeFormatter = new DateFormatter();
+            _timeFormatter.formatString = 'JJ:NN:SS';
+        }
 
+        /**
+         * The current format string.
+         */
         public function get format():String {
             return _format;
         }
+
+        /**
+         * @private
+         */
         public function set format(value:String):void {
             if (_format != value) {
                 _format = value;
@@ -48,6 +52,9 @@ package org.postgresql.log {
             }
         }
         
+        /**
+         * @inheritDoc
+         */
         public function handleMessage(level:int, category:String, msg:String):void {
             var methodName:String = '<unknown>';
             var lineNo:String = '??';
@@ -125,6 +132,11 @@ package org.postgresql.log {
             doHandleMessage(result);
         }
         
+        /**
+         * Handle the formatted log message.
+         *
+         * @param msg formatted log message
+         */
         protected function doHandleMessage(msg:String):void {
             throw new AbstractMethodError();
         }

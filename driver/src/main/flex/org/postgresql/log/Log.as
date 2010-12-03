@@ -3,6 +3,10 @@ package org.postgresql.log {
     import flash.utils.Dictionary;
     import flash.utils.getQualifiedClassName;
 
+    /**
+     * The central class in the logging framework. <code>ILogTarget</code>s are configured
+     * here and <code>ILogger</code>s are looked up here.
+     */
     public class Log {
 
         private static var _categoryLoggers:Object = {};
@@ -12,6 +16,12 @@ package org.postgresql.log {
         private static var _targetFilters:Dictionary = new Dictionary();
         private static var _classToCategory:Dictionary = new Dictionary(true);
 
+        /**
+         * Obtain an <code>ILogger</code> for the given Class.
+         *
+         * @param clazz Class for which to obtain ILogger
+         * @return ILogger for this Class 
+         */
         public static function getLogger(clazz:Class):ILogger {
             // TODO: this does not work well for top-level functions like assert, since
             // getQualifiedClassName returns 'builtin.as$0::MethodClosure'
@@ -36,15 +46,20 @@ package org.postgresql.log {
 
         /**
          * Add a logging target. Check existing categories to see if they should log to this target.
-         * Check future categories as well.
+         * Check future categories as well. Filters passed in, if any, should be an Array of Strings
+         * indicating specific Classes or wildcards at the package level (e.g., <code>'org.postgresql.*'</code>).
+         * If target is already configured, replace it.
+         *
+         * @param target ILogTarget to add
+         * @param level level at which to add target
+         * @param filters filters to use for target
+         * @see org.postgresql.log.LogLevel
          */
         public static function addTarget(target:ILogTarget, level:int, filters:Array=null):void {
             for (var category:String in _categoryTargets) {
                 if (!filters) {
                     // this is a catch-all target
                     _categoryTargets[category][target] = true;
-                    //var e:Error = new Error();
-                    //trace('adding target for', category, 'from:', e.getStackTrace());
                 } else {
                     for each (var filter:String in filters) {
                         var expr:String = filter.replace('.', '\\.').replace('*', '.*');
@@ -58,6 +73,12 @@ package org.postgresql.log {
             _targetLevels[target] = level;
             _targetFilters[target] = filters;
         }
+
+        /**
+         * Remove logging target. If target is not configured, do nothing.
+         *
+         * @param target target to remove
+         */
         public static function removeTarget(target:ILogTarget):void {
             delete _targetLevels[target];
             delete _targetFilters[target];
