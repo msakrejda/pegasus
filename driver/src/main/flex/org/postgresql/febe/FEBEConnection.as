@@ -130,7 +130,7 @@ package org.postgresql.febe {
         }
         
         private function send(msg:IFEMessage):void {
-            if (_connected || (_connecting && msg is StartupMessage)) {
+            if (_connected || (_connecting && (msg is StartupMessage || msg is PasswordMessage))) {
                 try {
                     _stream.send(msg);
                 } catch (e:Error) {
@@ -338,7 +338,7 @@ package org.postgresql.febe {
         }
 
         private function handleStreamError(e:MessageStreamErrorEvent):void {
-            _connected = false;
+            close();
             _connHandler.handleStreamError(new Error("Error event: " + e.text));
         }
 
