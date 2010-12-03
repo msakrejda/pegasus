@@ -1,5 +1,6 @@
 package org.postgresql.io {
 
+    import flash.events.ErrorEvent;
     import flash.events.Event;
     import flash.events.IOErrorEvent;
     import flash.events.ProgressEvent;
@@ -34,13 +35,13 @@ package org.postgresql.io {
             }
         }
         
-        private function handleError(e:Event):void {
-            dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR));
+        private function handleError(e:ErrorEvent):void {
+            dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR, e.text));
         }
 
         private function handleClose(e:Event):void {
             if (!_clientDisconnect) {
-                handleError(e);
+	            dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR, "Unexpected close of stream by server"));
             }
         }
 
