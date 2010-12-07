@@ -5,6 +5,7 @@
     
     <mx:Script>
         <![CDATA[
+            import org.postgresql.pegasus.util.UtilSuite;
             import org.postgresql.log.TraceTarget;
             import org.postgresql.log.ILogTarget;
             import org.postgresql.log.LogLevel;
@@ -26,7 +27,7 @@
 
                 _core.addListener( new UIListener( uiListener ));
                 
-                _core.run( CodecSuite, SimpleQuerySuite );
+                _core.run( CodecSuite, UtilSuite, SimpleQuerySuite );
             }
         ]]>
     </mx:Script>

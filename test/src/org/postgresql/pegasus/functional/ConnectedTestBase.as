@@ -1,13 +1,17 @@
 package org.postgresql.pegasus.functional {
-    import org.postgresql.event.ConnectionEvent;
     import org.flexunit.async.Async;
-    import org.postgresql.db.IConnection;
-    import org.postgresql.pegasus.Credentials;
     import org.postgresql.db.ConnectionFactory;
+    import org.postgresql.db.IConnection;
+    import org.postgresql.event.ConnectionEvent;
+    import org.postgresql.log.ILogger;
+    import org.postgresql.log.Log;
+    import org.postgresql.pegasus.Credentials;
     /**
      * @author maciek
      */
     public /* abstract */ class ConnectedTestBase {
+        
+        private const LOGGER:ILogger = Log.getLogger(Object(this).constructor);
 
         protected static var connectionFactory:ConnectionFactory;
         protected static var connection:IConnection;
@@ -29,7 +33,9 @@ package org.postgresql.pegasus.functional {
         [Before(async,timeout=1000)]
         public function setup():void {
             if (!connection) {
+                LOGGER.debug("Creating connection.");
                 connection = createConnection();
+                LOGGER.debug("Created");
             }
             setupCount++;
         }
@@ -38,8 +44,10 @@ package org.postgresql.pegasus.functional {
         public function tearDown():void {
             setupCount--;
             if (setupCount == 0) {
+                LOGGER.debug("Closing connection.");
                 connection.close();
                 connection = null;
+                LOGGER.debug("Closed.");
             }
         }
     }
