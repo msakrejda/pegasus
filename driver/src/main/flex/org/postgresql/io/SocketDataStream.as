@@ -41,7 +41,7 @@ package org.postgresql.io {
 
         private function handleClose(e:Event):void {
             if (!_clientDisconnect) {
-	            dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR, "Unexpected close of stream by server"));
+                dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR, "Unexpected close of stream by server"));
             }
         }
 

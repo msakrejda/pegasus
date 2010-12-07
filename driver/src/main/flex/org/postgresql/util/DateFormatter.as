@@ -1,12 +1,11 @@
-package org.postgresql.util
-{
+package org.postgresql.util {
 
     /**
      * Attempts to closely mirror the API of the Flex DateFormatter, though also supports
      * escaping the pattern letters (precede with a backslash). The Flex DateFormatter API
      * is rather loosely defined, but:
-     *
-     * Y{2,4}:    Year, two or four digits (technically allows three as well)
+     * <pre>
+     * Y{2,4}:    Year, two or four digits
      * M{1,4}:    Month (single number / padded to two digits / three-letter abbreviation / full name)
      * D{1,2}:    Day of month (padded to specified length if necessary)
      * E{1,4}:    Day of week (single number / padded to two digits / three-letter abbreviation / full name)
@@ -17,32 +16,61 @@ package org.postgresql.util
      * L{1,2}:    Hour in day (1-12), padded to two digits if necessary
      * N{1,2}:    Minute in hour, padded to two digits if necessary
      * S{1,2}:    Second in hour, padded to two digits if necessary
-     *
+     * </pre>
      * Note that, unlike internally, months are one-indexed. Date formatting is not currently localizable.
      */
-    public class DateFormatter
-    {
+    public class DateFormatter {
+
+        /**
+         * Short-form (three-letter) names for the months of the year, in order. 
+         */
         public var months:Array = [
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
         ];
 
+        /**
+         * Long-form (full) names for the months of the year, in order.
+         */
         public var fullMonths:Array = [
             'January', 'February', 'March', 'April', 'May', 'June', 'July',
             'August', 'September', 'October', 'November', 'December'
         ];
 
+        /**
+         * Short-form (three-letter) names for the days of the week, in order (starting with Sunday).
+         */
         public var daysOfWeek:Array = [
             'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
         ];
 
+        /**
+         * Long-form (full) names for hte days of the week, in order (starting with Sunday).
+         */
         public var fullDaysOfWeek:Array = [
             'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
         ];
 
+        /**
+         * A.M. indicator.
+         */
         public var am:String = 'a.m.';
+
+        /**
+         * P.M. indicator.
+         */
         public var pm:String = 'p.m.';
 
+        /**
+         * Format string to specify how dates should be formatted. See main class documentation for details.
+         */
         public var formatString:String;
+
+        /**
+         * Format the given date according to the current format string.
+         *
+         * @param value Date to format.
+         * @return String representation of this Date 
+         */
         public function format(value:Date):String {
             // This function ain't pretty...
 
