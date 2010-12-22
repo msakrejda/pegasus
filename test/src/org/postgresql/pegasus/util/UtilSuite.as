@@ -4,5 +4,6 @@ package org.postgresql.pegasus.util {
     [RunWith("org.flexunit.runners.Suite")]
     public class UtilSuite {
         public var dateFormatterTest:TestDateFormatter;
+        public var pgURLTest:TestPgURL;
     }
 }

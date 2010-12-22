@@ -1,6 +1,6 @@
 package org.postgresql.util {
 
-    public class DbURL {
+    public class PgURL {
         private var _url:String;
         private var _port:int;
         private var _host:String;
@@ -8,21 +8,21 @@ package org.postgresql.util {
         private var _args:Object;
         /**
          * Parse a simple jdbc-like db URL syntax:
-         * <code>as3dbc://localhost:5432/mydb?param1=val1&param2val2</code>.
+         * <code>asdbc:postgresql//localhost:5432/mydb?param1=val1&param2val2</code>.
          */ 
-        public function DbURL(url:String) {
+        public function PgURL(url:String) {
             // TODO: Throw InvalidArgumentException if url does not match expected syntax
             _url = url;
             var urlParts:Array = url.split('?');
             var root:String = urlParts[0];
             var args:String = urlParts.length > 1 ? urlParts[1] : null;
-            var rootElems:Array = new RegExp("as3dbc:postgresql://(\\w+)(?::(\\d+))?/(\\w+)").exec(root);
+            var rootElems:Array = new RegExp("asdbc:postgresql://([\\w\\.]+)(?::(\\d+))?/(\\w+)").exec(root);
             var argElems:Array = args ? args.split("&") : [];
             if (!rootElems) {
                 throw new ArgumentError("Invalid url: " + url);
             }
             _host = rootElems[1];
-            _port = rootElems[2] as int || 5432;
+            _port = int(rootElems[2]) || 5432;
             _db = rootElems[3];
             _args = {};
 

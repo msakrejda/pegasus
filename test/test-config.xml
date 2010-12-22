@@ -2,5 +2,5 @@
 <config>
   <user>pegasus</user>
   <password>pegasus</password>
-  <url>as3dbc:postgresql://localhost/pegasus</url>
+  <url>asdbc:postgresql://localhost/pegasus</url>
 </config>

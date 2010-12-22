@@ -9,7 +9,7 @@ package org.postgresql.db {
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.MessageStreamFactory;
     import org.postgresql.io.SocketDataStreamFactory;
-    import org.postgresql.util.DbURL;
+    import org.postgresql.util.PgURL;
 
     /**
      * A simple wiring of all the pegasus pieces into a single, simple interface.
@@ -43,7 +43,7 @@ package org.postgresql.db {
         }
 
         public function createConnection(url:String, user:String, password:String):IConnection {
-            var pegasusUrl:DbURL = new DbURL(url);
+            var pegasusUrl:PgURL = new PgURL(url);
 
             var brokerFactory:MessageStreamFactory =
                 new MessageStreamFactory(
