@@ -20,7 +20,7 @@ package org.postgresql.log {
          * Obtain an <code>ILogger</code> for the given Class.
          *
          * @param clazz Class for which to obtain ILogger
-         * @return ILogger for this Class 
+         * @return ILogger for this Class
          */
         public static function getLogger(clazz:Class):ILogger {
             // TODO: this does not work well for top-level functions like assert, since
@@ -31,7 +31,7 @@ package org.postgresql.log {
             } else {
                 type = flash.utils.getQualifiedClassName(clazz).replace('::', '.');
             }
-             
+
             _classToCategory[clazz] = type;
             if (!(type in _categoryLoggers)) {
                 _categoryLoggers[type] = new Logger(type, doLog);
@@ -82,7 +82,7 @@ package org.postgresql.log {
         public static function removeTarget(target:ILogTarget):void {
             delete _targetLevels[target];
             delete _targetFilters[target];
-            
+
             for (var category:String in _categoryTargets) {
                 var targets:Dictionary = _categoryTargets[category];
                 delete targets[target];
@@ -101,8 +101,8 @@ package org.postgresql.log {
 }
     import org.postgresql.log.ILogger;
     import org.postgresql.log.LogLevel;
-    
-    
+
+
 class Logger implements ILogger {
 
     private var _cat:String;

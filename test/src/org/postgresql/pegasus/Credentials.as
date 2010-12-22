@@ -1,7 +1,7 @@
 package org.postgresql.pegasus {
     import flash.utils.ByteArray;
     /**
-     * Credentials used for testing. 
+     * Credentials used for testing.
      */
     public class Credentials {
 

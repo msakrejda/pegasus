@@ -42,7 +42,7 @@ package org.postgresql {
         public function get cause():Error {
             return _cause;
         }
- 
+
         /**
          * If applicable, the ActionScript Class of the destination type (when
          * decoding) or the source type (when encoding).

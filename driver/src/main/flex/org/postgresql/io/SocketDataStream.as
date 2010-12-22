@@ -34,7 +34,7 @@ package org.postgresql.io {
                 dispatchEvent(new DataStreamEvent(DataStreamEvent.PROGRESS));
             }
         }
-        
+
         private function handleError(e:ErrorEvent):void {
             dispatchEvent(new DataStreamErrorEvent(DataStreamErrorEvent.ERROR, e.text));
         }

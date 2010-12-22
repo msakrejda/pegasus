@@ -37,7 +37,7 @@ package org.postgresql.codec.decode {
                     // need to treat it as a microsencond offset since 2000 (not 1970).
                     throw new UnsupportedProtocolFeatureError("Binary format not supported");
                 default:
-                    throw new ArgumentError("Unknown format: " + format.format); 
+                    throw new ArgumentError("Unknown format: " + format.format);
             }
         }
 
@@ -67,7 +67,7 @@ package org.postgresql.codec.decode {
             }
 
             if (dateStr.charAt(19) == '.') {
-                millis = int(Number(dateStr.substr(19, tzSignIdx - 19)) * 1000); 
+                millis = int(Number(dateStr.substr(19, tzSignIdx - 19)) * 1000);
             } else {
                 millis = 0;
             }
@@ -78,7 +78,7 @@ package org.postgresql.codec.decode {
                 if (tzSignIdx + 3 < dateStr.length) {
                     tzOffMin = int(dateStr.substr(tzSignIdx + 3, 2));
                 } else {
-                    tzOffMin = 0; 
+                    tzOffMin = 0;
                 }
                 tzOffset = (dateStr.charAt(tzSignIdx) == '+' ? 1 : -1) * ((tzOffHours * 60) + tzOffMin);
             } else {

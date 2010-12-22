@@ -20,6 +20,6 @@ package org.postgresql.febe {
         public function MessageStreamErrorEvent(type:String, text:String="") {
             super(type, false, false, text);
         }
-        
+
     }
 }

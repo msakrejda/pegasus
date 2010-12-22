@@ -1,6 +1,6 @@
 package org.postgresql.log {
     import flash.system.Capabilities;
-    
+
     import org.postgresql.util.AbstractMethodError;
     import org.postgresql.util.DateFormatter;
     import org.postgresql.util.assert;
@@ -11,7 +11,7 @@ package org.postgresql.log {
     public class AbstractLogTarget implements ILogTarget {
 
         public static const DEFAULT_FORMAT:String = '%d %t [%l]: %c - %m (%n): %s';
-        
+
         private var _format:String;
         private var _timeFormatter:DateFormatter;
         private var _dateFormatter:DateFormatter;
@@ -51,7 +51,7 @@ package org.postgresql.log {
                 }
             }
         }
-        
+
         /**
          * @inheritDoc
          */
@@ -110,9 +110,9 @@ package org.postgresql.log {
                             lineNo = match[4];
                             assert("Could not find line number in stack trace", lineNo);
                         }
-                        
+
                     }
-                    
+
                 }
             }
             var logTime:Date = new Date();
@@ -131,7 +131,7 @@ package org.postgresql.log {
             });
             doHandleMessage(result);
         }
-        
+
         /**
          * Handle the formatted log message.
          *
@@ -140,6 +140,6 @@ package org.postgresql.log {
         protected function doHandleMessage(msg:String):void {
             throw new AbstractMethodError();
         }
-        
+
     }
 }

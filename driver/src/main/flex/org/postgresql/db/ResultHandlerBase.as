@@ -6,18 +6,18 @@ package org.postgresql.db {
     import org.postgresql.log.Log;
 
     /**
-     * A simple handler 
+     * A simple handler
      */
     public class ResultHandlerBase implements IResultHandler {
 
         private static const LOGGER:ILogger = Log.getLogger(ResultHandlerBase);
-        
+
         private var _columns:Array;
         private var _data:Array;
         public function get columns():Array {
             return _columns;
         }
-        
+
         public function get data():Array {
             return _data;
         }
@@ -26,12 +26,12 @@ package org.postgresql.db {
             _columns = columns;
             _data = [];
         }
-        
+
         public function handleRow(rowData:Array):void {
             assert("Received data before metadata", _data);
             if (rowData.length != _columns.length) {
                 LOGGER.error("Unexpected row data: got {0} fields, expected {1}; skipping", rowData.length, _columns.length);
-                return; 
+                return;
             }
             var row:Object = {};
             // Re-map values based on column names. This is problematic when multiple
@@ -44,7 +44,7 @@ package org.postgresql.db {
             }
             _data.push(row);
         }
-        
+
         public /* abstract */ function handleCompletion(command:String, rows:int, oid:int):void {
             throw new AbstractMethodError();
         }

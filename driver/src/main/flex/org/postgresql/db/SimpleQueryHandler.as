@@ -1,7 +1,7 @@
 package org.postgresql.db {
 
     import flash.events.EventDispatcher;
-    
+
     import org.postgresql.CodecError;
     import org.postgresql.codec.CodecFactory;
     import org.postgresql.codec.IPGTypeDecoder;
@@ -9,16 +9,16 @@ package org.postgresql.db {
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
-    
+
     internal class SimpleQueryHandler extends EventDispatcher implements IQueryHandler {
 
         private static const LOGGER:ILogger = Log.getLogger(SimpleQueryHandler);
-    
+
         private var _codecFactory:CodecFactory;
         private var _resultHandler:IResultHandler;
         private var _fields:Array;
         private var _decoders:Array;
-    
+
         public function SimpleQueryHandler(resultHandler:IResultHandler, codecs:CodecFactory) {
             _resultHandler = resultHandler;
             _codecFactory = codecs;
@@ -41,7 +41,7 @@ package org.postgresql.db {
         public function handleData(rows:Array, serverParams:Object):void {
             for each (var row:Array in rows) {
                 var decodedRow:Array = [];
-                for (var i:int = 0; i < row.length; i++) { 
+                for (var i:int = 0; i < row.length; i++) {
                     if (row[i]) {
                         try {
                             decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
@@ -58,11 +58,11 @@ package org.postgresql.db {
                 _resultHandler.handleRow(decodedRow);
             }
         }
-    
+
         public function handleCompletion(command:String, rows:int=0, oid:int=-1):void {
             _resultHandler.handleCompletion(command, rows, oid);
         }
-    
+
         public function dispose():void {
             _resultHandler.dispose();
         }

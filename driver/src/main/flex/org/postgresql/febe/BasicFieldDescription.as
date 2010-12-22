@@ -9,7 +9,7 @@ package org.postgresql.febe {
             _typeOid = oid;
             _format = format;
         }
-        
+
         public function get format():int { return _format; }
         public function get typeOid():int { return _typeOid; }
 

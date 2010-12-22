@@ -16,12 +16,12 @@ package org.postgresql.febe {
          * streaming.
          *
          * @eventType batchComplete
-         */  
+         */
         public static const BATCH_COMPLETE:String = 'batchComplete';
 
         public function MessageStreamEvent(type:String) {
             super(type);
         }
-        
+
     }
 }

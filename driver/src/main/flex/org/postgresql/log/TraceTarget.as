@@ -12,6 +12,6 @@ package org.postgresql.log {
          */
         protected override function doHandleMessage(msg:String):void {
             trace(msg);
-        }        
+        }
     }
 }

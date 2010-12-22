@@ -1,7 +1,7 @@
 package org.postgresql.febe {
 
     import flash.events.Event;
-    
+
     import org.postgresql.febe.message.IMessage;
 
     public class MessageEvent extends Event {

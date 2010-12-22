@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" 
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml"
     creationComplete="handleInit(event)" styleName="flexUnitApplication" width="1200" height="800"
     xmlns:listeners="org.flexunit.listeners.*" xmlns:flexui="org.flexunit.flexui.*">
-    
+
     <mx:Script>
         <![CDATA[
             import org.postgresql.pegasus.util.UtilSuite;
@@ -22,11 +22,11 @@
                 var target:ILogTarget = new TraceTarget();
                 target.format = '%d %t [%l] %c %m(%n): %s';
                 Log.addTarget(target, LogLevel.DEBUG);
-                
+
                 _core = new FlexUnitCore();
 
                 _core.addListener( new UIListener( uiListener ));
-                
+
                 _core.run( CodecSuite, UtilSuite, SimpleQuerySuite );
             }
         ]]>

@@ -22,7 +22,7 @@ package org.postgresql.util {
     public class DateFormatter {
 
         /**
-         * Short-form (three-letter) names for the months of the year, in order. 
+         * Short-form (three-letter) names for the months of the year, in order.
          */
         public var months:Array = [
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -69,7 +69,7 @@ package org.postgresql.util {
          * Format the given date according to the current format string.
          *
          * @param value Date to format.
-         * @return String representation of this Date 
+         * @return String representation of this Date
          */
         public function format(value:Date):String {
             // This function ain't pretty...
@@ -122,7 +122,7 @@ package org.postgresql.util {
                         return '??';
                     }
                 } else if (/[JHKL]+/.test(match)) {
-                    // KL are on the twelve-hour clock, and HL are one-indexed 
+                    // KL are on the twelve-hour clock, and HL are one-indexed
                     var hours:int = value.hours;
                     var adjustedHours:int = hours;
                     if (/[KL]+/.test(match)) {

@@ -5,7 +5,7 @@ package org.postgresql.febe {
     public class Parameter {
 
         public var format:int;
-        public var payload:ByteArray; 
+        public var payload:ByteArray;
 
     }
 }

@@ -10,7 +10,7 @@ package org.postgresql.pegasus.functional {
      * @author maciek
      */
     public /* abstract */ class ConnectedTestBase {
-        
+
         private const LOGGER:ILogger = Log.getLogger(Object(this).constructor);
 
         protected static var connectionFactory:ConnectionFactory;
@@ -29,7 +29,7 @@ package org.postgresql.pegasus.functional {
             Async.proceedOnEvent(this, conn, ConnectionEvent.CONNECTED);
             return conn;
         }
-        
+
         [Before(async,timeout=1000)]
         public function setup():void {
             if (!connection) {

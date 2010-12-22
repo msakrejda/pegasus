@@ -13,6 +13,6 @@ package org.postgresql.io {
         public function create():IDataStream {
             return new SocketDataStream(_host, _port);
         }
-        
+
     }
 }

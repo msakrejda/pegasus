@@ -1,6 +1,6 @@
 package org.postgresql.febe.message {
 
-    import flash.utils.ByteArray;    
+    import flash.utils.ByteArray;
     import org.postgresql.io.ICDataOutput;
 
     public class Bind extends AbstractMessage implements IFEMessage {
@@ -38,7 +38,7 @@ package org.postgresql.febe.message {
             for each (var resultFormat:int in resultFormats) {
                 out.writeShort(resultFormat);
             }
-            
+
         }
 
     }

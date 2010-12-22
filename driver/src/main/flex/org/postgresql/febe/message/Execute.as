@@ -6,7 +6,7 @@ package org.postgresql.febe.message {
 
         public var portal:String;
         public var limit:int;
-        
+
         public function write(out:ICDataOutput):void {
             out.writeByte(code('E'));
             var len:int = 4 + portal.length + 1 + 4;
@@ -14,6 +14,6 @@ package org.postgresql.febe.message {
             out.writeCString(portal);
             out.writeInt(limit);
         }
-        
+
     }
 }

@@ -6,7 +6,7 @@ package org.postgresql.pegasus.codec.decode {
         var bytes:ByteDataStream = new ByteDataStream();
         bytes.writeUTFBytes(str);
         bytes.position = 0;
-        return bytes;                
+        return bytes;
     }
 
 }

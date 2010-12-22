@@ -16,7 +16,7 @@ package org.postgresql.event {
          * An error message.
          */
         public static const ERROR:String = 'error';
-        
+
         /**
          * Details of the message.
          * @see org.postgresql.NoticeFields

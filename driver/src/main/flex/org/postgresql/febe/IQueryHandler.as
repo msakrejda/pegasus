@@ -18,13 +18,13 @@ package org.postgresql.febe {
          *
          * @param rows
          * @param serverParams
-         * @throws org.postgresql.CodecError if an error occurred in decoding data 
+         * @throws org.postgresql.CodecError if an error occurred in decoding data
          */
         function handleData(rows:Array, serverParams:Object):void;
         /**
          * Indicates successful completion of a query. After this is
          * called, no other methods on this IQueryHandler will be called.
-         * 
+         *
          * @param command
          * @param affected
          * @param oid

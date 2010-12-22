@@ -1,7 +1,7 @@
 package org.postgresql.febe {
 
     import flash.events.EventDispatcher;
-    
+
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.Bind;
@@ -30,7 +30,7 @@ package org.postgresql.febe {
 
     public class MessageStream extends EventDispatcher implements IMessageStream {
 
-        private static const LOGGER:ILogger = Log.getLogger(MessageStream); 
+        private static const LOGGER:ILogger = Log.getLogger(MessageStream);
 
         // Commented-out messages are part of the protocol but unimplemented. COPY
         // will probably be implemented at some point; the function call (fastpath)
@@ -48,7 +48,7 @@ package org.postgresql.febe {
             'D': DataRow,
             'I': EmptyQueryResponse,
             'E': ErrorResponse,
-          /*'V': FunctionCallResponse */ 
+          /*'V': FunctionCallResponse */
             'n': NoData,
             'N': NoticeResponse,
             't': ParameterDescription,
@@ -64,7 +64,7 @@ package org.postgresql.febe {
 
         private var _nextMessageType:int;
         private var _nextMessageLen:int;
-        
+
         public function MessageStream(stream:IDataStream) {
             _dataStream = stream;
             _dataStream.addEventListener(DataStreamEvent.PROGRESS, handleStreamData);

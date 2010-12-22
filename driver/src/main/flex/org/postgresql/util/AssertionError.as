@@ -10,6 +10,6 @@ package org.postgresql.util {
         public function AssertionError(message:String="") {
             super("Assertion failure: " + message);
         }
-        
+
     }
 }

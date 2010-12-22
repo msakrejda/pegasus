@@ -3,10 +3,10 @@ package org.postgresql.db.event {
     import flash.events.Event;
 
     public class QueryCompletionEvent extends Event {
-        
+
         public static const COMPLETE:String = 'queryComplete';
 
-        private var _tag:String;        
+        private var _tag:String;
         private var _rows:int;
         private var _oid:int;
 

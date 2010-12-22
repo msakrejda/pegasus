@@ -16,6 +16,6 @@ package org.postgresql.febe.message {
             out.writeByte(code(kind));
             out.writeCString(name);
         }
-        
+
     }
 }

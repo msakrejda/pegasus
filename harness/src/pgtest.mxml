@@ -34,9 +34,9 @@
         import org.postgresql.io.SocketDataStream;
         import org.postgresql.febe.message.StartupMessage;
         import org.postgresql.febe.MessageBroker;
-    
+
         private var str:SocketDataStream;
-    
+
         private function handleClick(e:Event):void {
             trace('connecting');
             if (Capabilities.isDebugger) {
@@ -79,8 +79,8 @@
                 conn.close();
             };
             var closeHandler:IResultHandler = new SimpleResultHandler(handleData, closeFn);
-            conn.execute("select * from test", closeHandler); 
-            
+            conn.execute("select * from test", closeHandler);
+
         }
         private function handleResult(command:String, affectedRows:int):void {
             trace(command, affectedRows);

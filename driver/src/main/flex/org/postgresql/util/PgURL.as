@@ -9,7 +9,7 @@ package org.postgresql.util {
         /**
          * Parse a simple jdbc-like db URL syntax:
          * <code>asdbc:postgresql//localhost:5432/mydb?param1=val1&param2val2</code>.
-         */ 
+         */
         public function PgURL(url:String) {
             // TODO: Throw InvalidArgumentException if url does not match expected syntax
             _url = url;
@@ -17,7 +17,7 @@ package org.postgresql.util {
             // in hostname, db name, and parameter keys and values, as well as the inability to escape
             // anything. We should support anything allowed by DNS for host names, anything allowed
             // by PostgreSQL as a db name for db, and something reasonably flexible for param keys
-            // and values.  
+            // and values.
             var urlParts:Array = url.split('?');
             var root:String = urlParts[0];
             var args:String = urlParts.length > 1 ? urlParts[1] : null;
@@ -39,15 +39,15 @@ package org.postgresql.util {
                 _args[pair[1]] = pair[2];
             }
         }
-        
+
         public function get host():String {
             return _host;
         }
-        
+
         public function get port():int {
             return _port;
         }
-        
+
         public function get db():String {
             return _db;
         }
@@ -55,7 +55,7 @@ package org.postgresql.util {
         public function get parameters():Object {
             return _args;
         }
-        
+
         public function toString():String {
             return _url;
         }

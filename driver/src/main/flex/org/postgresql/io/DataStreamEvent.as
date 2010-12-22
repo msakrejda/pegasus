@@ -24,6 +24,6 @@ package org.postgresql.io {
         public function DataStreamEvent(type:String) {
             super(type);
         }
-        
+
     }
 }

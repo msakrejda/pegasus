@@ -9,7 +9,7 @@ package org.postgresql.febe {
     [Event(name="error", type="org.postgresql.febe.MessageStreamErrorEvent")]
     /**
      * @eventType org.postgresql.febe.MessageStreamEvent.BATCH_COMPLETE
-     */    
+     */
     [Event(name="batchComplete", type="org.postgresql.febe.MessageStreamEvent")]
     /**
      * @eventType org.postgresql.febe.MessageEvent.SENT

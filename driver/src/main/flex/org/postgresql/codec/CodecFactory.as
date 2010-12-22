@@ -1,7 +1,7 @@
 package org.postgresql.codec {
 
     import flash.utils.Dictionary;
-    
+
     import org.postgresql.CodecError;
 
     public class CodecFactory {
@@ -14,7 +14,7 @@ package org.postgresql.codec {
 
         // TODO: handle defaults. On input, any unknown type should be mapped
         // to Oid.UNSPECIFIED and sent as its String representation. On output,
-        // if sent as text, we can destringify and present text. 
+        // if sent as text, we can destringify and present text.
         public function CodecFactory() {
             _decoders = new Dictionary();
             _encoders = new Dictionary();
@@ -44,7 +44,7 @@ package org.postgresql.codec {
             } else {
                 throw new CodecError("Could not find suitable decoder", CodecError.DECODE, null, oid);
             }
-            
+
         }
 
         public function getOutputClass(oid:int):Class {

@@ -20,7 +20,7 @@ package org.postgresql.db {
      * concerned with simplicity.
      */
     public class ConnectionFactory {
-        
+
         private var _codecFactory:CodecFactory;
 
         public function ConnectionFactory() {
@@ -38,7 +38,7 @@ package org.postgresql.db {
             // Technically, this isn't right, especially for binary, but
             // it's at least moderately useful and better than the alternative of
             // CodecErrors everywhere. This typically occurs if someone is selecting
-            // text literals: e.g., "SELECT 'foo'". 
+            // text literals: e.g., "SELECT 'foo'".
             _codecFactory.registerDecoder(Oid.UNKNOWN, String, new TextOut());
         }
 

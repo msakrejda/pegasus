@@ -1,7 +1,7 @@
 package org.postgresql.event {
 
     import flash.events.Event;
-    
+
     /**
      * Indicates a change in a server configuration paramter.
      */
@@ -28,6 +28,6 @@ package org.postgresql.event {
             this.name = name;
             this.value = newValue;
         }
-        
+
     }
 }

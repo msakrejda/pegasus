@@ -6,7 +6,7 @@ package org.postgresql.febe {
     /**
      * Provides callbacks for interactions with the PostgreSQL protocol-level
      * connection object. In terms of the interface contract, "query" means
-     * any message sent to the server through the basic or extend query protocol. 
+     * any message sent to the server through the basic or extend query protocol.
      */
     public interface IConnectionHandler {
 
@@ -36,7 +36,7 @@ package org.postgresql.febe {
 
         /**
          * Indicates an error in the understanding of the protocol between client
-         * and server. The connection is broken. 
+         * and server. The connection is broken.
          */
         function handleProtocolError(error:ProtocolError):void;
 

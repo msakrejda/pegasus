@@ -1,7 +1,7 @@
 package org.postgresql.db {
 
     import flash.events.EventDispatcher;
-    
+
     import org.postgresql.CodecError;
     import org.postgresql.ProtocolError;
     import org.postgresql.event.ConnectionErrorEvent;
@@ -35,11 +35,11 @@ package org.postgresql.db {
             _pendingExecution = [];
             _baseConn.connect(this);
         }
-        
+
         public function handleConnected():void {
             dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
         }
-        
+
         public function handleStreamError(error:Error):void {
             LOGGER.error("Stream error: " + error.message);
             dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CONNECTIVITY_ERROR, error));
@@ -85,7 +85,7 @@ package org.postgresql.db {
                 doExecute(nextQuery.sql, nextQuery.token, nextQuery.handler);
             }
         }
-        
+
         public function cancel(token:QueryToken):void {
             var found:Boolean = false;
             if (_currentToken == token) {
@@ -108,14 +108,14 @@ package org.postgresql.db {
                 throw new ArgumentError("Attempting to cancel unknown query");
             }
         }
-        
+
         private function doExecute(sql:String, token:QueryToken, handler:IResultHandler):void {
             var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
             _currentHandler = queryHandler;
             _currentToken = token;
-            _baseConn.executeSimpleQuery(sql, queryHandler);            
+            _baseConn.executeSimpleQuery(sql, queryHandler);
         }
-        
+
         public function close():void {
             _baseConn.close();
         }

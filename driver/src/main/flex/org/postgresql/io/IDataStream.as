@@ -58,7 +58,7 @@ package org.postgresql.io {
          * through client action or an error.
          *
          * @returns <code>true</code> if this stream is still connected; <code>false</code> otherwise
-         */        
+         */
         function get connected():Boolean;
     }
 }

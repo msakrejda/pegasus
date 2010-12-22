@@ -7,6 +7,6 @@ package org.postgresql.febe.message {
         public function read(input:ICDataInput):void {
             // do nothing
         }
-        
+
     }
 }

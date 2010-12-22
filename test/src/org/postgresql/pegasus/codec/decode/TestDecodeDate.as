@@ -17,7 +17,7 @@ package org.postgresql.pegasus.codec.decode {
         public function setup():void {
             _decoder = new DateOut();
         }
-        
+
         public static function getTestDates():Array {
             var format:BasicFieldDescription = new BasicFieldDescription(Oid.TIMESTAMP, EncodingFormat.TEXT);
             var params:Object = { DateStyle: DateStyle.OUTPUT_ISO + ', ' + DateStyle.ORDER_YMD };

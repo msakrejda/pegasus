@@ -10,7 +10,7 @@ package org.postgresql.log {
          */
         public static const FINE:int = 0;
         /**
-         * Normal debugging output 
+         * Normal debugging output
          */
         public static const DEBUG:int = 1;
         /**

@@ -38,8 +38,8 @@ package org.postgresql.db {
         /**
          * Close the connection. This cleans up any outstanding resources related
          * to the connection. Note that a closed connection cannot be reopened.
-         * 
-         * It is safe (albeit pointless) to call close multiple times. 
+         *
+         * It is safe (albeit pointless) to call close multiple times.
          */
         function close():void;
     }

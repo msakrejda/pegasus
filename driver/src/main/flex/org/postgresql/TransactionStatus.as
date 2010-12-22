@@ -1,7 +1,7 @@
 package org.postgresql {
 
     /**
-     * Possible values for the current transaction status of the connection. 
+     * Possible values for the current transaction status of the connection.
      */
     public class TransactionStatus {
         /**

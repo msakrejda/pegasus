@@ -22,12 +22,12 @@ package org.postgresql.codec.decode {
                         case Oid.INT4:
                             return bytes.readDouble();
                         default:
-                            throw new ArgumentError("Unable to decode oid: " + format.typeOid);  
+                            throw new ArgumentError("Unable to decode oid: " + format.typeOid);
                     }
                 default:
                     throw new ArgumentError("Unknown format: " + format.format);
             }
         }
-        
+
     }
 }

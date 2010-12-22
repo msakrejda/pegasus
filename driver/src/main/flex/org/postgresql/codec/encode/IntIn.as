@@ -22,9 +22,9 @@ package org.postgresql.codec.encode {
                             throw new ArgumentError("Unable to encode oid: " + fieldInfo.typeOid);
                     }
                 default:
-                    throw new ArgumentError("Unknown format: " + fieldInfo.format); 
+                    throw new ArgumentError("Unknown format: " + fieldInfo.format);
             }
-            
+
         }
 
     }

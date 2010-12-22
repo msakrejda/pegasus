@@ -16,7 +16,7 @@ package org.postgresql.pegasus.codec.decode {
         public function setup():void {
             _decoder = new FloatOut();
         }
-        
+
         public static function getTestFloats():Array {
             var format:BasicFieldDescription = new BasicFieldDescription(Oid.FLOAT4, EncodingFormat.TEXT);
             var params:Object = {};
@@ -27,7 +27,7 @@ package org.postgresql.pegasus.codec.decode {
                 /*
                     The Number.MAX_VALUE tests fail right now due to some interesting properties of the Flash Player
                     platform: Number(String(Integer.MAX_VALUE)) != Integer.MAX_VALUE . Not sure if this is a Flash Player
-                    problem or reasonable (but definitely unintuitive) behavior. 
+                    problem or reasonable (but definitely unintuitive) behavior.
                 [ getBytes(String(Number.MAX_VALUE)), format, params, Number.MAX_VALUE ],
                 [ getBytes(String(-Number.MAX_VALUE)), format, params, -Number.MAX_VALUE ],
                 */

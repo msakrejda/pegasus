@@ -20,7 +20,7 @@ package org.postgresql.codec.decode {
                         case Oid.CHAR:
                             return bytes.readUTFBytes(bytes.bytesAvailable);
                         default:
-                            throw new ArgumentError("Unable to decode oid: " + format.typeOid);  
+                            throw new ArgumentError("Unable to decode oid: " + format.typeOid);
                     }
                 case EncodingFormat.BINARY:
                     throw new ArgumentError("Unsupported format: " + format.format);
