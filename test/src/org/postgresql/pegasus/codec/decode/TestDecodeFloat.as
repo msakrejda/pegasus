@@ -23,6 +23,16 @@ package org.postgresql.pegasus.codec.decode {
             return [
                 [ getBytes('0'), format, params, 0 ],
                 [ getBytes('1'), format, params, 1 ],
+                [ getBytes('-1'), format, params, -1 ],
+                /*
+                    The Number.MAX_VALUE tests fail right now due to some interesting properties of the Flash Player
+                    platform: Number(String(Integer.MAX_VALUE)) != Integer.MAX_VALUE . Not sure if this is a Flash Player
+                    problem or reasonable (but definitely unintuitive) behavior. 
+                [ getBytes(String(Number.MAX_VALUE)), format, params, Number.MAX_VALUE ],
+                [ getBytes(String(-Number.MAX_VALUE)), format, params, -Number.MAX_VALUE ],
+                */
+                [ getBytes(String(Number.MIN_VALUE)), format, params, Number.MIN_VALUE ],
+                [ getBytes(String(-Number.MIN_VALUE)), format, params, -Number.MIN_VALUE ],
                 [ getBytes('Infinity'), format, params, Infinity ],
                 [ getBytes('-Infinity'), format, params, -Infinity ],
                 [ getBytes('NaN'), format, params, NaN ]

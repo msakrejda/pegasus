@@ -13,6 +13,11 @@ package org.postgresql.util {
         public function PgURL(url:String) {
             // TODO: Throw InvalidArgumentException if url does not match expected syntax
             _url = url;
+            // N.B.: this parsing method is pretty ghetto, especially the restrictions on characters
+            // in hostname, db name, and parameter keys and values, as well as the inability to escape
+            // anything. We should support anything allowed by DNS for host names, anything allowed
+            // by PostgreSQL as a db name for db, and something reasonably flexible for param keys
+            // and values.  
             var urlParts:Array = url.split('?');
             var root:String = urlParts[0];
             var args:String = urlParts.length > 1 ? urlParts[1] : null;
