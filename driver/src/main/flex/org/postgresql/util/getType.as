@@ -1,15 +1,17 @@
 package org.postgresql.util {
 
+    import flash.utils.getDefinitionByName;
+    import flash.utils.getQualifiedClassName;
+
     public function getType(value:Object):Class {
-        // TODO: the logic here is wrong. The SwifSuspenders DI container includes
-        // proper logic, which has more sensible handling for int, uint, and XML
         if (value == null) {
             throw new ArgumentError("Cannot determine type of null value");
-        }
-        if (value is int) {
-            return int;
-        } else if (value is uint) {
-            return uint;
+        } else if (value is XMLList || value is XML) {
+            // Note that XMLList and XML don't play nice with .constructor. There's odd
+            // behavior with numeric types as well, but that seems more difficult to
+            // work around. Will revisit.
+            var fqcn:String = getQualifiedClassName(value);
+            return Class(getDefinitionByName(fqcn));
         } else {
             return Class(value.constructor);
         }

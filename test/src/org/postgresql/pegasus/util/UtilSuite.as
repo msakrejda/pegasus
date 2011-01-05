@@ -5,5 +5,6 @@ package org.postgresql.pegasus.util {
     public class UtilSuite {
         public var dateFormatterTest:TestDateFormatter;
         public var pgURLTest:TestPgURL;
+        public var getTypeTest:TestGetType;
     }
 }
