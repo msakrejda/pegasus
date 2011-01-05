@@ -11,7 +11,7 @@ package org.postgresql.pegasus.functional {
      */
     public /* abstract */ class ConnectedTestBase {
 
-        private const LOGGER:ILogger = Log.getLogger(Object(this).constructor);
+        private const LOGGER:ILogger = Log.getLogger(Object(this).constructor as Class);
 
         protected static var connectionFactory:ConnectionFactory;
         protected static var connection:IConnection;
