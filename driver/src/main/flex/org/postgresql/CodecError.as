@@ -60,7 +60,7 @@ package org.postgresql {
         }
 
         /**
-         * Whether encoding or decoding caused the error.
+         * Whether the error was encountered in encoding or decoding.
          * @see #ENCODE
          * @see #DECODE
          */
