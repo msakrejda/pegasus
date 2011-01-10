@@ -2,9 +2,6 @@ package org.postgresql.pegasus.functional {
 
     import org.flexunit.asserts.assertTrue;
     import org.flexunit.asserts.assertNull;
-    import org.hamcrest.assertThatBoolean;
-    import org.flexunit.asserts.fail;
-    import org.postgresql.util.Assert;
     import org.postgresql.util.NumberUtil;
     import org.postgresql.util.DateUtil;
     import org.postgresql.db.IColumn;
