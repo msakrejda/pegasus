@@ -13,42 +13,23 @@ package org.postgresql.pegasus.functional {
 
         private const LOGGER:ILogger = Log.getLogger(Object(this).constructor as Class);
 
-        protected static var connectionFactory:ConnectionFactory;
-        protected static var connection:IConnection;
-        protected static var setupCount:int;
-
-        protected function createConnection():IConnection {
-            // We can't really create the connection factory (or connection, for that matter)
-            // in a [BeforeClass] method, because that does not play well with inheritance.
-            if (!connectionFactory) {
-                connectionFactory = new ConnectionFactory();
-            }
-            var conn:IConnection = new ConnectionFactory().createConnection(Credentials.url, Credentials.user, Credentials.password);
-            // TODO: register failure event on Connection error, once we broadcast
-            // connection errors.
-            Async.proceedOnEvent(this, conn, ConnectionEvent.CONNECTED);
-            return conn;
-        }
+        protected var connection:IConnection;
 
         [Before(async,timeout=1000)]
         public function setup():void {
-            if (!connection) {
-                LOGGER.debug("Creating connection.");
-                connection = createConnection();
-                LOGGER.debug("Created");
-            }
-            setupCount++;
+            LOGGER.debug("Creating connection.");
+            connection = new ConnectionFactory().createConnection(Credentials.url, Credentials.user, Credentials.password);
+            // TODO: register failure event on Connection error, once we broadcast connection errors.
+            Async.proceedOnEvent(this, connection, ConnectionEvent.CONNECTED);
+            LOGGER.debug("Created");
         }
 
         [After(async,timeout=1000)]
         public function tearDown():void {
-            setupCount--;
-            if (setupCount == 0) {
-                LOGGER.debug("Closing connection.");
-                connection.close();
-                connection = null;
-                LOGGER.debug("Closed.");
-            }
+            LOGGER.debug("Closing connection.");
+            connection.close();
+            connection = null;
+            LOGGER.debug("Closed.");
         }
     }
 }
