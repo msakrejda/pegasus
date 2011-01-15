@@ -54,6 +54,7 @@ package org.postgresql.pegasus.functional {
 
         [Test(async,timeout=1000)]
         public function testSelectInt():void {
+            // TODO: this should handle smallint as well
             var verifyFn:Function = function(e:QueryResultEvent) : void {
                 assertEquals(5, e.columns.length);
                 assertEquals('neg_one', IColumn(e.columns[0]).name);
