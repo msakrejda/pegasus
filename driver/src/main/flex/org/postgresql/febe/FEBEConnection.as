@@ -393,7 +393,6 @@ import org.postgresql.febe.message.IBEMessage;
 import org.postgresql.util.assert;
 import org.postgresql.log.ILogger;
 import org.postgresql.log.Log;
-import org.postgresql.febe.IMessageStream;
 
 /**
  * Helper class for reading messages. Note that this is not a full wrapper
