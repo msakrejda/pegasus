@@ -42,5 +42,9 @@ package org.postgresql.db {
          * It is safe (albeit pointless) to call close multiple times.
          */
         function close():void;
+        /**
+         * Cancel an ongoing or pending query execution.
+         */
+        function cancel(token:QueryToken):Boolean
     }
 }

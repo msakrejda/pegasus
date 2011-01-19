@@ -86,7 +86,7 @@ package org.postgresql.db {
             }
         }
 
-        public function cancel(token:QueryToken):void {
+        public function cancel(token:QueryToken):Boolean {
             var found:Boolean = false;
             if (_currentToken == token) {
                 _baseConn.cancel();
@@ -102,11 +102,7 @@ package org.postgresql.db {
                     }
                 }
             }
-            if (!found) {
-                // TODO: this is probably wrong: we should allow cancellation
-                // attempts on old queries
-                throw new ArgumentError("Attempting to cancel unknown query");
-            }
+            return found;
         }
 
         private function doExecute(sql:String, token:QueryToken, handler:IResultHandler):void {
