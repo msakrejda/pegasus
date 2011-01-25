@@ -7,8 +7,8 @@ package org.postgresql.util {
         private var _db:String;
         private var _args:Object;
         /**
-         * Parse a simple jdbc-like db URL syntax:
-         * <code>asdbc:postgresql//localhost:5432/mydb?param1=val1&param2val2</code>.
+         * Parse a simple URL syntax similar to that of the PostgreSQL JDBC driver
+         * <code>asdbc:postgresql//localhost:5432/mydb?param1=val1&amp;param2=val2</code>.
          */
         public function PgURL(url:String) {
             // TODO: Throw InvalidArgumentException if url does not match expected syntax

@@ -1,7 +1,7 @@
 package org.postgresql.log  {
     /**
      * An <code>ILogTarget</code> receives log messages from the logging framework and
-     * publishes them for consumption by an end user. This can be achieved through <code>trace<code>
+     * publishes them for consumption by an end user. This can be achieved through <code>trace</code>
      * statement, browser integration through <code>ExternalInterface</code>, shipping
      * to the back-end, or any other such means. The <code>ILogTarge</code> should format
      * the incoming messages according to the configured format string.

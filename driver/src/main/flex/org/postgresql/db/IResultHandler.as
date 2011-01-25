@@ -1,12 +1,23 @@
 package org.postgresql.db {
 
     /**
-     * An IResultHandler manages the results of query execution.
-     *
+     * An IResultHandler manages the results of query execution through a set of callbacks.
+     * A query which returns data will typically have the following methods involved (in
+     * this order):
+     * <ol>
+     *   <li>handleColumns</li>
+     *   <li>handleRow (zero or more times)</li>
+     *   <li>handleCompletion</li>
+     *   <li>dispose</li>
+     * </ol>
+     * A query which does not return data will only have the last two invoked. A query
+     * which encounters a server-side error will only have <code>dispose</code> invoked.
+     * A query which encounters an error in decoding will not have <code>handleCompletion</code>
+     * invoked, and may miss one or more <code>handleRow</code> calls.
      */
     public interface IResultHandler {
         /**
-         *
+         * Handle the columns
          * @param columns Array of IColumn objects describing the data.
          */
         function handleColumns(columns:Array):void;

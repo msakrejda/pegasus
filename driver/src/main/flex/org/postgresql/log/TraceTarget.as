@@ -2,7 +2,7 @@ package org.postgresql.log {
 
     /**
      * An <code>ILogTarget</code> which prints the log messages using the
-     * built-in <code>trace<code> function.
+     * built-in <code>trace</code> function.
      *
      * @see trace
      */

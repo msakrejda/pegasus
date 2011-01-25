@@ -15,6 +15,7 @@
 
   <property name="pegasus.src" value="driver/src/main/flex"/>
   <property name="pegasus.swc" value="dist/pegasus-${pegasus.version}.swc"/>
+  <property name="pegasus.doc" value="dist/pegasus-${pegasus.version}-api.zip"/>
 
   <target name="clean" description="Removes artifacts from previous build">
     <delete failonerror="false" includeEmptyDirs="true">
@@ -73,6 +74,34 @@
     </compc>
   </target>
 
-  <target name="dist" depends="swc"/>
+  <target name="doc" depends="flex-setup" description="Create API docs">
+    <echo>Generating asdoc documentation...</echo>
+    <tstamp>
+      <format property="docgen.copyright.year" pattern="yyyy"/>
+    </tstamp>
+    <!--
+       N.B.: We don't just use the asdoc ant task because through some
+       fantastically creative API design, ant property replacement (one
+       of the few handy features in ant) is almost entirely unsupported
+       in that task. To get this to run properly with java directly, we
+       need to set the working directory, which means we need to pass a
+       fully qualified path everywhere.
+      -->
+    <java jar="${FLEX_HOME}/lib/asdoc.jar" dir="${FLEX_HOME}/frameworks" fork="true" failonerror="true">
+      <arg line="-output=${basedir}/build/asdoc"/>
+      <arg line="-doc-sources=${basedir}/driver/src"/>
+      <arg line="-window-title='Pegasus ${pegasus.version}'"/>
+      <arg line="-main-title='Pegasus ${pegasus.version}'"/>
+      <arg line="-footer='Copyright 2010-${docgen.copyright.year}'"/>
+    </java>
+    <copy todir="${basedir}/dist/asdoc">
+        <fileset dir="${basedir}/build/asdoc"/>
+    </copy>
+    <zip destfile="${basedir}/${pegasus.doc}">
+        <fileset dir="${basedir}/dist/asdoc"/>
+    </zip>
+  </target>
+
+  <target name="dist" depends="swc,doc" description="Build all pegasus artifacts"/>
 
 </project>

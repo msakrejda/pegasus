@@ -18,7 +18,7 @@ package org.postgresql.febe.message {
             }
         }
 
-        public function toString():String {
+        public override function toString():String {
             var items:Array = [];
             for (var key:String in fields) {
                 items.push(NoticeFields.describe(key) + ': ' + fields[key]);
