@@ -10,6 +10,9 @@ package org.postgresql.log {
      */
     public class AbstractLogTarget implements ILogTarget {
 
+        /**
+         * The default log message format.
+         */
         public static const DEFAULT_FORMAT:String = '%d %t [%l]: %c - %m (%n): %s';
 
         private var _format:String;

@@ -15,20 +15,35 @@ package org.postgresql.event {
          */
         public static const NOTIFICATION:String = 'notification';
 
+        private var _notifierPid:int;
+        private var _condition:String;
+
         /**
          * The LISTEN condition.
          */
-        public var condition:String;
+        public function get condition():String {
+            return _condition;
+        }
 
         /**
          * The processs identifier of the notifying process
          */
-        public var notifierPid:int;
+        public function get notifierPid():int {
+            return _notifierPid;
+        }
 
+        /**
+         * Create a new notification event
+         *
+         * @param condition condition corresponding to this notification
+         * @param notifierPid pid of notifying process
+         *
+         * @private
+         */
         public function NotificationEvent(condition:String, notifierPid:int) {
             super(NOTIFICATION, false, false);
-            this.condition = condition;
-            this.notifierPid = notifierPid;
+            _condition = condition;
+            _notifierPid = notifierPid;
         }
 
     }

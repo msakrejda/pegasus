@@ -13,6 +13,9 @@ package org.postgresql.io {
         private var _dispatcher:IEventDispatcher;
         private var _connected:Boolean;
 
+        /**
+         * Create a new stream.
+         */
         public function ByteDataStream() {
             _dispatcher = new EventDispatcher();
         }

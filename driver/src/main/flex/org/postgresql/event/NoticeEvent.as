@@ -3,8 +3,7 @@ package org.postgresql.event {
     import flash.events.Event;
 
     /**
-     * Indicates a notice or error sent by the server. All notices and errors directly
-     * relating to a currently-executing query are handled elsewhere, however.
+     * Indicates a notice or error sent by the server.
      */
     public class NoticeEvent extends Event {
 
@@ -17,15 +16,27 @@ package org.postgresql.event {
          */
         public static const ERROR:String = 'error';
 
+        private var _fields:Object;
+
         /**
-         * Details of the message.
+         * Details of the message, as a map of notice field code to corresponding message.
+         *
          * @see org.postgresql.NoticeFields
          */
-        public var fields:Object;
-
+        public function get fields():Object {
+            return _fields;
+        }
+        /**
+         * Create a new notice event.
+         *
+         * @param type type of notice
+         * @param fields fields describing notice
+         *
+         * @private
+         */
         public function NoticeEvent(type:String, fields:Object) {
             super(type);
-            this.fields = fields;
+            _fields = fields;
         }
 
     }

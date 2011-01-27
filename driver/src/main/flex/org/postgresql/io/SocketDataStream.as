@@ -12,11 +12,19 @@ package org.postgresql.io {
      * is connected immediately, and in normal operation, the server is
      * never expected to close the connection, so a simple close is considered
      * an error unless initiated by the client.
+     *
+     * @see flash.net.Socket
      */
     public class SocketDataStream extends Socket implements IDataStream {
 
         private var _clientDisconnect:Boolean;
 
+        /**
+         * Create a new stream connecting to given host and port
+         *
+         * @param host host to connect to
+         * @param port port to connect to
+         */
         public function SocketDataStream(host:String, port:int) {
             super(host, port);
             // TODO: Technically, if SocketDataStream "is a" socket, we should

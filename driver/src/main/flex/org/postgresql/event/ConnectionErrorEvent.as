@@ -25,6 +25,10 @@ package org.postgresql.event {
         private var _cause:Error;
 
         /**
+         * Create a new connection error event
+         *
+         * @param type type of event
+         * @param cause <code>Error</code> which triggered the event
          * @private
          */
         public function ConnectionErrorEvent(type:String, cause:Error) {
@@ -33,7 +37,7 @@ package org.postgresql.event {
         }
 
         /**
-         * The Error that triggered this Event.
+         * The <code>Error</code> which triggered this Event.
          */
         public function get cause():Error {
             return _cause;

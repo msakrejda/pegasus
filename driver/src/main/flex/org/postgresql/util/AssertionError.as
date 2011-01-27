@@ -7,6 +7,9 @@ package org.postgresql.util {
      */
     public class AssertionError extends Error {
 
+        /**
+         * @private
+         */
         public function AssertionError(message:String="") {
             super("Assertion failure: " + message);
         }

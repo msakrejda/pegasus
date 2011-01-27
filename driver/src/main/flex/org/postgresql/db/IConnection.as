@@ -2,11 +2,6 @@ package org.postgresql.db {
     import flash.events.IEventDispatcher;
 
     /**
-     * @eventType org.postgresql.event.ConnectionEvent.DISCONNECTED
-     */
-    [Event(name='disconnected', type='org.postgresql.event.ConnectionEvent')]
-
-    /**
      * @eventType org.postgresql.event.NoticeEvent.ERROR
      */
     [Event(name='error', type='org.postgresql.event.NoticeEvent')]

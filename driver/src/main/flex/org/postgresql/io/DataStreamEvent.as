@@ -19,7 +19,10 @@ package org.postgresql.io {
         public static const PROGRESS:String = 'progress';
 
         /**
-         * @inheritDoc
+         * Create a new DataStreamEvent of given type
+         * @param type event type
+         *
+         * @private
          */
         public function DataStreamEvent(type:String) {
             super(type);

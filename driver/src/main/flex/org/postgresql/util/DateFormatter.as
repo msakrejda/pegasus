@@ -1,35 +1,38 @@
 package org.postgresql.util {
 
     /**
-     * Attempts to closely mirror the API of the Flex DateFormatter, though also supports
-     * escaping the pattern letters (precede with a backslash). The Flex DateFormatter API
-     * is rather loosely defined, but:
+     * Utility class for formatting dates as Strings. Attempts to closely mirror the API
+     * of the Flex DateFormatter, though also supports escaping the pattern letters (precede
+     * with a backslash). The Flex DateFormatter API is rather loosely defined, but:
      * <pre>
      * Y{2,4}:    Year, two or four digits
      * M{1,4}:    Month (single number / padded to two digits / three-letter abbreviation / full name)
-     * D{1,2}:    Day of month (padded to specified length if necessary)
+     * D{1,2}:    Day of month, padded to specified length if necessary
      * E{1,4}:    Day of week (single number / padded to two digits / three-letter abbreviation / full name)
-     * A:        AM / PM indicator
-     * J{1,2}:    Hour in day (0-23), padded to two digits if necessary
-     * H{1,2}:    Hour in day (1-24), padded to two digits if necessary
-     * K{1,2}:    Hour in day (0-11), padded to two digits if necessary
-     * L{1,2}:    Hour in day (1-12), padded to two digits if necessary
-     * N{1,2}:    Minute in hour, padded to two digits if necessary
-     * S{1,2}:    Second in hour, padded to two digits if necessary
+     * A:         AM / PM indicator
+     * J{1,2}:    Hour in day (0-23), padded to specified length if necessary
+     * H{1,2}:    Hour in day (1-24), padded to specified length if necessary
+     * K{1,2}:    Hour in day (0-11), padded to specified length if necessary
+     * L{1,2}:    Hour in day (1-12), padded to specified length if necessary
+     * N{1,2}:    Minute in hour, padded to specified length if necessary
+     * S{1,2}:    Second in hour, padded to specified length if necessary
      * </pre>
      * Note that, unlike internally, months are one-indexed. Date formatting is not currently localizable.
+     * However, the properties that map to the long and short form of day and month names, as well as
+     * the <code>am</code> / <code>pm</code> indicator properties, are all public instances properties
+     * which can be redefined in a given instance of the formatter.
      */
     public class DateFormatter {
 
         /**
-         * Short-form (three-letter) names for the months of the year, in order.
+         * Short-form (three-letter) names for the months of the year, in calendar order.
          */
         public var months:Array = [
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
         ];
 
         /**
-         * Long-form (full) names for the months of the year, in order.
+         * Long-form (full) names for the months of the year, in calendar order.
          */
         public var fullMonths:Array = [
             'January', 'February', 'March', 'April', 'May', 'June', 'July',

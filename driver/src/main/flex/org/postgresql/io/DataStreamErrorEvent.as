@@ -17,7 +17,12 @@ package org.postgresql.io {
         public static const ERROR:String = 'dataStreamError';
 
         /**
-         * @inheritDoc
+         * Create a new event of given type
+         *
+         * @param type event type
+         * @param text error text
+         *
+         * @private
          */
         public function DataStreamErrorEvent(type:String, text:String = "") {
             super(type, false, false, text);

@@ -12,21 +12,36 @@ package org.postgresql.event {
          */
         public static const PARAMETER_CHANGE:String = 'parameterChange';
 
+        private var _name:String;
+        private var _value:String;
+
         /**
          * Name of parameter that has changed.
          */
-        public var name:String;
+        public function get name():String {
+            return _name;
+        }
 
         /**
          * New value for the parameter. Note that this is a string representation
          * of the value, even for numeric parameters.
          */
-        public var value:String;
+        public function get value():String {
+            return _value;
+        }
 
+        /**
+         * Create a new event
+         *
+         * @param name name of parameter which changed
+         * @param name newValue new value of parameter
+         *
+         * @private
+         */
         public function ParameterChangeEvent(name:String, newValue:String) {
             super(PARAMETER_CHANGE);
-            this.name = name;
-            this.value = newValue;
+            _name = name;
+            _value = newValue;
         }
 
     }

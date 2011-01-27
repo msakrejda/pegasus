@@ -7,7 +7,6 @@ package org.postgresql.io {
      * Internal helper class for stream method implementations. Ideally, these would
      * be shared in a better manner, but this is te simplest way to simplify implementation
      * across classes with distinct inheritance hierarchies.
-     * @private
      */
     internal class IOUtil {
 
@@ -18,7 +17,6 @@ package org.postgresql.io {
          *
          * @param stream stream to read from
          * @return the String read
-         * @private
          */
         public static function readCString(stream:IDataInput):String {
             var strBytes:Array = [];
@@ -37,7 +35,6 @@ package org.postgresql.io {
          *
          * @param stream stream to write to
          * @param str String to write
-         * @private
          */
          public static function writeCString(stream:IDataOutput, str:String):void {
             stream.writeUTFBytes(str);

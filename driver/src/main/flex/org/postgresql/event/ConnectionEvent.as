@@ -15,6 +15,10 @@ package org.postgresql.event {
         public static const CONNECTED:String = 'connected';
 
         /**
+         * Create a new connetion event
+         *
+         * @param type event type
+         *
          * @private
          */
         public function ConnectionEvent(type:String) {
