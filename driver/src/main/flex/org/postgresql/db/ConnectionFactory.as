@@ -1,6 +1,7 @@
 package org.postgresql.db {
 
     import org.postgresql.Oid;
+    import org.postgresql.PgURL;
     import org.postgresql.codec.CodecFactory;
     import org.postgresql.codec.decode.DateOut;
     import org.postgresql.codec.decode.FloatOut;
@@ -9,7 +10,6 @@ package org.postgresql.db {
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.MessageStreamFactory;
     import org.postgresql.io.SocketDataStreamFactory;
-    import org.postgresql.util.PgURL;
 
     /**
      * A simple wiring of all the pegasus pieces into a single, simple interface.

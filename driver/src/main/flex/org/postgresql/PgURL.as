@@ -1,4 +1,4 @@
-package org.postgresql.util {
+package org.postgresql {
     /**
      * Parses a simple URL syntax similar to that of the PostgreSQL JDBC driver. E.g.,
      * <code>asdbc:postgresql//localhost:5432/mydb?param1=val1&amp;param2=val2</code>.
