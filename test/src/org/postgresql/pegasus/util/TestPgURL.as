@@ -1,7 +1,7 @@
 package org.postgresql.pegasus.util {
 
     import org.flexunit.Assert;
-    import org.postgresql.util.PgURL;
+    import org.postgresql.PgURL;
 
     [RunWith("org.flexunit.runners.Parameterized")]
     public class TestPgURL {
