@@ -223,6 +223,8 @@ package org.postgresql.febe {
                 } catch (e:CodecError) {
                     onCodecError(e);
                 }
+            } else if (_hasCodecError) {
+                /* do nothing; just drop */
             } else {
                 onProtocolError(new ProtocolError('Unexpected RowDescription message'));
             }

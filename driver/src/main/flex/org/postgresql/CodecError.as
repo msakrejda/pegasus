@@ -7,7 +7,7 @@ package org.postgresql {
      * in this process.
      * <br/>
      * This error does <em>not</em> break the connection, but it does
-     * cause the current query to fail.
+     * indicate that the current query has failed.
      */
     public class CodecError extends Error {
 
@@ -26,6 +26,9 @@ package org.postgresql {
         private var _as3Type:Class;
         private var _cause:Error;
 
+        /**
+         * @private
+         */
         public function CodecError(message:String, direction:String, cause:Error, oid:int=Oid.UNSPECIFIED, as3Type:Class=null) {
             super(message);
             _direction = direction;
@@ -35,7 +38,7 @@ package org.postgresql {
         }
 
         /**
-         * Original Error causing this codec error, if any
+         * Original <code>Error</code> causing this codec error, if any
          *
          * @return cause, or <code>null</code> if no nested cause
          */
@@ -44,7 +47,7 @@ package org.postgresql {
         }
 
         /**
-         * If applicable, the ActionScript Class of the destination type (when
+         * If applicable, the ActionScript <code>Class</code> of the destination type (when
          * decoding) or the source type (when encoding).
          */
         public function get as3Type():Class {

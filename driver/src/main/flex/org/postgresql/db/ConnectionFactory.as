@@ -24,6 +24,9 @@ package org.postgresql.db {
         private var _codecFactory:CodecFactory;
 
         public function ConnectionFactory() {
+            // TODO: handle defaults. On input, any unknown type should be mapped
+            // to Oid.UNSPECIFIED and sent as its String representation. On output,
+            // if sent as text, we can destringify and present text.
             _codecFactory = new CodecFactory();
             _codecFactory.registerDecoder(Oid.INT2, int, new IntOut());
             _codecFactory.registerDecoder(Oid.INT4, int, new IntOut());

@@ -13,7 +13,8 @@ package org.postgresql.io {
      * Dispatched when an error occurs in the stream. After an error occurs,
      * the stream is in a disconnected state (and cannot be reconnected).
      * If ability to reconnect is integral to a client of an <code>IDataStream</code>,
-     * an <code>IDataStream</code> factory should be used instead.
+     * an <code>IDataStream</code> factory should be used instead. (In that case,
+     * a new stream can be obtained, effectively mimicing reconnection.)
      *
      * @eventType org.postgresql.io.DataStreamErrorEvent.ERROR
      */
@@ -26,9 +27,9 @@ package org.postgresql.io {
      * can be written to or read from the stream.
      * <br/>
      * Note that a server is never expected to initiate close-of-stream in normal
-     * operation, so no standard "IDataStream closed" event exists. A standard server-
-     * initiated disconnection is considered an error. A client-initiated close
-     * triggers a best-effort attempt to close the server connection cleanly, but
+     * operation, so no standard "<code>IDataStream</code> closed" event exists. A
+     * standard server-initiated disconnection is considered an error. A client-initiated
+     * close triggers a best-effort attempt to close the server connection cleanly, but
      * any failures here are ignored.
      * <br/>
      * Note that an <code>IDataStream</code> always connects automatically (technically,

@@ -21,7 +21,8 @@ package org.postgresql.febe.message {
         public override function toString():String {
             var items:Array = [];
             for (var key:String in fields) {
-                items.push(NoticeFields.describe(key) + ': ' + fields[key]);
+                var keyDescription:String = NoticeFields.describe(key) || ('UNKNOWN FIELD(' + key + ')');
+                items.push(keyDescription + ': ' + fields[key]);
             }
             return super.toString() + '[' + items.join(', ') + ']';
         }

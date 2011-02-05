@@ -6,6 +6,9 @@ package org.postgresql {
      */
     public class UnsupportedProtocolFeatureError extends ProtocolError {
 
+        /**
+         * @private
+         */
         public function UnsupportedProtocolFeatureError(message:String="") {
             super(message);
         }

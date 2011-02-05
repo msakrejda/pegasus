@@ -7,6 +7,9 @@ package org.postgresql {
      */
     public class ProtocolError extends Error {
 
+        /**
+         * @private
+         */
         public function ProtocolError(message:String="") {
             super(message);
         }

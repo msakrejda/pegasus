@@ -1,5 +1,9 @@
 package org.postgresql {
 
+    /**
+     * These are the field names and corresponding field codes which
+     * may occur in notice and error messages from PostgreSQL.
+     */
     public class NoticeFields {
 
         private static const FIELD_DESCRIPTIONS:Object = {
@@ -30,12 +34,14 @@ package org.postgresql {
         public static const LINE:String = 'L';
         public static const ROUTINE:String = 'R';
 
+        /**
+         * Describe a notice field type based on its code.
+         *
+         * @param fieldCode field code to look up
+         * @return field description, or <code>null</code> if field code is not recognized
+         */
         public static function describe(fieldCode:String):String {
-            if (fieldCode in FIELD_DESCRIPTIONS) {
-                return FIELD_DESCRIPTIONS[fieldCode];
-            } else {
-                return "UNKNOWN FIELD (" + fieldCode + ")";
-            }
+            return FIELD_DESCRIPTIONS[fieldCode];
         }
 
     }

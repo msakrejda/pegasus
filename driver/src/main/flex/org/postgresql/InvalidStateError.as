@@ -5,6 +5,9 @@ package org.postgresql {
      * to perform the requested operation.
      */
     public class InvalidStateError extends Error {
+        /**
+         * @private
+         */
         public function InvalidStateError(message:String) {
             super(message);
         }

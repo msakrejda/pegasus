@@ -1,7 +1,14 @@
 package org.postgresql {
-    // error codes from: http://www.postgresql.org/docs/8.4/static/errcodes-appendix.html
+    /**
+     * These are the error names and corresponding error codes which may be produced by PostgreSQL
+     * in the course of a connection.
+     * <br/>
+     * See <code>http://www.postgresql.org/docs/current/static/errcodes-appendix.html</code>
+     * @see org.postgresql.NoticeFields#CODE
+     */
     public class ErrorCodes {
-        public static const errors:Object = {
+
+        private static const ERRORS:Object = {
             // Class 00 — Successful Completion
             '00000' : "SUCCESSFUL COMPLETION",
             // Class 01 — Warning
@@ -476,5 +483,16 @@ package org.postgresql {
         public static const INTERNAL_ERROR:String = "XX000";
         public static const DATA_CORRUPTED:String = "XX001";
         public static const INDEX_CORRUPTED:String = "XX002";
+
+        /**
+         * Describe an error based on its code.
+         *
+         * @param errorCode error code to look up
+         * @return error description, or <code>null</code> if error code is not recognized
+         */
+        public static function describe(errorCode:String):String {
+            return ERRORS[errorCode];
+        }
+
     }
 }

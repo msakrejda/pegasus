@@ -17,7 +17,7 @@ package org.postgresql.codec.decode {
                     if (!('DateStyle' in serverParams)) {
                         throw new ArgumentError("No DateStyle specified");
                     }
-                    var outputStyle:String = DateStyle.parse(serverParams['DateStyle'])[0];
+                    var outputStyle:String = DateStyle.getOutputFormat(serverParams['DateStyle']);
                     if (outputStyle != DateStyle.OUTPUT_ISO) {
                         throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
                     }

@@ -26,9 +26,6 @@ package org.postgresql.codec {
          * Constructor. No encoders or decoders are registered by default.
          */
         public function CodecFactory() {
-            // TODO: handle defaults. On input, any unknown type should be mapped
-            // to Oid.UNSPECIFIED and sent as its String representation. On output,
-            // if sent as text, we can destringify and present text.
             _decoders = new Dictionary();
             _encoders = new Dictionary();
 
