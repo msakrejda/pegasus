@@ -53,7 +53,7 @@ package org.postgresql.db {
                 var decoder:IPGTypeDecoder = _codecFactory.getDecoder(f.typeOid);
                 _decoders.push(decoder);
                 // TODO: ColumnFactory?
-                columns.push(new Column(f.name, _codecFactory.getOutputClass(f.typeOid), f.typeOid));
+                columns.push(new Column(f.name, decoder.getOutputClass(f.typeOid), f.typeOid));
             }
             LOGGER.debug("Got fields: {0}", fields.join(' '));
             _resultHandler.handleColumns(columns);
@@ -64,7 +64,7 @@ package org.postgresql.db {
          * <code>serverParams</code>) and handed off to the wrapped <code>IResultHandler</code> row by row.
          *
          * @param rows <code>Array</code> of <code>Array</code>s of <code>ByteArray</code>s containing the (encoded) query results
-         * @param serverParams the server parameters at the time of query execution
+         * @param serverParams the server parameters at the time data is made available
          */
         public function handleData(rows:Array, serverParams:Object):void {
             for each (var row:Array in rows) {
@@ -75,7 +75,7 @@ package org.postgresql.db {
                             decodedRow.push(_decoders[i].decode(row[i], _fields[i], serverParams));
                         } catch (e:Error) {
                             var oid:int = _fields[i].typeOid;
-                            var outClass:Class = _codecFactory.getOutputClass(oid);
+                            var outClass:Class = _decoders[i].getOutputClass(oid);
                             var codecErr:CodecError = new CodecError("Error decoding", CodecError.DECODE, e, oid, outClass);
                             throw codecErr;
                         }

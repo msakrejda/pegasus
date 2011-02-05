@@ -28,21 +28,21 @@ package org.postgresql.db {
             // to Oid.UNSPECIFIED and sent as its String representation. On output,
             // if sent as text, we can destringify and present text.
             _codecFactory = new CodecFactory();
-            _codecFactory.registerDecoder(Oid.INT2, int, new IntOut());
-            _codecFactory.registerDecoder(Oid.INT4, int, new IntOut());
-            _codecFactory.registerDecoder(Oid.FLOAT4, int, new FloatOut());
-            _codecFactory.registerDecoder(Oid.FLOAT8, int, new FloatOut());
-            _codecFactory.registerDecoder(Oid.TIMESTAMP, Date, new DateOut());
-            _codecFactory.registerDecoder(Oid.TIMESTAMPTZ, Date, new DateOut());
-            _codecFactory.registerDecoder(Oid.BPCHAR, String, new TextOut());
-            _codecFactory.registerDecoder(Oid.VARCHAR, String, new TextOut());
-            _codecFactory.registerDecoder(Oid.CHAR, String, new TextOut());
-            _codecFactory.registerDecoder(Oid.TEXT, String, new TextOut());
+            _codecFactory.registerDecoder(Oid.INT2, new IntOut());
+            _codecFactory.registerDecoder(Oid.INT4, new IntOut());
+            _codecFactory.registerDecoder(Oid.FLOAT4, new FloatOut());
+            _codecFactory.registerDecoder(Oid.FLOAT8, new FloatOut());
+            _codecFactory.registerDecoder(Oid.TIMESTAMP, new DateOut());
+            _codecFactory.registerDecoder(Oid.TIMESTAMPTZ, new DateOut());
+            _codecFactory.registerDecoder(Oid.BPCHAR, new TextOut());
+            _codecFactory.registerDecoder(Oid.VARCHAR, new TextOut());
+            _codecFactory.registerDecoder(Oid.CHAR, new TextOut());
+            _codecFactory.registerDecoder(Oid.TEXT, new TextOut());
             // Technically, this isn't right, especially for binary, but
             // it's at least moderately useful and better than the alternative of
             // CodecErrors everywhere. This typically occurs if someone is selecting
             // text literals: e.g., "SELECT 'foo'".
-            _codecFactory.registerDecoder(Oid.UNKNOWN, String, new TextOut());
+            _codecFactory.registerDecoder(Oid.UNKNOWN, new TextOut());
         }
 
         public function createConnection(url:String, user:String, password:String):IConnection {

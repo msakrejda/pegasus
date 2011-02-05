@@ -268,6 +268,13 @@ package org.postgresql.febe {
         private function flushPendingResults():void {
             if (_queryHandler && _currResults.length > 0) {
                 try {
+                    // Technically, passing the serverParams like this may not be quite right.
+                    // Theoretically, we may get some data, get notification of server parameter
+                    // changes, and get more data. In batching it like this, we may give the false
+                    // impression that a consistent set of server params was used for all the
+                    // returned rows. This is so preposterously unlikely (and may even be impossible
+                    // if the server is processing messages in a sensible manner) that we will
+                    // ignore it for now.
                     _queryHandler.handleData(_currResults, serverParams);
                     _currResults = [];
                 } catch (e:CodecError) {

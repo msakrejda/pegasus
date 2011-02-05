@@ -99,6 +99,10 @@ package org.postgresql.codec.decode {
                 }
             }
             return result;
-         }
+        }
+
+        public function getOutputClass(typeOid:int):Class {
+            return Date;
+        }
     }
 }

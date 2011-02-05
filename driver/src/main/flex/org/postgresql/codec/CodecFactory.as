@@ -19,18 +19,12 @@ package org.postgresql.codec {
         private var _decoders:Dictionary;
         private var _encoders:Dictionary;
 
-        private var _typeToOid:Dictionary;
-        private var _oidToType:Dictionary;
-
         /**
          * Constructor. No encoders or decoders are registered by default.
          */
         public function CodecFactory() {
             _decoders = new Dictionary();
             _encoders = new Dictionary();
-
-            _typeToOid = new Dictionary();
-            _oidToType = new Dictionary();
         }
 
         /**
@@ -42,9 +36,8 @@ package org.postgresql.codec {
          * @param inOid
          * @param encoder
          */
-        public function registerEncoder(inType:Class, inOid:int, encoder:IPGTypeEncoder):void {
+        public function registerEncoder(inType:Class, encoder:IPGTypeEncoder):void {
             _encoders[inType] = encoder;
-            _typeToOid[inType] = inOid;
         }
 
         /**
@@ -55,9 +48,8 @@ package org.postgresql.codec {
          * @param outType
          * @param decoder
          */
-        public function registerDecoder(outOid:int, outType:Class, decoder:IPGTypeDecoder):void {
+        public function registerDecoder(outOid:int, decoder:IPGTypeDecoder):void {
             _decoders[outOid] = decoder;
-            _oidToType[outOid] = outType;
         }
 
         /**
@@ -72,15 +64,6 @@ package org.postgresql.codec {
             } else {
                 throw new CodecError("Could not find suitable decoder", CodecError.DECODE, null, oid);
             }
-        }
-
-        /**
-         * Return the Class given oid is currently mapped to.
-         * @param oid oid for which to find mapped Class
-         * @return Class mapped (or null if none)
-         */
-        public function getOutputClass(oid:int):Class {
-            return _oidToType[oid];
         }
 
         /**

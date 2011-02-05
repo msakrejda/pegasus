@@ -28,5 +28,9 @@ package org.postgresql.codec.decode {
                     throw new ArgumentError("Unknown format: " + format.format);
             }
         }
+
+        public function getOutputClass(typeOid:int):Class {
+            return String;
+        }
     }
 }

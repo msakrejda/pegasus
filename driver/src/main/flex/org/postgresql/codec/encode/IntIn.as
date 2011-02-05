@@ -27,5 +27,9 @@ package org.postgresql.codec.encode {
 
         }
 
+        public function getInputOid(clazz:Class):int {
+            return Oid.INT4;
+        }
+
     }
 }

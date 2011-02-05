@@ -45,5 +45,9 @@ package org.postgresql.codec.decode {
             }
         }
 
+        public function getOutputClass(typeOid:int):Class {
+            return Number;
+        }
+
     }
 }
