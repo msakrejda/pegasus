@@ -24,6 +24,7 @@ package org.postgresql.codec.decode {
                     // Number() function treats as Infinity. So if it's not finite, not NaN (because
                     // NaN is considered "not finite"), and matches the string above, we treat it as
                     // Number.MAX_VALUE (modulo sign); otherwise, we just return what Number() gave.
+                    // Unfortunately, this approach only works for the default extra_float_digits setting.
                     if (!isFinite(result) && !isNaN(result) && resultStr.indexOf(MAX_PG_DOUBLE_STR) != -1) {
                         return result > 0 ? Number.MAX_VALUE : -Number.MAX_VALUE;
                     } else {

@@ -3,6 +3,9 @@ package org.postgresql.codec {
     import org.postgresql.febe.IFieldInfo;
     import org.postgresql.io.ICDataInput;
 
+    /**
+     * Decodes PostgreSQL types into corresponding ActionScript objects.
+     */
     public interface IPGTypeDecoder {
         /**
          * Decode the given value from the encoded byte array. The encoding
