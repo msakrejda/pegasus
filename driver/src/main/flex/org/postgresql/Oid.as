@@ -1,7 +1,9 @@
 package org.postgresql {
 
     /**
-     * OIDs for all the main PostgreSQL data types.
+     * OIDs for all the main PostgreSQL data types. Note that this
+     * is <em>not</em> an exhaustive list--it's merely a convenient
+     * way to reference the most common OIDs.
      */
     public class Oid {
         public static const UNSPECIFIED:int = 0;
