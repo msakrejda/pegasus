@@ -10,6 +10,7 @@
             import org.postgresql.log.ILogTarget;
             import org.postgresql.log.LogLevel;
             import org.postgresql.log.Log;
+            import org.postgresql.pegasus.functional.ExtendedQuerySuite;
             import org.postgresql.pegasus.functional.SimpleQuerySuite;
             import org.postgresql.pegasus.codec.CodecSuite;
 
@@ -27,7 +28,7 @@
 
                 _core.addListener( new UIListener( uiListener ));
 
-                _core.run( CodecSuite, UtilSuite, SimpleQuerySuite );
+                _core.run( CodecSuite, UtilSuite, SimpleQuerySuite, ExtendedQuerySuite );
             }
         ]]>
     </mx:Script>

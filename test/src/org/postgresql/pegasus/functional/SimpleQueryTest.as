@@ -29,7 +29,7 @@ package org.postgresql.pegasus.functional {
                     assertEquals('SELECT', e.tag);
             });
 
-            var qt:QueryToken = connection.execute(sql, handler);
+            var qt:QueryToken = connection.execute(handler, sql);
             assertNotNull(qt);
             assertEquals(qt.sql, sql);
         }
