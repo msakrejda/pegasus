@@ -1,10 +1,9 @@
 package org.postgresql.febe {
-
     import flash.events.EventDispatcher;
-
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
     import org.postgresql.febe.message.Bind;
+    import org.postgresql.febe.message.BindComplete;
     import org.postgresql.febe.message.CloseComplete;
     import org.postgresql.febe.message.CommandComplete;
     import org.postgresql.febe.message.DataRow;
@@ -54,6 +53,7 @@ package org.postgresql.febe {
             't': ParameterDescription,
             'S': ParameterStatus,
             '1': ParseComplete,
+            '2': BindComplete,
             's': PortalSuspended,
             'Z': ReadyForQuery,
             'T': RowDescription
