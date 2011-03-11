@@ -5,7 +5,7 @@ package org.postgresql.febe.message {
     public class ParseComplete extends AbstractMessage implements IBEMessage {
 
         public function read(input:ICDataInput):void {
-            // do nothing
+            /* do nothing */
         }
 
     }

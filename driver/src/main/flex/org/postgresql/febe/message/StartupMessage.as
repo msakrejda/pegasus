@@ -12,6 +12,9 @@ package org.postgresql.febe.message {
         private var _paramLen:int;
 
         public function StartupMessage(parameters:Object) {
+            if (!parameters) {
+                throw new ArgumentError("parameters must not be null");
+            }
             if (!('user' in parameters)) {
                 throw new MessageError("StartupMessage must include user", this);
             }

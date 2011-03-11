@@ -8,10 +8,19 @@ package org.postgresql.febe.message {
         public var sql:String;
         public var paramOids:Array;
 
+        public function Parse(statement:String, sql:String, paramOids:Array) {
+            if (statement == null || sql == null || paramOids == null) {
+                throw new ArgumentError("statement, sql, and paramOids must not be null");
+            }
+            this.statement = statement;
+            this.sql = sql;
+            this.paramOids = paramOids;
+        }
+
         public function write(out:ICDataOutput):void {
-            var len:int = 4 + statement.length + 1 + sql.length + 1 + 4 * paramOids.length;
             out.writeByte(code('P'));
-            out.writeByte(len);
+            var len:int = 4 + statement.length + 1 + sql.length + 1 + 2 + 4 * paramOids.length;
+            out.writeInt(len);
             out.writeCString(statement);
             out.writeCString(sql);
             out.writeShort(paramOids.length);

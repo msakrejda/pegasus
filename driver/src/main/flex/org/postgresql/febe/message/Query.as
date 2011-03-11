@@ -9,6 +9,9 @@ package org.postgresql.febe.message {
         public var query:String;
 
         public function Query(query:String) {
+            if (query == null) {
+                throw new ArgumentError("query must not be null");
+            }
             this.query = query;
         }
 

@@ -8,14 +8,14 @@ package org.postgresql.febe.message {
     public class Describe extends AbstractMessage implements IFEMessage {
 
         public static const PORTAL:String = 'P';
-        public static const PREPARED_STATEMENT:String = 'S';
+        public static const STATEMENT:String = 'S';
 
         private var _name:String;
         private var _type:String;
 
         public function Describe(name:String, type:String) {
             _name = name;
-            if (type != PORTAL && type != PREPARED_STATEMENT) {
+            if (type != PORTAL && type != STATEMENT) {
                 throw new MessageError("unknown describe type: " + type, this);
             }
             _type = type;
@@ -23,8 +23,9 @@ package org.postgresql.febe.message {
 
         public function write(out:ICDataOutput):void {
             out.writeByte(code('D'));
-            var len:int = 4 + _name.length + 1;
+            var len:int = 4 + 1 + _name.length + 1;
             out.writeInt(len);
+            out.writeByte(code(_type));
             out.writeCString(_name);
         }
 

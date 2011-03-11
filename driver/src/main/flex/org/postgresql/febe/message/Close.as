@@ -4,11 +4,19 @@ package org.postgresql.febe.message {
 
     public class Close extends AbstractMessage implements IFEMessage {
 
-        public var name:String;
-        public var kind:String;
-
-        public static const STATEMENT:String = 'S';
         public static const PORTAL:String = 'P';
+        public static const STATEMENT:String = 'S';
+
+        public var kind:String;
+        public var name:String;
+
+        public function Close(kind:String, name:String) {
+            if (kind != PORTAL && kind != STATEMENT) {
+                throw new ArgumentError("Unknown close kind for " + name + ": " + kind);
+            }
+            this.kind = kind;
+            this.name = name;
+        }
 
         public function write(out:ICDataOutput):void {
             out.writeByte(code('C'));
