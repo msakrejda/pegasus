@@ -41,11 +41,18 @@ package org.postgresql.db {
          * Note that the method is asynchronous: it returns before the query actually
          * executes. Query completion information, as well as metadata and results (if any)
          * are passed to the handler provided.
+         * <p/>
+         * An optional array of arguments may be provided; if it is present, the query will
+         * be executed as a PostgreSQL parameterized query. The arguments must match
+         * the standard PostgreSQL parameter markers in the query text. These are simply
+         * one-based indexes of the arguments prefixed with '<code>$</code>'. E.g., the first
+         * argument in the args array would be referred to in the query text as '<code>$1</code>'.
          *
-         * @param sql query to be executed
          * @param handler handler to process query metadata, results, and completion
+         * @param sql query to be executed
+         * @param args arguments to the query, if any
          */
-        function execute(sql:String, handler:IResultHandler):QueryToken;
+        function execute(handler:IResultHandler, sql:String, args:Array=null):QueryToken;
         /**
          * Close the connection. This cleans up any outstanding resources related
          * to the connection. Note that a closed connection cannot be reopened.

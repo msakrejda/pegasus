@@ -1,5 +1,7 @@
 package org.postgresql.db {
 
+    import org.postgresql.febe.ArgumentInfo;
+    import org.postgresql.febe.IExtendedQueryHandler;
     import flash.events.EventDispatcher;
 
     import org.postgresql.CodecError;
@@ -30,7 +32,7 @@ package org.postgresql.db {
             _baseConn = baseConn;
             _queryHandlerFactory = queryHandlerFactory;
 
-            // TODO: extended query support, copy, function call
+            // TODO: copy, function call
 
             _pendingExecution = [];
             _baseConn.connect(this);
@@ -81,8 +83,17 @@ package org.postgresql.db {
 
         public function handleReady(status:String):void {
             if (_pendingExecution.length > 0) {
-                var nextQuery:Object = _pendingExecution.shift();
-                doExecute(nextQuery.sql, nextQuery.token, nextQuery.handler);
+                var nextQuery:PendingQueryExecution = _pendingExecution.shift();
+                executeNext(nextQuery.handler, nextQuery.token, nextQuery.sql, nextQuery.args);
+            }
+        }
+
+        private function executeNext(handler:IResultHandler, token:QueryToken, sql:String, args:Array):void {
+            _currentToken = token;
+            if (args) {
+                doParameterizedExecute(handler, sql, args);
+            } else {
+                doExecute(handler, sql);
             }
         }
 
@@ -94,7 +105,7 @@ package org.postgresql.db {
             } else {
                 // See if a pending query corresponds to this token
                 for (var i:int = 0; i < _pendingExecution.length; i++) {
-                    var pending:Object = _pendingExecution[i];
+                    var pending:PendingQueryExecution = _pendingExecution[i];
                     if (pending.token == token) {
                         _pendingExecution.splice(i, 1);
                         found = true;
@@ -105,25 +116,61 @@ package org.postgresql.db {
             return found;
         }
 
-        private function doExecute(sql:String, token:QueryToken, handler:IResultHandler):void {
+        private function doExecute(handler:IResultHandler, sql:String):void {
             var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
             _currentHandler = queryHandler;
-            _currentToken = token;
             _baseConn.executeSimpleQuery(sql, queryHandler);
+        }
+
+        private function doParameterizedExecute(handler:IResultHandler, sql:String, argValues:Array):void {
+            var queryHandler:IExtendedQueryHandler = _queryHandlerFactory.createExtendedHandler(handler);
+            // the queryHandler can give us parameter info, encoded parameter values, and desired input types
+            var arguments:Array = queryHandler.describeArguments(argValues, _baseConn.serverParams);
+            var argOids:Array = arguments.map(function(arg:ArgumentInfo, index:int, array:Array):int {
+                return arg.typeOid;
+            });
+            _baseConn.prepareStatement('', sql, argOids, queryHandler);
+            // We don't know what these will be without a describe. But we'd need to wait for a statement-flavor
+            // describe to return before we could specify per-column result formats, since we don't know how
+            // many columns there will be. To get around this, we could force a format here, but the backend
+            // will send us RowDescription messages specifying an unknown format (which is unfortunately aliased
+            // to the same value as TEXT format), so we'd need to set the query handler straight.
+            var resultFormats:Array = queryHandler.getOutputFormats(null);
+            _baseConn.bindStatement('', '', arguments, resultFormats);
+            _baseConn.describePortal('');
+            _baseConn.execute('');
+            _baseConn.sync();
         }
 
         public function close():void {
             _baseConn.close();
         }
 
-        public function execute(sql:String, handler:IResultHandler):QueryToken {
+        public function execute(handler:IResultHandler, sql:String, args:Array=null):QueryToken {
             var token:QueryToken = new QueryToken(sql);
             if (_baseConn.rfq) {
-                doExecute(sql, token, handler);
+                executeNext(handler, token, sql, args);
             } else {
-                _pendingExecution.push({ sql: sql, token: token, handler: handler });
+                _pendingExecution.push(new PendingQueryExecution(token, handler, sql, args));
             }
             return token;
         }
     }
+}
+import org.postgresql.db.IResultHandler;
+import org.postgresql.db.QueryToken;
+
+class PendingQueryExecution {
+    public var token:QueryToken;
+    public var handler:IResultHandler;
+    public var sql:String;
+    public var args:Array;
+
+    public function PendingQueryExecution(token:QueryToken, handler:IResultHandler, sql:String, args:Array=null) {
+        this.token = token;
+        this.handler = handler;
+        this.sql = sql;
+        this.args = args;
+    }
+
 }

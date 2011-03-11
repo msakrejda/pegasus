@@ -22,10 +22,10 @@ package org.postgresql.db {
 
         private static const LOGGER:ILogger = Log.getLogger(SimpleQueryHandler);
 
-        private var _codecFactory:CodecFactory;
-        private var _resultHandler:IResultHandler;
-        private var _fields:Array;
-        private var _decoders:Array;
+        protected var _codecFactory:CodecFactory;
+        protected var _resultHandler:IResultHandler;
+        protected var _fields:Array;
+        protected var _decoders:Array;
 
         /**
          * Create a new simple query handler.

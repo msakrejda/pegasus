@@ -1,5 +1,6 @@
 package org.postgresql.db {
 
+    import org.postgresql.codec.encode.Int4In;
     import org.postgresql.Oid;
     import org.postgresql.PgURL;
     import org.postgresql.codec.CodecFactory;
@@ -28,6 +29,7 @@ package org.postgresql.db {
             // to Oid.UNSPECIFIED and sent as its String representation. On output,
             // if sent as text, we can destringify and present text.
             _codecFactory = new CodecFactory();
+
             _codecFactory.registerDecoder(Oid.INT2, new IntOut());
             _codecFactory.registerDecoder(Oid.INT4, new IntOut());
             _codecFactory.registerDecoder(Oid.FLOAT4, new FloatOut());
@@ -38,6 +40,8 @@ package org.postgresql.db {
             _codecFactory.registerDecoder(Oid.VARCHAR, new TextOut());
             _codecFactory.registerDecoder(Oid.CHAR, new TextOut());
             _codecFactory.registerDecoder(Oid.TEXT, new TextOut());
+
+            _codecFactory.registerEncoder(int, new Int4In());
             // Technically, this isn't right, especially for binary, but
             // it's at least moderately useful and better than the alternative of
             // CodecErrors everywhere. This typically occurs if someone is selecting

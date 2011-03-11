@@ -1,5 +1,14 @@
 package org.postgresql.febe {
 
+    import org.postgresql.febe.message.ParseComplete;
+    import flash.net.Socket;
+    import org.postgresql.febe.message.Flush;
+    import org.postgresql.febe.message.Sync;
+    import org.postgresql.febe.message.Execute;
+    import org.postgresql.febe.message.Bind;
+    import org.postgresql.febe.message.Describe;
+    import org.postgresql.febe.message.Close;
+    import org.postgresql.febe.message.Parse;
     import flash.events.Event;
 
     import org.postgresql.CodecError;
@@ -29,10 +38,20 @@ package org.postgresql.febe {
     import org.postgresql.log.Log;
     import org.postgresql.util.assert;
 
-    // A FEBEConnection can execute one statement at a time (when it is rfq).
-    // It does not do any parameter encoding or result set decoding: these
-    // are passed through as binary payloads, with decoding to be done at
-    // a higher level.
+    /**
+     * A bare-bones abstraction over the PostgreSQL Front End / Back End (FEBE) protocol.
+     * This effectively provides a programmatic, message-level interface to the protocol
+     * defined in <code>http://developer.postgresql.org/pgdocs/postgres/protocol-flow.html</code>.
+     * This can then serve as a building block for more user-friendly connection / query /
+     * result abstractions.
+     * <br/>
+     * At the moment, the <code>FEBEConnection</code> only supports a single outstanding
+     * query at a time. If another query is submitted before the connection is ready, a
+     * <code>ProtocolError</code> is raised. This limitation is likely to be removed in the
+     * future.
+     *
+     * @see org.postgresql.ProtocolError
+     */
     public class FEBEConnection {
 
         private static const LOGGER:ILogger = Log.getLogger(FEBEConnection);
@@ -50,7 +69,9 @@ package org.postgresql.febe {
         private var _rfq:Boolean;
         private var _status:String;
 
-        private var _queryHandler:IQueryHandler;
+        private var _currentQueryHandler:IQueryHandler;
+        private var _statementHandlerMap:Object;
+
         private var _currResults:Array;
         private var _hasCodecError:Boolean;
 
@@ -84,7 +105,9 @@ package org.postgresql.febe {
             _connecting = true;
             _authenticated = false;
 
-            _queryHandler = null;
+            _currentQueryHandler = null;
+            _statementHandlerMap = {};
+
             _hasCodecError = false;
             _currResults = [];
 
@@ -169,6 +192,10 @@ package org.postgresql.febe {
                 _messageHandler.setMessageListener(NotificationResponse, handleNotification);
                 _messageHandler.setMessageListener(RowDescription, handleMetadata);
                 _messageHandler.setMessageListener(DataRow, handleData);
+                // TODO: Add message listeners for the extended query protocol. We don't
+                // actually need them right now to do extended protocol queries, but
+                // it's a little ugly to drop messages everywhere.
+
                 // _broker.setMessageListener(CopyInResponse, ...);
                 // _broker.setMessageListener(CopyOutResponse, ...);
                 _messageHandler.setMessageListener(CommandComplete, handleComplete);
@@ -209,17 +236,17 @@ package org.postgresql.febe {
 
         private function handleError(msg:ErrorResponse):void {
             _connHandler.handleSQLError(msg.fields);
-            if (_queryHandler) {
-                _queryHandler.dispose();
-                _queryHandler = null;
+            if (_currentQueryHandler) {
+                _currentQueryHandler.dispose();
+                _currentQueryHandler = null;
             }
         }
 
         private function handleMetadata(msg:RowDescription):void {
-            if (_queryHandler) {
+            if (_currentQueryHandler) {
                 assert("Unexpected data remaining in result buffer", _currResults.length == 0);
                 try {
-                    _queryHandler.handleMetadata(msg.fields);
+                    _currentQueryHandler.handleMetadata(msg.fields);
                 } catch (e:CodecError) {
                     onCodecError(e);
                 }
@@ -231,7 +258,7 @@ package org.postgresql.febe {
         }
 
         private function handleData(msg:DataRow):void {
-            if (_queryHandler) {
+            if (_currentQueryHandler) {
                 _currResults.push(msg.rowBytes);
             } else if (_hasCodecError) {
                 /* do nothing; just drop */
@@ -241,11 +268,11 @@ package org.postgresql.febe {
         }
 
         private function handleComplete(msg:CommandComplete):void {
-            if (_queryHandler) {
+            if (_currentQueryHandler) {
                 flushPendingResults();
-                _queryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
-                _queryHandler.dispose();
-                _queryHandler = null;
+                _currentQueryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
+                _currentQueryHandler.dispose();
+                _currentQueryHandler = null;
             } else if (_hasCodecError) {
                 _hasCodecError = false;
             } else {
@@ -257,16 +284,16 @@ package org.postgresql.febe {
             // This is equivalent to CommandComplete when an empty query completes.
             // Let's call this a query completing successfully. Theoretically, we may want
             // to handle this differently, but there's little practical use for that.
-            if (_queryHandler) {
-                _queryHandler.handleCompletion('EMPTY QUERY');
-                _queryHandler = null;
+            if (_currentQueryHandler) {
+                _currentQueryHandler.handleCompletion('EMPTY QUERY');
+                _currentQueryHandler = null;
             } else {
                 onProtocolError(new ProtocolError("Unexpected EmptyQueryResponse"));
             }
         }
 
         private function flushPendingResults():void {
-            if (_queryHandler && _currResults.length > 0) {
+            if (_currentQueryHandler && _currResults.length > 0) {
                 try {
                     // Technically, passing the serverParams like this may not be quite right.
                     // Theoretically, we may get some data, get notification of server parameter
@@ -275,7 +302,7 @@ package org.postgresql.febe {
                     // returned rows. This is so preposterously unlikely (and may even be impossible
                     // if the server is processing messages in a sensible manner) that we will
                     // ignore it for now.
-                    _queryHandler.handleData(_currResults, serverParams);
+                    _currentQueryHandler.handleData(_currResults, serverParams);
                     _currResults = [];
                 } catch (e:CodecError) {
                      onCodecError(e);
@@ -287,39 +314,91 @@ package org.postgresql.febe {
             flushPendingResults();
         }
 
-        // Methods executeSimpleQuery and executeQuery should both notify caller when commandComplete
-        // returns a result set. When rfq, the nesting Connection should issue another query.
-
-        // Since these will only have one outstanding statement at any given time, perhaps
-        // we should keep that as a member variable while the call is being executed. We
-        // need to have some concept of 'outstanding statement' (which could lead to more
-        // than one result set for a simple query), and we still need to process notices
-        // and notifications while this happens. We also need to figure out what events
-        // to dispatch in this case.
-
-        // To future-proof against result set streaming, we should dispatch separate
-        // query-data-available and statement-complete messages. We should also batch
-        // the data-available messages--dispatching an event per-DataRow would be silly.
         public function executeSimpleQuery(sql:String, handler:IQueryHandler):void {
             ensureConnected();
             ensureReady();
             _rfq = false;
-            _queryHandler = handler;
+            _currentQueryHandler = handler;
             send(new Query(sql));
         }
 
-        public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
+        /*public function executeQuery(sql:String, params:Array, handler:IQueryHandler):void {
             ensureConnected();
             ensureReady();
+            _rfq = false;
             // > parse(statement)
             // < parseComplete | errorResponse
-            // > bind(portal)
+            // > bind(statement, portal, params)
             // < bindComplete | errorResponse
             // > describe(portal)
             // < rowDescription
-            // > execute(portal)
+            // > execute(portal, limit)
             // < commandComplete | errorResponse | emptyQueryResponse | portalSuspended
             // > sync
+        }*/
+
+        public function prepareStatement(name:String, sql:String, paramOids:Array, handler:IExtendedQueryHandler):void {
+            ensureConnected();
+            ensureReady();
+            _rfq = false;
+            _statementHandlerMap[name] = handler;
+            _currentQueryHandler = handler;
+            send(new Parse(name, sql, paramOids));
+        }
+
+        public function describeStatement(name:String):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Describe(name, Describe.STATEMENT));
+        }
+
+        public function bindStatement(portal:String, statement:String, arguments:Array, resultFormats:Array):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            var formats:Array = [];
+            var values:Array = [];
+            for each (var argument:ArgumentInfo in arguments) {
+                formats.push(argument.format);
+                values.push(argument.value);
+            }
+            send(new Bind(portal, statement, formats, values, resultFormats));
+        }
+
+        public function describePortal(name:String):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Describe(name, Describe.PORTAL));
+        }
+
+        public function closePortal(name:String):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Close(Close.PORTAL, name));
+        }
+
+        public function closeStatement(name:String):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            delete _statementHandlerMap[name];
+            send(new Close(Close.STATEMENT, name));
+        }
+
+        public function execute(portal:String, rowCount:int=0):void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Execute(portal, rowCount));
+        }
+
+        public function sync():void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Sync());
+        }
+
+        public function flush():void {
+            ensureConnected();
+            ensureProcessingPrepared();
+            send(new Flush());
         }
 
         // additionally, there is fastpath (function call) and copy. It might be handy to
@@ -374,8 +453,8 @@ package org.postgresql.febe {
         private function onCodecError(error:CodecError):void {
             // The query dies, but the connection is fine
             _connHandler.handleCodecError(error);
-            _queryHandler.dispose();
-            _queryHandler = null;
+            _currentQueryHandler.dispose();
+            _currentQueryHandler = null;
             // Note that we still may need to throw away any number of DataRow messages
             _hasCodecError = true;
         }
@@ -389,6 +468,12 @@ package org.postgresql.febe {
         private function ensureReady():void {
             if (!_rfq) {
                 onProtocolError(new ProtocolError("FEBEConnection is not ready for query"));
+            }
+        }
+
+        private function ensureProcessingPrepared():void {
+            if (!(_currentQueryHandler is IExtendedQueryHandler)) {
+                onProtocolError(new ProtocolError("FEBEConnection is not processing a prepared statement"));
             }
         }
 
@@ -426,11 +511,9 @@ class MessageHandler {
         assert("No message associated with message event", msg);
         if (Object(msg).constructor in _msgListeners) {
             var listener:Function = _msgListeners[Object(msg).constructor];
-            if (listener != null) {
-                listener(msg);
-            } else {
-                LOGGER.warn("No message listener associated with message {0}; dropping", msg);
-            }
+            listener(msg);
+        } else {
+            LOGGER.warn("No message listener associated with message {0}; dropping", msg);
         }
     }
 
