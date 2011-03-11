@@ -8,7 +8,7 @@ package org.postgresql.pegasus.util {
 
         public static function getTestTypes():Array {
             return [
-               [ Number(42), Number ],
+               [ Number(42), int ],
                /*
                 * The behavior for int, uint and Number is *really* weird. Essentially, AS3 seems
                 * to veer away from straight static typing here and do a sort of numerical
