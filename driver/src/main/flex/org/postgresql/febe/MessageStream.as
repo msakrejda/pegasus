@@ -25,6 +25,7 @@ package org.postgresql.febe {
     import org.postgresql.io.IDataStream;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
+    import org.postgresql.util.assert;
     import org.postgresql.util.format;
 
     public class MessageStream extends EventDispatcher implements IMessageStream {
@@ -85,12 +86,18 @@ package org.postgresql.febe {
                     // our purposes (it would make a number of things more confusing
                     // than necessary), so we subtract the size of the length field.
                     _nextMessageLen = _dataStream.readInt() - 4;
+                    LOGGER.debug("Waiting for {0} more bytes ({1} available)", _nextMessageLen, _dataStream.bytesAvailable);
                 } else {
+                    LOGGER.debug("Reading message of {0} bytes ({1} available)", _nextMessageLen, _dataStream.bytesAvailable);
                     // TODO: We should not have to copy the message to its own array: we
                     // should wrap the stream in something that sets an arbitrary hard limit
                     // to the number of bytes this particular message can read.
                     var messageBytes:ByteDataStream = new ByteDataStream();
-                    _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
+                    if (_nextMessageLen > 0) {
+                        // N.B.: If
+                        _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
+                    }
+                    assert("Unexpected amount of data was read off the stream", messageBytes.length == _nextMessageLen);
                     var nextTypeCode:String = String.fromCharCode(_nextMessageType);
                     var nextMessageClass:Class = backendMessageTypes[nextTypeCode];
                     if (!nextMessageClass) {
