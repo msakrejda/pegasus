@@ -1,17 +1,9 @@
 package org.postgresql.pegasus.functional {
 
     import org.postgresql.db.IColumn;
-    import org.postgresql.db.event.QueryCompletionEvent;
     import org.postgresql.db.event.QueryResultEvent;
-    import org.postgresql.db.EventResultHandler;
-    import org.flexunit.async.Async;
     import org.flexunit.asserts.assertEquals;
-    import org.flexunit.asserts.assertNotNull;
-    import org.postgresql.db.QueryToken;
 
-    /**
-     * @author maciek
-     */
     public class ExtendedQueryTest extends SelectTestBase {
 
         [Test(async,timeout=5000)]

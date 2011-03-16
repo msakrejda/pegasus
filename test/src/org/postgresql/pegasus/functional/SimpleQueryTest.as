@@ -8,9 +8,6 @@ package org.postgresql.pegasus.functional {
     import org.postgresql.db.event.QueryResultEvent;
     import org.flexunit.asserts.assertEquals;
 
-    /**
-     * @author maciek
-     */
     public class SimpleQueryTest extends SelectTestBase {
 
         [Test(async,timeout=1000)]

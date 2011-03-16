@@ -6,9 +6,7 @@ package org.postgresql.pegasus.functional {
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
     import org.postgresql.pegasus.Credentials;
-    /**
-     * @author maciek
-     */
+
     public /* abstract */ class ConnectedTestBase {
 
         private const LOGGER:ILogger = Log.getLogger(Object(this).constructor as Class);

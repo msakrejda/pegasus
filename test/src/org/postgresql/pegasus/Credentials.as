@@ -16,7 +16,7 @@ package org.postgresql.pegasus {
                 var ba:ByteArray = (new ConfigXML()) as ByteArray;
                 var str:String = ba.readUTFBytes(ba.length);
                 _config = new XML(str);
-               }
+            }
             return _config;
         }
 
