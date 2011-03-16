@@ -12,23 +12,7 @@ package org.postgresql.pegasus.functional {
     /**
      * @author maciek
      */
-    public class ExtendedQueryTest extends ConnectedTestBase {
-
-        private function runQuery(sql:String, args:Array, verifyFn:Function):void {
-            var handler:EventResultHandler = new EventResultHandler();
-            Async.proceedOnEvent(this, handler, QueryCompletionEvent.COMPLETE, 5000);
-
-            handler.addEventListener(QueryResultEvent.RESULT, verifyFn);
-            // N.B.: this listener is executing with higher priority that the 'proceed' above
-            handler.addEventListener(QueryCompletionEvent.COMPLETE, function(e:QueryCompletionEvent):void {
-                    assertEquals(0, e.rows);
-                    assertEquals('SELECT', e.tag);
-            });
-
-            var qt:QueryToken = connection.execute(handler, sql, args);
-            assertNotNull(qt);
-            assertEquals(qt.sql, sql);
-        }
+    public class ExtendedQueryTest extends SelectTestBase {
 
         [Test(async,timeout=5000)]
         public function testSelectInt():void {
@@ -42,7 +26,7 @@ package org.postgresql.pegasus.functional {
             };
 
             var sql:String = "select $1::int as arg";
-            runQuery(sql, [ 0 ], verifyFn);
+            runQuery(verifyFn, sql, [ 0 ]);
         }
 
 

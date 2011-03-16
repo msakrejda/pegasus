@@ -19,7 +19,7 @@ package org.postgresql.pegasus.functional {
         public function setup():void {
             LOGGER.debug("Creating connection.");
             connection = new ConnectionFactory().createConnection(Credentials.url, Credentials.user, Credentials.password);
-            // TODO: register failure event on Connection error, once we broadcast connection errors.
+            // TODO: register failure event on Connection error
             Async.proceedOnEvent(this, connection, ConnectionEvent.CONNECTED);
             LOGGER.debug("Created");
         }

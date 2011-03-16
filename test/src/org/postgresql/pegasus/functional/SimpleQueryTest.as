@@ -5,34 +5,13 @@ package org.postgresql.pegasus.functional {
     import org.postgresql.util.NumberUtil;
     import org.postgresql.util.DateUtil;
     import org.postgresql.db.IColumn;
-    import org.postgresql.db.event.QueryCompletionEvent;
     import org.postgresql.db.event.QueryResultEvent;
-    import org.postgresql.db.EventResultHandler;
-    import org.flexunit.async.Async;
     import org.flexunit.asserts.assertEquals;
-    import org.flexunit.asserts.assertNotNull;
-    import org.postgresql.db.QueryToken;
 
     /**
      * @author maciek
      */
-    public class SimpleQueryTest extends ConnectedTestBase {
-
-        private function runQuery(sql:String, verifyFn:Function):void {
-            var handler:EventResultHandler = new EventResultHandler();
-            Async.proceedOnEvent(this, handler, QueryCompletionEvent.COMPLETE, 1000);
-
-            handler.addEventListener(QueryResultEvent.RESULT, verifyFn);
-            // N.B.: this listener is executing with higher priority that the 'proceed' above
-            handler.addEventListener(QueryCompletionEvent.COMPLETE, function(e:QueryCompletionEvent):void {
-                    assertEquals(0, e.rows);
-                    assertEquals('SELECT', e.tag);
-            });
-
-            var qt:QueryToken = connection.execute(handler, sql);
-            assertNotNull(qt);
-            assertEquals(qt.sql, sql);
-        }
+    public class SimpleQueryTest extends SelectTestBase {
 
         [Test(async,timeout=1000)]
         public function testSelectText():void {
@@ -49,7 +28,7 @@ package org.postgresql.pegasus.functional {
             };
 
             var sql:String = "select ''::text as empty, '?'::text as one_char, 'hello world'::text as text";
-            runQuery(sql, verifyFn);
+            runQuery(verifyFn, sql);
         }
 
         [Test(async,timeout=1000)]
@@ -72,7 +51,7 @@ package org.postgresql.pegasus.functional {
             };
 
             var sql:String = "select (-1)::int as neg_one, 0::int as zero, 1::int as one, (2^31-1)::int as max_int, (-(2^31))::int as min_int";
-            runQuery(sql, verifyFn);
+            runQuery(verifyFn, sql);
         }
 
         [Test(async,timeout=1000)]
@@ -123,7 +102,7 @@ package org.postgresql.pegasus.functional {
                     "('infinity'::float4, 'infinity'::float8)," +
                     "('NaN'::float4, 'NaN'::float8)" +
                 ") as vals(float, double)";
-            runQuery(sql, verifyFn);
+            runQuery(verifyFn, sql);
         }
 
         [Test(async,timeout=1000)]
@@ -143,7 +122,7 @@ package org.postgresql.pegasus.functional {
 
             // TODO: more dates
             var sql:String = "select '-infinity'::timestamptz as neg_inf, '1970-01-01 00:00:00'::timestamptz as epoch, 'infinity'::timestamptz as inf";
-            runQuery(sql, verifyFn);
+            runQuery(verifyFn, sql);
         }
 
         // TODO: these should be pulled out as more general, but the way asserts work
