@@ -14,8 +14,9 @@ package org.postgresql.util {
      * H{1,2}:    Hour in day (1-24), padded to specified length if necessary
      * K{1,2}:    Hour in day (0-11), padded to specified length if necessary
      * L{1,2}:    Hour in day (1-12), padded to specified length if necessary
-     * N{1,2}:    Minute in hour, padded to specified length if necessary
-     * S{1,2}:    Second in hour, padded to specified length if necessary
+     * N{1,2}:    Minutes, padded to specified length if necessary
+     * S{1,2}:    Seconds, padded to specified length if necessary
+     * Q{1,3}:    Milliseconds, padded to specified length if necessary 
      * </pre>
      * Note that, unlike internally, months are one-indexed. Date formatting is not currently localizable.
      * However, the properties that map to the long and short form of day and month names, as well as
@@ -78,7 +79,7 @@ package org.postgresql.util {
             // This function ain't pretty...
 
             // 2 to 4 Y or 1 to 4 of [ME] or 1 to 2 of [DJHKLNS] or A, *not* preceeded by a backslash
-            return formatString.replace(/(?<!\\)(?:YY+|[ME]{1,4}|[DJHKLNS]{1,2}|A)/g, function():String {
+            return formatString.replace(/(?<!\\)(?:YY+|[ME]{1,4}|[DJHKLNS]{1,2}|Q{1,3}|A)/g, function():String {
                 var match:String = arguments[0];
                 if (/Y+/.test(match)) {
                     // Let's assume we're logging between 1000 AD and 9999 AD; they will curse us on y10k
@@ -87,10 +88,8 @@ package org.postgresql.util {
                     // N.B.: months are zero-indexed
                     var monthIndex:int = value.month;
                     var monthVal:String = (monthIndex + 1).toString();
-                    if (match.length == 1 || (match.length == 2 && monthVal.length == 2)) {
-                        return monthVal;
-                    } else if (match.length == 2) {
-                        return '0' + monthVal;
+                    if (match.length <= 2) {
+                        return zeroPad(monthVal, match.length);
                     } else if (match.length == 3) {
                         return months[monthIndex];
                     } else if (match.length == 4) {
@@ -101,21 +100,16 @@ package org.postgresql.util {
                     }
                 } else if (/D+/.test(match)) {
                     var dayVal:String = value.date.toString();
-                    if (match.length == 1 || (match.length == 2 && dayVal.length == 2)) {
-                        return dayVal;
-                    } else if (match.length == 2) {
-                        return '0' + dayVal;
+                    if (match.length <= 2) {
+                        return zeroPad(dayVal, match.length);
                     } else {
                         assert("Unexpected day format match: " + match, false);
                         return '??';
                     }
                 } else if (/E+/.test(match)) {
                     var dayOfWeekIdx:int = value.day;
-                    if (match.length == 1) {
-                        return dayOfWeekIdx.toString();
-                    } else if (match.length == 2) {
-                        // There are only seven days of the week, so we always pad
-                        return '0' + dayOfWeekIdx;
+                    if (match.length <= 2) {
+                        return zeroPad(dayOfWeekIdx.toString(), match.length);
                     } else if (match.length == 3) {
                         return daysOfWeek[dayOfWeekIdx];
                     } else if (match.length == 4) {
@@ -135,33 +129,38 @@ package org.postgresql.util {
                         adjustedHours = 12;
                     }
                     var hoursVal:String = adjustedHours.toString();
-
-                    if (match.length == 1 || (match.length == 2 && hoursVal.length == 2)) {
-                        return hoursVal;
-                    } else {
-                        return '0' + hoursVal;
-                    }
+                    return zeroPad(hoursVal, match.length);
                 } else if (/N/.test(match)) {
                     var minutesVal:String = value.minutes.toString();
-                    if (match.length == 1 || (match.length == 2 && minutesVal.length == 2)) {
-                        return minutesVal;
-                    } else {
-                        return '0' + minutesVal;
-                    }
+                    return zeroPad(minutesVal, match.length);
                 } else if (/S/.test(match)) {
                     var secondsVal:String = value.seconds.toString();
-                    if (match.length == 1 || (match.length == 2 && secondsVal.length == 2)) {
-                        return secondsVal;
-                    } else {
-                        return '0' + secondsVal;
-                    }
+                    return zeroPad(secondsVal, match.length);
+                } else if (/Q/.test(match)) {
+                    var millisVal:String = value.milliseconds.toString();
+                    return zeroPad(millisVal, match.length);
                 } else if (/A/.test(match)) {
                     return value.hours < 12 ? am : pm;
-                }else {
+                } else {
                     assert("Unexpected format match: " + match, false);
                     return '??';
                 }
-            }).replace(/\\([YMEDJHKLNSA])/g, '$1');
+            }).replace(/\\([YMEDJHKLNSQA])/g, '$1');
+        }
+
+        // pad to specified length using '0' 
+        private function zeroPad(value:String, padLen:int):String {
+        	if (value.length >= padLen) {
+        		return value;
+        	} else if (value.length == padLen - 1) {
+        		return '0' + value;
+        	} else if (value.length == padLen - 2) {
+        		return '00' + value;
+        	} else {
+        		// We don't currently use this, but it's here
+        		// for completeness; we can certainly optimize this
+        		return zeroPad('000' + value, padLen - 3);
+        	}
         }
     }
 }
