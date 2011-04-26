@@ -29,7 +29,7 @@ package org.postgresql {
         /**
          * @private
          */
-        public function CodecError(message:String, direction:String, cause:Error, oid:int=Oid.UNSPECIFIED, as3Type:Class=null) {
+        public function CodecError(message:String, direction:String, cause:Error, oid:int=0 /* Oid.UNSPECIFIED */, as3Type:Class=null) {
             super(message);
             _direction = direction;
             _cause = cause;
