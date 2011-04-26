@@ -16,7 +16,7 @@ package org.postgresql.util {
      * L{1,2}:    Hour in day (1-12), padded to specified length if necessary
      * N{1,2}:    Minutes, padded to specified length if necessary
      * S{1,2}:    Seconds, padded to specified length if necessary
-     * Q{1,3}:    Milliseconds, padded to specified length if necessary 
+     * Q{1,3}:    Milliseconds, padded to specified length if necessary
      * </pre>
      * Note that, unlike internally, months are one-indexed. Date formatting is not currently localizable.
      * However, the properties that map to the long and short form of day and month names, as well as
@@ -148,19 +148,19 @@ package org.postgresql.util {
             }).replace(/\\([YMEDJHKLNSQA])/g, '$1');
         }
 
-        // pad to specified length using '0' 
+        // pad to specified length using '0'
         private function zeroPad(value:String, padLen:int):String {
-        	if (value.length >= padLen) {
-        		return value;
-        	} else if (value.length == padLen - 1) {
-        		return '0' + value;
-        	} else if (value.length == padLen - 2) {
-        		return '00' + value;
-        	} else {
-        		// We don't currently use this, but it's here
-        		// for completeness; we can certainly optimize this
-        		return zeroPad('000' + value, padLen - 3);
-        	}
+            if (value.length >= padLen) {
+                return value;
+            } else if (value.length == padLen - 1) {
+                return '0' + value;
+            } else if (value.length == padLen - 2) {
+                return '00' + value;
+            } else {
+                // We don't currently use this, but it's here
+                // for completeness; we can certainly optimize this
+                return zeroPad('000' + value, padLen - 3);
+            }
         }
     }
 }
