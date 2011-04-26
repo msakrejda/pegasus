@@ -1,5 +1,6 @@
 package org.postgresql.codec.decode {
 
+    import org.postgresql.Oid;
     import org.postgresql.DateStyle;
     import org.postgresql.EncodingFormat;
     import org.postgresql.codec.IPGTypeDecoder;
@@ -14,22 +15,29 @@ package org.postgresql.codec.decode {
         public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
-                    if (!('DateStyle' in serverParams)) {
-                        throw new ArgumentError("No DateStyle specified");
-                    }
-                    var outputStyle:String = DateStyle.getOutputFormat(serverParams['DateStyle']);
-                    if (outputStyle != DateStyle.OUTPUT_ISO) {
-                        throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
-                    }
-                    var dateStr:String = bytes.readUTFBytes(bytes.bytesAvailable);
-                    // Unfortunately, ActionScript does not have infinite dates: this is probably
-                    // a reasonable workaround for the moment
-                    if (dateStr == 'infinity') {
-                        return new Date(DateUtil.MAX_DATE_TICKS);
-                    } else if (dateStr == '-infinity') {
-                        return new Date(DateUtil.MIN_DATE_TICKS);
-                    } else {
-                        return parseISO(dateStr);
+                    switch (format.typeOid) {
+                        case Oid.TIMESTAMP:
+                        case Oid.TIMESTAMPTZ:
+                            if (!('DateStyle' in serverParams)) {
+                                throw new ArgumentError("No DateStyle specified");
+                            }
+                            var outputStyle:String = DateStyle.getOutputFormat(serverParams['DateStyle']);
+                            if (outputStyle != DateStyle.OUTPUT_ISO) {
+                                throw new ArgumentError("Unsupported output DateStyle: " + outputStyle);
+                            }
+                            var dateStr:String = bytes.readUTFBytes(bytes.bytesAvailable);
+                            // Unfortunately, ActionScript does not have infinite dates: this is probably
+                            // a reasonable workaround for the moment
+                            if (dateStr == 'infinity') {
+                                return new Date(DateUtil.MAX_DATE_TICKS);
+                            } else if (dateStr == '-infinity') {
+                                return new Date(DateUtil.MIN_DATE_TICKS);
+                            } else {
+                                return parseISO(dateStr);
+                            }
+                            break;
+                        default:
+                            throw new ArgumentError("Unable to decode oid: " + format.typeOid);
                     }
                 case EncodingFormat.BINARY:
                     // TODO: implement me. on the wire, the value here depends on
