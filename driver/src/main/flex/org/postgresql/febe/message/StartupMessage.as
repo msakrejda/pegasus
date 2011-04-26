@@ -40,5 +40,14 @@ package org.postgresql.febe.message {
             out.writeByte(0x00);
         }
 
+        public override function toString():String {
+            var items:Array = [];
+            for (var key:String in _parameters) {
+                items.push(key + ': ' + _parameters[key]);
+            }
+            return super.toString() + '[' + items.join(', ') + ']';
+        }
+
+
     }
 }
