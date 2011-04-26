@@ -60,6 +60,7 @@ package org.postgresql.db {
                 params[key] = pegasusUrl.parameters[key];
             }
             params.user = user;
+            params.database = pegasusUrl.db;
             var febeConn:FEBEConnection = new FEBEConnection(params, password, brokerFactory);
             var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(_codecFactory));
             return conn;
