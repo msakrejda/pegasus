@@ -17,7 +17,7 @@ package org.postgresql.db {
             _onCompletion = onCompletion;
         }
 
-        public override function handleCompletion(command:String, rows:int, oid:int):void {
+        public override function doHandleCompletion(command:String, rows:int, oid:int):void {
             if (columns) {
                 onQueryResult(columns, data);
             }

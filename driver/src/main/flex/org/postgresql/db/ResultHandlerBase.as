@@ -60,7 +60,7 @@ package org.postgresql.db {
          * and adds this to the <code>_data</code> array.
          */
         public function handleRow(rowData:Array):void {
-            assert("Received data before metadata", _data);
+            assert("Received data before metadata", _columns);
             if (rowData.length != _columns.length) {
                 LOGGER.error("Unexpected row data: got {0} fields, expected {1}; skipping", rowData.length, _columns.length);
                 return;
@@ -77,10 +77,17 @@ package org.postgresql.db {
             _data.push(row);
         }
 
+        public function handleCompletion(command:String, rows:int, oid:int):void {
+            doHandleCompletion(command, rows, oid);
+            _columns = null;
+            _data = null;
+        }
+
+
         /**
          * This method is abstract and must be overridden by subsclasses
          */
-        public /* abstract */ function handleCompletion(command:String, rows:int, oid:int):void {
+        public /* abstract */ function doHandleCompletion(command:String, rows:int, oid:int):void {
             throw new AbstractMethodError();
         }
 
