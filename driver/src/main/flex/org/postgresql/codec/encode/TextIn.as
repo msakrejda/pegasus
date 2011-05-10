@@ -3,9 +3,6 @@ package org.postgresql.codec.encode {
     import org.postgresql.codec.IPGTypeEncoder;
     import org.postgresql.io.ICDataOutput;
 
-    /**
-     * @author maciek
-     */
     public class TextIn implements IPGTypeEncoder {
         public function encode(bytes:ICDataOutput, value:Object, format:int, serverParams:Object):void {
         }
