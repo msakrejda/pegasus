@@ -29,5 +29,10 @@ package org.postgresql.febe.message {
             }
         }
 
+        override public function toString():String {
+            return super.toString() + ' {' + (statement.length > 0 ? statement : '[unnamed]: ') +
+                sql + '; paramOids[' + paramOids.join(',') + ']}';
+        }
+
     }
 }

@@ -21,5 +21,9 @@ package org.postgresql.febe.message {
             out.writeInt(len);
             out.writeCString(query);
         }
+
+        override public function toString():String {
+            return super.toString() + ' {' + query + '}';
+        }
     }
 }
