@@ -1,4 +1,5 @@
 package org.postgresql.febe {
+    import org.postgresql.febe.message.NotificationResponse;
     import flash.events.EventDispatcher;
     import org.postgresql.febe.message.AuthenticationRequest;
     import org.postgresql.febe.message.BackendKeyData;
@@ -51,6 +52,7 @@ package org.postgresql.febe {
           /*'V': FunctionCallResponse */
             'n': NoData,
             'N': NoticeResponse,
+            'A': NotificationResponse,
             't': ParameterDescription,
             'S': ParameterStatus,
             '1': ParseComplete,
