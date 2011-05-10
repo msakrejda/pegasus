@@ -1,5 +1,8 @@
 package org.postgresql.db {
-
+    import org.postgresql.codec.encode.BoolIn;
+    import org.postgresql.codec.encode.TimestamptzIn;
+    import org.postgresql.codec.encode.Float8In;
+    import org.postgresql.codec.encode.TextIn;
     import org.postgresql.codec.encode.Int4In;
     import org.postgresql.Oid;
     import org.postgresql.PgURL;
@@ -25,9 +28,6 @@ package org.postgresql.db {
         private var _codecFactory:CodecFactory;
 
         public function ConnectionFactory() {
-            // TODO: handle defaults. On input, any unknown type should be mapped
-            // to Oid.UNSPECIFIED and sent as its String representation. On output,
-            // if sent as text, we can destringify and present text.
             _codecFactory = new CodecFactory();
 
             _codecFactory.registerDecoder(Oid.INT2, new IntOut());
@@ -42,11 +42,12 @@ package org.postgresql.db {
             _codecFactory.registerDecoder(Oid.TEXT, new TextOut());
 
             _codecFactory.registerEncoder(int, new Int4In());
-            // Technically, this isn't right, especially for binary, but
-            // it's at least moderately useful and better than the alternative of
-            // CodecErrors everywhere. This typically occurs if someone is selecting
-            // text literals: e.g., "SELECT 'foo'".
-            _codecFactory.registerDecoder(Oid.UNKNOWN, new TextOut());
+            _codecFactory.registerEncoder(String, new TextIn());
+            _codecFactory.registerEncoder(Number, new Float8In());
+            _codecFactory.registerEncoder(Boolean, new BoolIn());
+            _codecFactory.registerEncoder(Date, new TimestamptzIn(true));
+
+            _codecFactory.registerDefaultDecoder(new TextOut());
         }
 
         public function createConnection(url:String, user:String, password:String):IConnection {
