@@ -13,6 +13,11 @@ package org.postgresql.codec.encode {
         private var _dateFormatter:DateFormatter;
         private var _sendUTC:Boolean;
 
+        /**
+         * Constructor.
+         *
+         * @param sendUTC whether to send incoming timestamps as UTC or local time
+         */
         public function TimestamptzIn(sendUTC:Boolean) {
              _dateFormatter = new DateFormatter();
              // The ISO format is understood regardless of DateStyle
@@ -20,6 +25,9 @@ package org.postgresql.codec.encode {
              _sendUTC = sendUTC;
         }
 
+        /**
+         * @inheritDoc
+         */
         public function encode(bytes:ICDataOutput, value:Object, format:int, serverParams:Object):void {
             switch (format) {
                 case EncodingFormat.TEXT:
@@ -44,6 +52,9 @@ package org.postgresql.codec.encode {
             }
         }
 
+        /**
+         * @inheritDoc
+         */
         public function getInputOid(clazz:Class):int {
             return Oid.TIMESTAMPTZ;
         }
