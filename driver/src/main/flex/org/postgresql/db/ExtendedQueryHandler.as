@@ -16,7 +16,7 @@ package org.postgresql.db {
 
         public function describeArguments(params:Array, serverParams:Object):Array {
             var encodedArgs:Array = [];
-            for (var arg:Object in params) {
+            for each (var arg:Object in params) {
                 var argInfo:ArgumentInfo;
                 if (arg == null) {
                     argInfo = new ArgumentInfo(EncodingFormat.TEXT, Oid.UNSPECIFIED, null);
