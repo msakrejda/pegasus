@@ -223,6 +223,10 @@ package org.postgresql.febe {
         private function handleRfq(msg:ReadyForQuery):void {
             _rfq = true;
             _status = msg.status;
+            if (_currentQueryHandler) {
+                _currentQueryHandler.dispose();
+                _currentQueryHandler = null;
+            }
             _connHandler.handleReady(_status);
         }
 
@@ -236,10 +240,6 @@ package org.postgresql.febe {
 
         private function handleError(msg:ErrorResponse):void {
             _connHandler.handleSQLError(msg.fields);
-            if (_currentQueryHandler) {
-                _currentQueryHandler.dispose();
-                _currentQueryHandler = null;
-            }
         }
 
         private function handleMetadata(msg:RowDescription):void {
@@ -271,8 +271,6 @@ package org.postgresql.febe {
             if (_currentQueryHandler) {
                 flushPendingResults();
                 _currentQueryHandler.handleCompletion(msg.command, msg.affectedRows, msg.oid);
-                _currentQueryHandler.dispose();
-                _currentQueryHandler = null;
             } else if (_hasCodecError) {
                 _hasCodecError = false;
             } else {
@@ -286,7 +284,6 @@ package org.postgresql.febe {
             // to handle this differently, but there's little practical use for that.
             if (_currentQueryHandler) {
                 _currentQueryHandler.handleCompletion('EMPTY QUERY');
-                _currentQueryHandler = null;
             } else {
                 onProtocolError(new ProtocolError("Unexpected EmptyQueryResponse"));
             }
@@ -303,10 +300,10 @@ package org.postgresql.febe {
                     // if the server is processing messages in a sensible manner) that we will
                     // ignore it for now.
                     _currentQueryHandler.handleData(_currResults, serverParams);
-                    _currResults = [];
                 } catch (e:CodecError) {
                      onCodecError(e);
                 }
+                _currResults = [];
             }
         }
 
@@ -451,10 +448,9 @@ package org.postgresql.febe {
         }
 
         private function onCodecError(error:CodecError):void {
-            // The query dies, but the connection is fine
+            // The query dies, but the connection is fine. We clean up
+            // the query handler on ReadyForQuery
             _connHandler.handleCodecError(error);
-            _currentQueryHandler.dispose();
-            _currentQueryHandler = null;
             // Note that we still may need to throw away any number of DataRow messages
             _hasCodecError = true;
         }
