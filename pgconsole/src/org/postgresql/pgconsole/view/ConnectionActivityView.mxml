@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx">
+    <fx:Script>
+        <![CDATA[
+            import org.postgresql.pgconsole.component.NotificationRenderer;
+            import org.postgresql.pgconsole.component.NoticeRenderer;
+            import org.postgresql.pgconsole.component.QueryResponseRenderer;
+            import org.postgresql.pgconsole.model.activity.vo.QueryActivityResponseVO;
+            import org.postgresql.pgconsole.model.activity.vo.NotificationActivityVO;
+            import org.postgresql.pgconsole.model.activity.vo.NoticeActivityVO;
+            import org.postgresql.pgconsole.model.activity.vo.QueryActivityVO;
+            import org.postgresql.pgconsole.component.QueryRenderer;
+            import mx.core.IFactory;
+            import org.postgresql.pgconsole.view.model.ConnectionActivityViewPresentationModel;
+
+            [Inject]
+            [Bindable]
+            public var model:ConnectionActivityViewPresentationModel;
+
+            private var _queryRenderer:IFactory = new ClassFactory(QueryRenderer);
+            private var _responseRenderer:IFactory = new ClassFactory(QueryResponseRenderer);
+            private var _noticeRenderer:IFactory = new ClassFactory(NoticeRenderer);
+            private var _notificationRenderer:IFactory = new ClassFactory(NotificationRenderer);
+
+            private function createRenderer(item:Object):IFactory {
+                trace('rendering', item.constructor);
+                if (item is QueryActivityVO) {
+                    return _queryRenderer;
+                } else if (item is QueryActivityResponseVO) {
+                    return _responseRenderer;
+                } else if (item is NoticeActivityVO) {
+                    return _noticeRenderer;
+                } else if (item is NotificationActivityVO) {
+                    return _notificationRenderer;
+                } else {
+                    return null;
+                }
+            }
+
+            private function handleClick(event:MouseEvent):void {
+                // TODO: hack; this depends on mouseChildren being false in QueryResponseRenderer
+                if (event.target is QueryResponseRenderer && event.target.data) {
+                    model.showResults(event.target.data);
+                }
+            }
+        ]]>
+    </fx:Script>
+    <s:List itemRendererFunction="{createRenderer}" width="100%" height="100%" dataProvider="{model.activity}" click="handleClick(event)"/>
+</s:Panel>

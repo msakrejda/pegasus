@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx" autoDrawBackground="false">
+    <fx:Script>
+        <![CDATA[
+            import org.postgresql.NoticeFields;
+            import org.postgresql.pgconsole.model.activity.vo.NoticeActivityVO;
+
+            public override function set data(value:Object):void {
+                super.data = value;
+                if (!value) {
+                    severityLbl.text = '';
+                    messageText.text = '';
+                    messageText.toolTip = '';
+                    return;
+                }
+                var notice:NoticeActivityVO = NoticeActivityVO(value);
+                if (NoticeFields.SEVERITY in notice.fields) {
+                    var severity:String = notice.fields[NoticeFields.SEVERITY];
+                    severityLbl.text = severity;
+                    if (severity == 'PANIC' || severity == 'FATAL' || severity == 'ERROR') {
+                        severityLbl.setStyle('color', 0xff0000);
+                    } else if (severity == 'WARN') {
+                        severityLbl.setStyle('color', 0xffff00);
+                    } else {
+                        severityLbl.setStyle('color', 0x0000ff);
+                    }
+                } else {
+                    severityLbl.setStyle('color', 0x0000ff);
+                    severityLbl.text = '';
+                }
+                messageText.text = '';
+                messageText.toolTip = '';
+                if (NoticeFields.MESSAGE in notice.fields) {
+                    messageText.text = notice.fields[NoticeFields.MESSAGE];
+                }
+                if (NoticeFields.DETAIL in notice.fields) {
+                    if (!messageText.text) {
+                        messageText.text = notice.fields[NoticeFields.DETAIL];
+                    } else {
+                        messageText.toolTip = notice.fields[NoticeFields.DETAIL];
+                    }
+                }
+                if (NoticeFields.HINT in notice.fields) {
+                    if (!messageText.text) {
+                        messageText.text = notice.fields[NoticeFields.HINT];
+                    } else {
+                        messageText.toolTip += notice.fields[NoticeFields.HINT];
+                    }
+                }
+            }
+        ]]>
+    </fx:Script>
+    <s:Group width="100%" mouseEnabled="false">
+        <s:layout>
+            <s:HorizontalLayout verticalAlign="middle" paddingLeft="5"/>
+        </s:layout>
+        <s:Label id="severityLbl" fontWeight="bold" width="94"/>
+        <s:TextArea id="messageText" editable="false" width="100%" height="46" borderVisible="false"/>
+    </s:Group>
+</s:ItemRenderer>

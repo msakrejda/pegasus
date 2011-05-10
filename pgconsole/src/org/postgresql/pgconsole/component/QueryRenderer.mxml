@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx" autoDrawBackground="false">
+    <fx:Script>
+        <![CDATA[
+
+            override public function set data(value:Object):void {
+                super.data = value;
+                if (data) {
+                    sql.text = data.sql;
+                    args.text = formatArgs(data.args);
+                } else {
+                    sql.text = '';
+                    args.text = '';
+                }
+            }
+
+            private function formatArgs(args:Array):String {
+                if (args && args.length > 0) {
+                    return args.map(function(item:Object, index:int, array:Array):Object {
+                        return item == null ? 'NULL' : item.toString();
+                    }).join(', ');
+                } else {
+                    return '[none]';
+                }
+            }
+        ]]>
+    </fx:Script>
+    <s:Line width="100%">
+        <s:stroke>
+            <s:SolidColorStroke color="0x000000" weight="1"/>
+        </s:stroke>
+    </s:Line>
+    <mx:Grid paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5" width="100%">
+        <mx:GridRow width="100%">
+            <mx:GridItem>
+                <s:Label text="Query:" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem width="100%">
+                <s:TextArea id="sql" editable="false" width="100%" height="46" borderVisible="false"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+            <mx:GridItem>
+                <s:Label text="Arguments:" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <s:Label id="args"/>
+            </mx:GridItem>
+        </mx:GridRow>
+    </mx:Grid>
+</s:ItemRenderer>
