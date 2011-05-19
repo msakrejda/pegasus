@@ -7,11 +7,13 @@
             import spark.components.DataGroup;
             import mx.formatters.DateFormatter;
 
-            private var dateFmt:DateFormatter;
+            private var _dateFmt:DateFormatter;
+            private var _dirty:Boolean;
 
             private function handleInit(event:Event):void {
-                dateFmt = new DateFormatter();
-                dateFmt.formatString = 'JJ:NN';
+                _dateFmt = new DateFormatter();
+                _dateFmt.formatString = 'JJ:NN';
+                _dirty = false;
             }
 
             public override function set data(value:Object):void {
@@ -36,34 +38,42 @@
                     trueInput.selected = Boolean(argValue);
                 } else if (argValue is Date) {
                     dateInput.selectedDate = argValue as Date;
-                    timeInput.text = dateFmt.format(argValue as Date);
+                    timeInput.text = _dateFmt.format(argValue as Date);
                 }
             }
 
             private function handleChange(event:Event):void {
-                if (!isValid()) {
-                    return;
+                _dirty = true;
+                invalidateProperties();
+            }
+
+
+            override protected function commitProperties():void {
+                super.commitProperties();
+                if (_dirty && isValid()) {
+                    if (isNull.selected) {
+                        data.value = null;
+                    } else if (typeList.selectedItem == 'text') {
+                        data.value = txtInput.text;
+                    } else if (typeList.selectedItem == 'integer') {
+                        data.value = int(intInput.text);
+                    } else if (typeList.selectedItem == 'float') {
+                        data.value = Number(numInput.text);
+                    } else if (typeList.selectedItem == 'boolean') {
+                        trace('boolean param selected, setting to', trueInput.selected);
+                        data.value = trueInput.selected;
+                    } else if (typeList.selectedItem == 'timestamp') {
+                        var dateTicks:Number = dateInput.selectedDate.time;
+                        var timeComponents:Array = timeInput.text.split(':');
+                        dateTicks += (60 * 60 * 1000 * int(timeComponents[0])) + (60 * 1000 * int(timeComponents[1]));
+                        if (timeComponents.length == 3) {
+                            dateTicks += (1000 * int(timeComponents[2]));
+                        }
+                        data.value = new Date(dateTicks);
+                    }
+                    _dirty = false;
                 }
 
-                if (isNull.selected) {
-                    data.value = null;
-                } else if (typeList.selectedItem == 'text') {
-                    data.value = txtInput.text;
-                } else if (typeList.selectedItem == 'integer') {
-                    data.value = int(intInput.text);
-                } else if (typeList.selectedItem == 'float') {
-                    data.value = Number(numInput.text);
-                } else if (typeList.selectedItem == 'boolean') {
-                    data.value = trueInput.selected;
-                } else if (typeList.selectedItem == 'timestamp') {
-                    var dateTicks:Number = dateInput.selectedDate.time;
-                    var timeComponents:Array = timeInput.text.split(':');
-                    dateTicks += (60 * 60 * 1000 * int(timeComponents[0])) + (60 * 1000 * int(timeComponents[1]));
-                    if (timeComponents.length == 3) {
-                        dateTicks += (1000 * int(timeComponents[2]));
-                    }
-                    data.value = new Date(dateTicks);
-                }
             }
 
             public function isValid():Boolean {
@@ -71,6 +81,7 @@
                  (typeList.selectedItem == 'text') ||
                  (typeList.selectedItem == 'integer' && intValidator.validate()) ||
                  (typeList.selectedItem == 'float' && numValidator.validate()) ||
+                 (typeList.selectedItem == 'boolean') ||
                  (typeList.selectedItem == 'timestamp' && timeValidator.validate());
             }
 
@@ -96,7 +107,7 @@
         <mx:NumberValidator id="intValidator" source="{intInput}" property="text" domain="int"/>
         <mx:NumberValidator id="numValidator" source="{numInput}" property="text" domain="real"/>
         <mx:RegExpValidator id="timeValidator" source="{timeInput}" property="text" expression="^\d\d:\d\d(:\d\d)?$"/>
-        <s:RadioButtonGroup id="booleanInput"/>
+        <s:RadioButtonGroup id="booleanInput" change="handleChange(event)"/>
     </fx:Declarations>
     <s:layout>
         <s:HorizontalLayout verticalAlign="middle" paddingLeft="8" paddingBottom="5" paddingRight="8" paddingTop="5"/>
@@ -111,7 +122,7 @@
             </s:layout>
             <s:CheckBox id="isNull" label="null?" change="handleChange(event)"/>
             <s:Label text="or" paddingTop="3"/>
-            <s:DropDownList enabled="{!isNull.selected}" id="typeList" selectedIndex="0">
+            <s:DropDownList enabled="{!isNull.selected}" id="typeList" selectedIndex="0" change="handleChange(event)">
                 <mx:ArrayCollection>
                   <fx:String>text</fx:String>
                   <fx:String>integer</fx:String>
@@ -121,7 +132,8 @@
                 </mx:ArrayCollection>
             </s:DropDownList>
         </s:Group>
-        <mx:ViewStack enabled="{!isNull.selected}" id="valueSelector" height="30" width="200" selectedIndex="{typeList.selectedIndex}">
+        <mx:ViewStack enabled="{!isNull.selected}" id="valueSelector" height="30" width="200"
+            creationPolicy="all" selectedIndex="{typeList.selectedIndex}">
             <mx:Box styleName="inputWrapper" width="100%">
                 <s:TextInput id="txtInput" width="100%" change="handleChange(event)"/>
             </mx:Box>
@@ -132,8 +144,8 @@
                 <s:TextInput id="numInput" text="0" width="100%" change="handleChange(event)"/>
             </mx:Box>
             <mx:Box styleName="inputWrapper" width="100%" direction="horizontal">
-                <s:RadioButton id="trueInput" group="{booleanInput}" label="true" selected="true" change="handleChange(event)"/>
-                <s:RadioButton id="falseInput" group="{booleanInput}" label="false" change="handleChange(event)"/>
+                <s:RadioButton id="trueInput" group="{booleanInput}" label="true" selected="true"/>
+                <s:RadioButton id="falseInput" group="{booleanInput}" label="false"/>
             </mx:Box>
             <mx:Box styleName="inputWrapper" width="100%" direction="horizontal">
                 <mx:DateField id="dateInput" selectedDate="{new Date()}" change="handleChange(event)"/>

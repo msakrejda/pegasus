@@ -45,13 +45,13 @@
         <s:layout>
             <s:HorizontalLayout/>
         </s:layout>
-        <s:SkinnableContainer width="100%" height="100%">
+        <s:SkinnableContainer width="100%" minWidth="300" maxWidth="500" height="100%">
             <s:layout>
                 <s:VerticalLayout/>
             </s:layout>
             <pgv:QueryInputView width="100%"/>
             <pgv:ConnectionActivityView width="100%" height="100%"/>
         </s:SkinnableContainer>
-        <pgv:QueryResultView height="100%"/>
+        <pgv:QueryResultView height="100%" minWidth="500" width="100%"/>
     </s:SkinnableContainer>
 </s:SkinnableContainer>

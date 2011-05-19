@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:pg="org.postgresql.pgconsole.component.*"
-    height="300" title="Enter query:">
+    height="300" title="enter query:">
     <fx:Script>
         <![CDATA[
             import org.postgresql.pgconsole.view.model.QueryInputViewParameter;
@@ -10,16 +10,31 @@
             [Inject]
             [Bindable]
             public var model:QueryInputViewPresentationModel;
+
+            private function handleKeyUp(event:KeyboardEvent):void {
+                if (event.ctrlKey) {
+                    var char:String = String.fromCharCode(event.charCode);
+                    if (char == '\n' || char == '\r') {
+                        executeQuery();
+                    }
+                }
+            }
+
+            private function executeQuery():void {
+                model.execute(queryText.text);
+                queryText.text = '';
+            }
         ]]>
     </fx:Script>
     <s:layout>
         <s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
     </s:layout>
-    <s:TextArea id="queryText" width="100%" height="100%"/>
+    <s:TextArea id="queryText" width="100%" height="100%" keyUp="handleKeyUp(event)"/>
     <s:Group height="100%">
         <s:layout>
             <s:VerticalLayout/>
         </s:layout>
+        <s:Label text="reference with $1, $2, etc." fontSize="10"/>
         <s:List dataProvider="{model.args}" itemRenderer="org.postgresql.pgconsole.component.ParameterInputRenderer"
             width="100%" height="100%"/>
         <s:Group width="100%">
@@ -27,7 +42,7 @@
                 <s:HorizontalLayout horizontalAlign="center"/>
             </s:layout>
             <s:Button label="add parameter" click="model.args.addItem(new QueryInputViewParameter())"/>
-            <s:Button label="Execute" click="model.execute(queryText.text)"/>
+            <s:Button label="execute" click="executeQuery()"/>
         </s:Group>
     </s:Group>
 </s:Panel>
