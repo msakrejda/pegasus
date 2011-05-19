@@ -22,7 +22,7 @@ package org.postgresql.febe.message {
             out.writeCString(query);
         }
 
-        override public function toString():String {
+        public override function toString():String {
             return super.toString() + ' {' + query + '}';
         }
     }

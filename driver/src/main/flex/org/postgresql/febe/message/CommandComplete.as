@@ -55,5 +55,9 @@ package org.postgresql.febe.message {
             throw new MessageError("Unexpected command tag: " + tag, this);
         }
 
+        override public function toString():String {
+            return super.toString() + ' {' + commandTag + '}';
+        }
+
     }
 }

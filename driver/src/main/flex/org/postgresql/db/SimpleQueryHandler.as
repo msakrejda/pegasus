@@ -20,8 +20,6 @@ package org.postgresql.db {
      */
     internal class SimpleQueryHandler extends EventDispatcher implements IQueryHandler {
 
-        private static const LOGGER:ILogger = Log.getLogger(SimpleQueryHandler);
-
         protected var _codecFactory:CodecFactory;
         protected var _resultHandler:IResultHandler;
         protected var _fields:Array;
@@ -55,7 +53,6 @@ package org.postgresql.db {
                 // TODO: ColumnFactory?
                 columns.push(new Column(f.name, decoder.getOutputClass(f.typeOid), f.typeOid));
             }
-            LOGGER.debug("Got fields: {0}", fields.join(' '));
             _resultHandler.handleColumns(columns);
         }
 

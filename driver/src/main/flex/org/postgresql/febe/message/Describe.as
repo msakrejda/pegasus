@@ -29,5 +29,9 @@ package org.postgresql.febe.message {
             out.writeCString(_name);
         }
 
+        public override function toString():String {
+            return super.toString() + ' {' + _type + ' ' + _name + '}';
+        }
+
     }
 }

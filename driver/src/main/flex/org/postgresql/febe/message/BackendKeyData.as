@@ -14,5 +14,8 @@ package org.postgresql.febe.message {
             key = input.readInt();
         }
 
+        public override function toString():String {
+            return super.toString() + ' {pid:' + pid + ',key:' + key + '}';
+        }
     }
 }

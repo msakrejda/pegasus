@@ -45,7 +45,7 @@ package org.postgresql.febe.message {
             for (var key:String in _parameters) {
                 items.push(key + ': ' + _parameters[key]);
             }
-            return super.toString() + '[' + items.join(', ') + ']';
+            return super.toString() + ' {' + items.join(', ') + '}';
         }
 
 

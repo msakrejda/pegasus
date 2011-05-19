@@ -20,5 +20,9 @@ package org.postgresql.febe.message {
             out.writeInt(limit);
         }
 
+        public override function toString():String {
+            return super.toString() + ' {' + portal + (limit > 0 ? ' (fetch' + limit + ')' : '') + '}';
+        }
+
     }
 }

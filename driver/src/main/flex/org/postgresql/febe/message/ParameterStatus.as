@@ -14,7 +14,7 @@ package org.postgresql.febe.message {
         }
 
         public override function toString():String {
-            return format("{0} ({1} : {2})", type, name, value);
+            return format("{0} {{1}: {2}}", type, name, value);
         }
     }
 }

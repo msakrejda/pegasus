@@ -125,7 +125,6 @@ class Logger implements ILogger {
                 return rest[idx];
             }
         });
-        //trace(_cat, 'logging', result);
         _logMsg(level, _cat, result);
     }
     public function fine(message:String, ...rest):void { doLog(LogLevel.FINE, message, rest); }

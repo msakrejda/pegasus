@@ -14,5 +14,10 @@ package org.postgresql.febe.message {
             auxinfo = input.readCString();
         }
 
+        public override function toString():String {
+            return super.toString() + '{' + condition + ' from pid ' + notifierPid +
+                (auxinfo.length > 0 ? '(' + auxinfo + ')' : '') + '}';
+        }
+
     }
 }

@@ -21,5 +21,9 @@ package org.postgresql.febe.message {
             }
         }
 
+        public override function toString():String {
+            return super.toString() + ' {' + fields.join(', ') + '}';
+        }
+
     }
 }
