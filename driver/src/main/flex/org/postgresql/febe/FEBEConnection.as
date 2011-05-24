@@ -1,7 +1,5 @@
 package org.postgresql.febe {
 
-    import org.postgresql.febe.message.ParseComplete;
-    import flash.net.Socket;
     import org.postgresql.febe.message.Flush;
     import org.postgresql.febe.message.Sync;
     import org.postgresql.febe.message.Execute;
