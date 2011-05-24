@@ -16,12 +16,11 @@ package org.postgresql.codec.encode {
         /**
          * Constructor.
          *
+         * @param formatter DateFormatter instance to use for sending timestamps in TEXT-mode
          * @param sendUTC whether to send incoming timestamps as UTC or local time
          */
-        public function TimestamptzIn(sendUTC:Boolean) {
-             _dateFormatter = new DateFormatter();
-             // The ISO format is understood regardless of DateStyle
-             _dateFormatter.formatString = 'YYYY-MM-DD JJ:NN:SS.QQQ';
+        public function TimestamptzIn(formatter:DateFormatter, sendUTC:Boolean) {
+             _dateFormatter = formatter;
              _sendUTC = sendUTC;
         }
 

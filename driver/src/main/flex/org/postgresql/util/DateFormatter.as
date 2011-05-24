@@ -70,6 +70,16 @@ package org.postgresql.util {
         public var formatString:String;
 
         /**
+         * Constructor.
+         *
+         * @param formatString initial format String setting
+         */
+        public function DateFormatter(formatString:String='YYYY-MM-DD JJ:NN:SS.QQQ') {
+            // The ISO format is understood regardless of DateStyle
+            this.formatString = formatString;
+        }
+
+        /**
          * Format the given date according to the current format string.
          *
          * @param value Date to format.
@@ -78,7 +88,7 @@ package org.postgresql.util {
         public function format(value:Date):String {
             // This function ain't pretty...
 
-            // 2 to 4 Y or 1 to 4 of [ME] or 1 to 2 of [DJHKLNS] or A, *not* preceeded by a backslash
+            // 2 to 4 Y or 1 to 4 of [ME] or 1 to 2 of [DJHKLNS] or 1 to 3 of Q, or A, *not* preceeded by a backslash
             return formatString.replace(/(?<!\\)(?:YY+|[ME]{1,4}|[DJHKLNS]{1,2}|Q{1,3}|A)/g, function():String {
                 var match:String = arguments[0];
                 if (/Y+/.test(match)) {

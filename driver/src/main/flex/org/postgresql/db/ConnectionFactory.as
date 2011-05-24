@@ -1,4 +1,5 @@
 package org.postgresql.db {
+    import org.postgresql.util.DateFormatter;
     import org.postgresql.codec.encode.BoolIn;
     import org.postgresql.codec.encode.TimestamptzIn;
     import org.postgresql.codec.encode.Float8In;
@@ -45,7 +46,7 @@ package org.postgresql.db {
             _codecFactory.registerEncoder(String, new TextIn());
             _codecFactory.registerEncoder(Number, new Float8In());
             _codecFactory.registerEncoder(Boolean, new BoolIn());
-            _codecFactory.registerEncoder(Date, new TimestamptzIn(true));
+            _codecFactory.registerEncoder(Date, new TimestamptzIn(new DateFormatter(), true));
 
             _codecFactory.registerDefaultDecoder(new TextOut());
         }
