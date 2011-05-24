@@ -1,5 +1,5 @@
 package org.postgresql.log {
-
+    import org.postgresql.util.format;
     import flash.utils.Dictionary;
     import flash.utils.getQualifiedClassName;
 
@@ -88,19 +88,21 @@ package org.postgresql.log {
                 delete targets[target];
             }
         }
-        private static function doLog(level:int, category:String, message:String):void {
+        private static function doLog(level:int, category:String, message:String, ...rest):void {
             var targets:Dictionary = _categoryTargets[category];
             for (var target:* in targets) {
                 var targetThreshold:int = _targetLevels[target];
                 if (level >= targetThreshold) {
-                    target.handleMessage(level, category, message);
+                    var msg:String = format(message, rest);
+                    ILogTarget(target).handleMessage(level, category, msg);
                 }
             }
         }
     }
 }
-    import org.postgresql.log.ILogger;
-    import org.postgresql.log.LogLevel;
+
+import org.postgresql.log.ILogger;
+import org.postgresql.log.LogLevel;
 
 
 class Logger implements ILogger {
@@ -117,15 +119,7 @@ class Logger implements ILogger {
         doLog(level, message, rest);
     }
     private function doLog(level:int, message:String, rest:Array):void {
-        var result:String = message.replace(/{(\d+)}/g, function():String {
-            var idx:int = int(arguments[1]);
-            if (idx > rest.length || idx < 0) {
-                throw new ArgumentError("Invalid log argument index: " + idx);
-            } else {
-                return rest[idx];
-            }
-        });
-        _logMsg(level, _cat, result);
+        _logMsg(level, _cat, message, rest);
     }
     public function fine(message:String, ...rest):void { doLog(LogLevel.FINE, message, rest); }
     public function debug(message:String, ...rest):void { doLog(LogLevel.DEBUG, message, rest); }

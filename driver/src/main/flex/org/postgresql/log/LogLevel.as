@@ -48,6 +48,7 @@ package org.postgresql.log {
                 case WARN:      return 'WARN';
                 case ERROR:     return 'ERROR';
                 case FATAL:     return 'FATAL';
+                case NONE:      return 'NONE';
                 default:        return 'UNKNOWN';
             }
         }
