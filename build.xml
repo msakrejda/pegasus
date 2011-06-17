@@ -13,13 +13,13 @@
 
   <property name="debug" value="true"/>
 
-  <property name="pegasus.src" value="driver/src/main/flex"/>
+  <property name="pegasus.src" value="driver/src"/>
   <property name="pegasus.swc" value="dist/pegasus-${pegasus.version}.swc"/>
   <property name="pegasus.doc" value="dist/pegasus-${pegasus.version}-api.zip"/>
 
   <target name="clean" description="Removes artifacts from previous build">
     <delete failonerror="false" includeEmptyDirs="true">
-	  <fileset dir="build"/>
+      <fileset dir="build"/>
       <fileset dir="dist"/>
     </delete>
   </target>
@@ -42,16 +42,16 @@
     </condition>
     <fail message="flex.home must be specified in property file or FLEX_HOME environment variable must be set to build pegasus">
       <condition>
-		<not>
-		  <isset property="FLEX_HOME"/>
-		</not>
+	<not>
+	  <isset property="FLEX_HOME"/>
+	</not>
       </condition>
     </fail>
     <taskdef resource="flexTasks.tasks">
       <classpath>
-		<fileset dir="${FLEX_HOME}/ant/lib">
-		  <include name="**/*.jar"/>
-		</fileset>
+        <fileset dir="${FLEX_HOME}/ant/lib">
+          <include name="**/*.jar"/>
+        </fileset>
       </classpath>
     </taskdef>
   </target>
@@ -67,8 +67,8 @@
          Okay, it seems we need *both* source-path and include-sources. The documentation
          is vague. I think this is what is colloquially known as a "clusterfuck" of an API
         -->
-      <source-path>driver/src/main/flex</source-path>
-	  <include-sources dir="driver/src/main/flex" append="true">
+      <source-path>driver/src</source-path>
+      <include-sources dir="driver/src" append="true">
         <include name="**/*.as"/>
       </include-sources>
     </compc>
@@ -89,7 +89,7 @@
       -->
     <java jar="${FLEX_HOME}/lib/asdoc.jar" dir="${FLEX_HOME}/frameworks" fork="true" failonerror="true">
       <arg line="-output=${basedir}/build/asdoc"/>
-      <arg line="-doc-sources=${basedir}/driver/src/main/flex"/>
+      <arg line="-doc-sources=${basedir}/driver/src"/>
       <arg line="-window-title='Pegasus ${pegasus.version}'"/>
       <arg line="-main-title='Pegasus ${pegasus.version}'"/>
       <arg line="-footer='Copyright 2010-${docgen.copyright.year}'"/>
