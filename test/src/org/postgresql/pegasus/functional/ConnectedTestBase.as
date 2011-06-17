@@ -1,4 +1,5 @@
 package org.postgresql.pegasus.functional {
+    import flash.events.IEventDispatcher;
     import org.flexunit.async.Async;
     import org.postgresql.db.ConnectionFactory;
     import org.postgresql.db.IConnection;
@@ -18,7 +19,7 @@ package org.postgresql.pegasus.functional {
             LOGGER.debug("Creating connection.");
             connection = new ConnectionFactory().createConnection(Credentials.url, Credentials.user, Credentials.password);
             // TODO: register failure event on Connection error
-            Async.proceedOnEvent(this, connection, ConnectionEvent.CONNECTED);
+            Async.proceedOnEvent(this, IEventDispatcher(connection), ConnectionEvent.CONNECTED);
             LOGGER.debug("Created");
         }
 
