@@ -1,7 +1,7 @@
 package org.postgresql {
 
     /**
-     * Class related to encodings of data in the protocol.
+     * Functionality defining encodings of data in the protocol.
      */
     public class EncodingFormat {
         /**

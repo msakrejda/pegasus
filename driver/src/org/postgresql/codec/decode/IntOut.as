@@ -6,8 +6,15 @@ package org.postgresql.codec.decode {
     import org.postgresql.febe.IFieldInfo;
     import org.postgresql.io.ICDataInput;
 
+    /**
+     * Parse a PostgreSQL <code>int4</code> or <code>int2</code> value into an ActionScript
+     * <code>int</code>.
+     */
     public class IntOut implements IPGTypeDecoder {
 
+        /**
+         * @inheritDoc
+         */
         public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
@@ -26,6 +33,10 @@ package org.postgresql.codec.decode {
             }
         }
 
+        /**
+         * This decoder returns <code>int</code>.
+         * @see int
+         */
         public function getOutputClass(typeOid:int):Class {
             return int;
         }

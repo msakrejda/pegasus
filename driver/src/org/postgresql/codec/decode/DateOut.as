@@ -9,9 +9,27 @@ package org.postgresql.codec.decode {
     import org.postgresql.io.ICDataInput;
     import org.postgresql.util.DateUtil;
 
+    /**
+     * Parse a PostgreSQL <code>timestamp</code> or <code>timestamptz</code> value into an ActionScript
+     * Date object. Note that the "pseudo-timestamps" <code>infinity</code> and <code>-infinity</code>
+     * are represented by the minimum and maximum representable ActionScript dates.
+     * <br/>
+     * Note that ActionScript <code>Date</code>s have neither the precision nor the range to fully represent
+     * a PostgreSQL <code>timestamp</code> value; values not representable are approximated (in the former
+     * case) or throw an error (in the latter).
+     * <br/>
+     * An alternate, higher-fidelity decoder may be desirable, but producing ActionScript <code>Date</code>
+     * objects is pragmatic.
+     *
+     * @see org.postgresql.util.DateUtil#MAX_DATE_TICKS
+     * @see org.postgresql.util.DateUtil#MIN_DATE_TICKS
+     */
     public class DateOut implements IPGTypeDecoder {
         // Currently, we only support ISO-style date parsing, and only text mode
 
+        /**
+         * @inheritDoc
+         */
         public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
@@ -109,6 +127,10 @@ package org.postgresql.codec.decode {
             return result;
         }
 
+        /**
+         * This decoder returns <code>Date</code>.
+         * @see Date
+         */
         public function getOutputClass(typeOid:int):Class {
             return Date;
         }

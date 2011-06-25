@@ -6,14 +6,25 @@ package org.postgresql.codec.decode {
     import org.postgresql.febe.IFieldInfo;
     import org.postgresql.io.ICDataInput;
 
+    /**
+     * Parse a PostgreSQL <code>double precision</code> or <code>float</code> value into
+     * an ActionScript <code>Number</code>. Since both support IEEE floating point numbers,
+     * the mapping is fairly straightforward, albeit it depends on the <code>extra_float_digits</code>
+     * PostgreSQL setting.
+     */
     public class FloatOut implements IPGTypeDecoder {
 
         // This is an interesting tidbit of IEEE fun... Due to the default precision PostgreSQL
         // uses when printing doubles in text mode, the textual representation of the largest double
         // is a value rounded to something *bigger* than the largest double (and, correspondingly, Number).
-        // Hilarity ensues. This is the sober workaround to that rampant hilarity.
+        // Hilarity ensues. This is the sober workaround to that rampant hilarity. A better solution
+        // would be to work with extra_float_digits, but it's a little ugly to force that. Perhaps we
+        // can set it but fall back if it's subsequently changed.
         private static const MAX_PG_DOUBLE_STR:String = "1.79769313486232e+308";
 
+        /**
+         * @inheritDoc
+         */
         public function decode(bytes:ICDataInput, format:IFieldInfo, serverParams:Object):Object {
             switch (format.format) {
                 case EncodingFormat.TEXT:
@@ -36,7 +47,7 @@ package org.postgresql.codec.decode {
                         // as floats, but that's probably not worth it right now
                         case Oid.FLOAT4:
                             return bytes.readFloat();
-                        case Oid.INT4:
+                        case Oid.FLOAT8:
                             return bytes.readDouble();
                         default:
                             throw new ArgumentError("Unable to decode oid: " + format.typeOid);
@@ -46,6 +57,10 @@ package org.postgresql.codec.decode {
             }
         }
 
+        /**
+         * This decoder returns <code>Number</code>.
+         * @see Number
+         */
         public function getOutputClass(typeOid:int):Class {
             return Number;
         }

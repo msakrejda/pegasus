@@ -48,7 +48,7 @@ package org.postgresql {
 
         /**
          * If applicable, the ActionScript <code>Class</code> of the destination type (when
-         * decoding) or the source type (when encoding).
+         * decoding) or the source type (when encoding); otherwise <code>null</code>.
          */
         public function get as3Type():Class {
             return _as3Type;
@@ -56,7 +56,8 @@ package org.postgresql {
 
         /**
          * If applicable, the oid of the destination type (when encoding) or
-         * the source type (when decoding).
+         * the source type (when decoding); otherwise <code>Oid.UNSPECIFIED</code>.
+         * @see org.postgresql.Oid#UNSPECIFIED
          */
         public function get oid():int {
             return _oid;

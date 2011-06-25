@@ -1,9 +1,10 @@
 package org.postgresql {
     /**
-     * These are the error names and corresponding error codes which may be produced by PostgreSQL
+     * Error names and corresponding error codes which may be produced by PostgreSQL
      * in the course of a connection.
      * <br/>
-     * See <code>http://www.postgresql.org/docs/current/static/errcodes-appendix.html</code>
+     * See <a href="http://www.postgresql.org/docs/current/static/errcodes-appendix.html">Error Codes appendix</a>
+     * in the PostgreSQL documentation.
      * @see org.postgresql.NoticeFields#CODE
      */
     public class ErrorCodes {

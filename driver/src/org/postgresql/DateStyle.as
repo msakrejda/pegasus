@@ -1,27 +1,27 @@
 package org.postgresql {
 
     /**
-     * Class related to the representations of dates in PostgreSQL.
+     * Functionality defining the representation of dates in PostgreSQL.
      */
     public class DateStyle {
         /**
-         * Produce dates in ISO-8601 format, e.g., <code>2011-02-01 18:53:12.848059-08</code>.
+         * Expect dates in ISO-8601 format, e.g., <code>2011-02-01 18:53:12.848059-08</code>.
          */
         public static const OUTPUT_ISO:String = 'ISO';
         /**
-         * Produces dates in a legacy format, e.g., <code>Tue 01 Feb 18:54:14.348079 2011 PST</code>.
+         * Expect dates in a legacy format, e.g., <code>Tue 01 Feb 18:54:14.348079 2011 PST</code>.
          * Note that this output format is also affected by the MDY part of the <code>DateStyle</code>
          * setting: when set to <code>DMY</code>, the day is printed first.
          */
         public static const OUTPUT_POSTGRES:String = 'Postgres';
         /**
-         * Produces dates in SQL standard format, e.g., <code>01/02/2011 18:56:05.379808 PST</code>.
+         * Expect dates in SQL standard format, e.g., <code>01/02/2011 18:56:05.379808 PST</code>.
          * Note that this output format is also affected by the MDY part of the <code>DateStyle</code>
          * setting: when set to <code>DMY</code>, the day is printed first.
          */
         public static const OUTPUT_SQL:String = 'SQL';
         /**
-         * Produces dates in a custom legacy format, e.g., <code>01.02.2011 18:55:23.025107 PST</code>.
+         * Expect dates in a custom legacy format, e.g., <code>01.02.2011 18:55:23.025107 PST</code>.
          */
         public static const OUTPUT_GERMAN:String = 'German';
 

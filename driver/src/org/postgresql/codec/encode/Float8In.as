@@ -4,7 +4,15 @@ package org.postgresql.codec.encode {
     import org.postgresql.codec.IPGTypeEncoder;
     import org.postgresql.io.ICDataOutput;
 
+    /**
+     * Encodes ActionScript <code>Number</code>s into PostgreSQL <code>float8</code> (<code>double precision</code>)
+     * values.
+     */
     public class Float8In implements IPGTypeEncoder {
+
+        /**
+         * @inheritDoc
+         */
         public function encode(bytes:ICDataOutput, value:Object, format:int, serverParams:Object):void {
             switch (format) {
                 case EncodingFormat.TEXT:
@@ -19,6 +27,11 @@ package org.postgresql.codec.encode {
             }
         }
 
+        /**
+         * This encoder returns <code>Oid.FLOAT8</code>.
+         *
+         * @see org.postgresql.Oid#FLOAT8
+         */
         public function getInputOid(clazz:Class):int {
             return Oid.FLOAT8;
         }

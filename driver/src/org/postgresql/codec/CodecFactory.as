@@ -6,12 +6,13 @@ package org.postgresql.codec {
     import org.postgresql.CodecError;
 
     /**
-     * The CodecFactory manages mappings between ActionScript Objects (of certain
-     * Classes) and PostgreSQL column values (of certain oids). A Class can be mapped
-     * to an oid by registering an encoder, and an oid to a Class through a decoder.
-     * Only a single mapping can exist for a given oid (or Class) at any given time.
+     * Manages mappings between ActionScript Objects (of certain Classes) and PostgreSQL
+     * column values (of certain oids). A Class can be mapped to an oid by registering an
+     * encoder, and an oid to a Class through a decoder. Only a single mapping can exist for
+     * a given oid (or Class) at any given time.
      * <p/>
-     * Default encoders and decoders can also be registered.
+     * Default encoders and decoders can also be registered. These are used as fallback
+     * and are used when no encoder (or decoder) exists for a given Class (or oid).
      * <p/>
      * No encoders or decoders are registered by default.
      *

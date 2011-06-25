@@ -16,18 +16,22 @@ package org.postgresql.db {
     import org.postgresql.febe.MessageStreamFactory;
     import org.postgresql.io.SocketDataStreamFactory;
 
+    // N.B.: The other pegasus classes are designed with reusability and flexibility in mind; ConnectionFactory provides
+    // a facade to all that which is primarily concerned with simplicity.
+
     /**
-     * A simple wiring of all the pegasus pieces into a single, simple interface.
+     * The standard way to create a connection in pegasus.
      *
-     * This essentially configures a default set of options for pegasus, including CodecFactory
-     * and various other factories. The other pegasus classes are designed with reusability
-     * and flexibility in mind; ConnectionFactory provides a facade to all that which is primarily
-     * concerned with simplicity.
+     * This configures a default set of options for pegasus, including all the default available
+     * codecs, and allows usage of a connection URL.
      */
     public class ConnectionFactory {
 
         private var _codecFactory:CodecFactory;
 
+        /**
+         * @private
+         */
         public function ConnectionFactory() {
             _codecFactory = new CodecFactory();
 
@@ -51,10 +55,21 @@ package org.postgresql.db {
             _codecFactory.registerDefaultDecoder(new TextOut());
         }
 
+        /**
+         * Create a new connection to given URL with the specified credentials. The new connection
+         * attempts to connect automatically right after it is created, and will dispatch the
+         * relevant events as appropriate.
+         *
+         * @param url URL to connect to
+         * @param user database user to connect as
+         * @param password database password for user
+         *
+         * @return IConnection to given url
+         */
         public function createConnection(url:String, user:String, password:String):IConnection {
             var pegasusUrl:PgURL = new PgURL(url);
 
-            var brokerFactory:MessageStreamFactory =
+            var messageStreamFactory:MessageStreamFactory =
                 new MessageStreamFactory(
                     new SocketDataStreamFactory(pegasusUrl.host, pegasusUrl.port));
             var params:Object = {};
@@ -63,7 +78,7 @@ package org.postgresql.db {
             }
             params.user = user;
             params.database = pegasusUrl.db;
-            var febeConn:FEBEConnection = new FEBEConnection(params, password, brokerFactory);
+            var febeConn:FEBEConnection = new FEBEConnection(params, password, messageStreamFactory);
             var conn:Connection = new Connection(febeConn, new QueryHandlerFactory(_codecFactory));
             return conn;
         }

@@ -1,7 +1,7 @@
 package org.postgresql {
 
     /**
-     * These are the field names and corresponding field codes which
+     * Field names and corresponding field codes which
      * may occur in notice and error messages from PostgreSQL.
      */
     public class NoticeFields {

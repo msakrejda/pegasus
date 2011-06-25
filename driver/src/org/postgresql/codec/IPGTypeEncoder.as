@@ -1,6 +1,5 @@
 package org.postgresql.codec {
 
-    import org.postgresql.febe.IFieldInfo;
     import org.postgresql.io.ICDataOutput;
 
     /**

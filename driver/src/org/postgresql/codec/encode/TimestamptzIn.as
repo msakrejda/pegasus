@@ -7,7 +7,7 @@ package org.postgresql.codec.encode {
     import org.postgresql.io.ICDataOutput;
 
     /**
-     * Formats dates as UTC dates.
+     * Encodes ActionScript <code>Date</code>s into PostgreSQL <code>timestamptz</code> values.
      */
     public class TimestamptzIn implements IPGTypeEncoder {
         private var _dateFormatter:DateFormatter;
@@ -52,7 +52,9 @@ package org.postgresql.codec.encode {
         }
 
         /**
-         * @inheritDoc
+         * This encoder returns <code>Oid.TIMESTAMPTZ</code>.
+         *
+         * @see org.postgresql.Oid#TEXT
          */
         public function getInputOid(clazz:Class):int {
             return Oid.TIMESTAMPTZ;
