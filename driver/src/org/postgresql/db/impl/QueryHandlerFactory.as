@@ -1,6 +1,7 @@
-package org.postgresql.db {
-    import org.postgresql.febe.IExtendedQueryHandler;
+package org.postgresql.db.impl {
     import org.postgresql.codec.CodecFactory;
+    import org.postgresql.db.IResultHandler;
+    import org.postgresql.febe.IExtendedQueryHandler;
     import org.postgresql.febe.IQueryHandler;
 
     public class QueryHandlerFactory {

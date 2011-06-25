@@ -1,10 +1,4 @@
 package org.postgresql.db {
-    import org.postgresql.util.DateFormatter;
-    import org.postgresql.codec.encode.BoolIn;
-    import org.postgresql.codec.encode.TimestamptzIn;
-    import org.postgresql.codec.encode.Float8In;
-    import org.postgresql.codec.encode.TextIn;
-    import org.postgresql.codec.encode.Int4In;
     import org.postgresql.Oid;
     import org.postgresql.PgURL;
     import org.postgresql.codec.CodecFactory;
@@ -12,9 +6,17 @@ package org.postgresql.db {
     import org.postgresql.codec.decode.FloatOut;
     import org.postgresql.codec.decode.IntOut;
     import org.postgresql.codec.decode.TextOut;
+    import org.postgresql.codec.encode.BoolIn;
+    import org.postgresql.codec.encode.Float8In;
+    import org.postgresql.codec.encode.Int4In;
+    import org.postgresql.codec.encode.TextIn;
+    import org.postgresql.codec.encode.TimestamptzIn;
+    import org.postgresql.db.impl.Connection;
+    import org.postgresql.db.impl.QueryHandlerFactory;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.MessageStreamFactory;
     import org.postgresql.io.SocketDataStreamFactory;
+    import org.postgresql.util.DateFormatter;
 
     // N.B.: The other pegasus classes are designed with reusability and flexibility in mind; ConnectionFactory provides
     // a facade to all that which is primarily concerned with simplicity.

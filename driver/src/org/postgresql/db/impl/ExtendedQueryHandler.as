@@ -1,12 +1,13 @@
-package org.postgresql.db {
-    import org.postgresql.Oid;
-    import org.postgresql.febe.ArgumentInfo;
+package org.postgresql.db.impl {
     import org.postgresql.EncodingFormat;
-    import org.postgresql.io.ByteDataStream;
-    import org.postgresql.codec.IPGTypeEncoder;
-    import org.postgresql.util.getType;
-    import org.postgresql.febe.IExtendedQueryHandler;
+    import org.postgresql.Oid;
     import org.postgresql.codec.CodecFactory;
+    import org.postgresql.codec.IPGTypeEncoder;
+    import org.postgresql.db.IResultHandler;
+    import org.postgresql.febe.ArgumentInfo;
+    import org.postgresql.febe.IExtendedQueryHandler;
+    import org.postgresql.io.ByteDataStream;
+    import org.postgresql.util.getType;
 
     public class ExtendedQueryHandler extends SimpleQueryHandler implements IExtendedQueryHandler {
 

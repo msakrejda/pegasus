@@ -1,14 +1,15 @@
-package org.postgresql.db {
+package org.postgresql.db.impl {
 
     import flash.events.EventDispatcher;
-
     import org.postgresql.CodecError;
     import org.postgresql.codec.CodecFactory;
     import org.postgresql.codec.IPGTypeDecoder;
+    import org.postgresql.db.IResultHandler;
     import org.postgresql.febe.FieldDescription;
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
+
 
     /**
      * A simple implementation of the <code>IQueryHandler</code> interface to transform

@@ -1,21 +1,24 @@
-package org.postgresql.db {
+package org.postgresql.db.impl {
 
-    import org.postgresql.febe.ArgumentInfo;
-    import org.postgresql.febe.IExtendedQueryHandler;
     import flash.events.EventDispatcher;
-
     import org.postgresql.CodecError;
     import org.postgresql.ProtocolError;
+    import org.postgresql.db.IConnection;
+    import org.postgresql.db.IResultHandler;
+    import org.postgresql.db.QueryToken;
     import org.postgresql.event.ConnectionErrorEvent;
     import org.postgresql.event.ConnectionEvent;
     import org.postgresql.event.NoticeEvent;
     import org.postgresql.event.NotificationEvent;
     import org.postgresql.event.ParameterChangeEvent;
+    import org.postgresql.febe.ArgumentInfo;
     import org.postgresql.febe.FEBEConnection;
     import org.postgresql.febe.IConnectionHandler;
+    import org.postgresql.febe.IExtendedQueryHandler;
     import org.postgresql.febe.IQueryHandler;
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
+
 
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 

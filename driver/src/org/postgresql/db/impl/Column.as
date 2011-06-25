@@ -1,4 +1,5 @@
-package org.postgresql.db {
+package org.postgresql.db.impl {
+    import org.postgresql.db.IColumn;
     internal class Column implements IColumn {
         private var _name:String;
         private var _type:Class;
