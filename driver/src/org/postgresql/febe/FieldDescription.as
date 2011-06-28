@@ -3,9 +3,12 @@ package org.postgresql.febe {
     import org.postgresql.EncodingFormat;
     import org.postgresql.io.ICDataInput;
 
-    public class FieldDescription implements IFieldInfo {
+    /**
+     * Default <code>IColumnInfo</code> implementation.
+     */
+    public class FieldDescription implements IColumnInfo {
 
-        public var name:String;
+        private var _name:String;
         public var tableOid:int;
         public var attributeNum:int;
         private var _typeOid:int;
@@ -13,8 +16,13 @@ package org.postgresql.febe {
         public var typeModifier:int;
         private var _format:int;
 
+        /**
+         * Deserialize according to PostgreSQL field metadata encoding.
+         *
+         * @param input ICDataInput containing FieldDescription bytes
+         */
         public function read(input:ICDataInput):void {
-            name = input.readCString();
+            _name = input.readCString();
             tableOid = input.readInt();
             attributeNum = input.readShort();
             _typeOid = input.readInt();
@@ -24,16 +32,32 @@ package org.postgresql.febe {
             EncodingFormat.validate(format);
         }
 
+        /**
+         * @inheritDoc
+         */
         public function get typeOid():int {
             return _typeOid;
         }
 
+        /**
+         * @inheritDoc
+         */
         public function get format():int {
             return _format;
         }
 
+        /**
+         * @inheritDoc
+         */
         public function toString():String {
             return name + '(oid:' + _typeOid + ',attno:' + attributeNum + ',size:' + typeSize + ',typmod:' + typeModifier + ')';
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function get name():String {
+            return _name;
         }
 
     }

@@ -1,5 +1,7 @@
 package org.postgresql.db.impl {
 
+    import org.postgresql.febe.IColumnInfo;
+    import org.postgresql.febe.IFieldInfo;
     import flash.events.EventDispatcher;
     import org.postgresql.CodecError;
     import org.postgresql.codec.CodecFactory;
@@ -42,13 +44,13 @@ package org.postgresql.db.impl {
          * instances describing the data in terms of ActionScript classes and then handed off to the
          * wrapped <code>IResultHandler</code>.
          *
-         * @param fields <code>Array</code> of <code>FieldDescription</code> instances describing the data
+         * @param fields <code>Array</code> of <code>IColumnInfo</code> instances describing the data
          */
         public function handleMetadata(fields:Array):void {
             _fields = fields;
             _decoders = [];
             var columns:Array = [];
-            for each (var f:FieldDescription in fields) {
+            for each (var f:IColumnInfo in fields) {
                 var decoder:IPGTypeDecoder = _codecFactory.getDecoder(f.typeOid);
                 _decoders.push(decoder);
                 // TODO: ColumnFactory?
