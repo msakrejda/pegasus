@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
     xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:pgv="org.postgresql.pgconsole.view.*"
-    xmlns:pgc="org.postgresql.pgconsole.*" width="1200" height="500">
+    xmlns:pgc="org.postgresql.pgconsole.*">
     <fx:Declarations>
         <pgc:ApplicationContext contextView="{this}"/>
     </fx:Declarations>
