@@ -1,6 +1,9 @@
 package org.postgresql.febe {
     import org.postgresql.febe.IQueryHandler;
 
+    /**
+     * Handler for the PostgreSQL extended query protocol.
+     */
     public interface IExtendedQueryHandler extends IQueryHandler {
         /**
          * For each argument, provide an <code>ArgumentInfo</code> object defining

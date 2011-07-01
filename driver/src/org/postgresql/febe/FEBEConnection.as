@@ -190,12 +190,11 @@ package org.postgresql.febe {
                 _messageHandler.setMessageListener(NotificationResponse, handleNotification);
                 _messageHandler.setMessageListener(RowDescription, handleMetadata);
                 _messageHandler.setMessageListener(DataRow, handleData);
-                // TODO: Add message listeners for the extended query protocol. We don't
-                // actually need them right now to do extended protocol queries, but
-                // it's a little ugly to drop messages everywhere.
 
-                // _broker.setMessageListener(CopyInResponse, ...);
-                // _broker.setMessageListener(CopyOutResponse, ...);
+                // TODO: We should probably add handlers to process parseComplete / bindComplete / portalSuspended.
+                // We can ignore them for now, since we don't do anything with them, but it's a little ugly to
+                // drop them implicitly...
+
                 _messageHandler.setMessageListener(CommandComplete, handleComplete);
                 _messageHandler.setMessageListener(EmptyQueryResponse, handleEmpty);
 

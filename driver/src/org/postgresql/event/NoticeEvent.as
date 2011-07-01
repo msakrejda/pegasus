@@ -8,11 +8,16 @@ package org.postgresql.event {
     public class NoticeEvent extends Event {
 
         /**
-         * A notice (informational) message.
+         * A notice (informational) message from PostgreSQL.
+         *
+         * @eventType notice
          */
         public static const NOTICE:String = 'notice';
+
         /**
-         * An error message.
+         * An error message from PostgreSQL.
+         *
+         * @eventType error
          */
         public static const ERROR:String = 'error';
 
@@ -26,6 +31,7 @@ package org.postgresql.event {
         public function get fields():Object {
             return _fields;
         }
+
         /**
          * Create a new notice event.
          *

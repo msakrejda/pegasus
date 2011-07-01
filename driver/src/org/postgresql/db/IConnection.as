@@ -2,6 +2,26 @@ package org.postgresql.db {
     import flash.events.IEventDispatcher;
 
     /**
+     * @eventType org.postgresql.event.ConnectionErrorEvent.CONNECTIVITY_ERROR
+     */
+    [Event(name='connectivityError', type='org.postgresql.event.ConnectionErrorEvent')]
+
+    /**
+     * @eventType org.postgresql.event.ConnectionErrorEvent.PROTOCOL_ERROR
+     */
+    [Event(name='protocolError', type='org.postgresql.event.ConnectionErrorEvent')]
+
+    /**
+     * @eventType org.postgresql.event.ConnectionErrorEvent.CODEC_ERROR
+     */
+    [Event(name='codecError', type='org.postgresql.event.ConnectionErrorEvent')]
+
+    /**
+     * @eventType org.postgresql.event.ConnectionEvent.CONNECTED
+     */
+    [Event(name='connected', type='org.postgresql.event.ConnectionEvent')]
+
+    /**
      * @eventType org.postgresql.event.NoticeEvent.ERROR
      */
     [Event(name='error', type='org.postgresql.event.NoticeEvent')]
@@ -35,7 +55,7 @@ package org.postgresql.db {
          * from the connection.
          * <p/>
          * This method will generally not throw an Error even if the uderlying connection
-         * is broken; even synchronous errors will be "rerouted" through the Error event
+         * is broken; even synchronous errors will be "rerouted" through the error event
          * mechanism for uniformity.
          * <p/>
          * Note that the method is asynchronous: it returns before the query actually
@@ -47,6 +67,10 @@ package org.postgresql.db {
          * the standard PostgreSQL parameter markers in the query text. These are simply
          * one-based indexes of the arguments prefixed with '<code>$</code>'. E.g., the first
          * argument in the args array would be referred to in the query text as '<code>$1</code>'.
+         * <p/>
+         * Note that for a simple query (without parameters), a number of different queries can
+         * be included in the <code>sql</code> query text; when parameters are provided, only a
+         * single query can be specified.
          *
          * @param handler handler to process query metadata, results, and completion
          * @param sql query to be executed

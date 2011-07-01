@@ -96,6 +96,7 @@
       <!-- package overviews... damn you to hell, asdoc -->
       <arg value="-package=org.postgresql,Classes defining errors and constants core to the driver."/>
       <arg value="-package=org.postgresql.db,The &quot;user interface&quot; to the driver. Most applications will interact with the library largely through classes in this package."/>
+      <arg value="-package=org.postgresql.db.impl,Implementation details of the org.postgresql.db API."/>
       <arg value="-package=org.postgresql.db.event,Classes for events related to the API presented by the &lt;code&gt;org.postgresql.db&lt;/code&gt; package."/>
       <arg value="-package=org.postgresql.codec,Classes related to encoding and decoding data types."/>
       <arg value="-package=org.postgresql.codec.encode,Classes defining all built-in encoders."/>

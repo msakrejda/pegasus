@@ -45,8 +45,8 @@ package org.postgresql.db.event {
         }
 
         /**
-         * If the query was an <code>INSERT</code> of a single row, and if the target table has <code>OID</code>s,
-         * this contains the <code>OID</code> of the newly-inserted row. Otherwise, it is zero.
+         * If the query was an <code>INSERT</code> of a single row, and if the target table has oids,
+         * this contains the oid of the newly-inserted row. Otherwise, it is zero.
          */
         public function get oid():int {
             return _oid;

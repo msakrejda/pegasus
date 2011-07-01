@@ -8,7 +8,7 @@ package org.postgresql.event {
     public class ParameterChangeEvent extends Event {
 
         /**
-         * A parameter change.
+         * A parameter change in a PostgreSQL configuration parameter.
          */
         public static const PARAMETER_CHANGE:String = 'parameterChange';
 

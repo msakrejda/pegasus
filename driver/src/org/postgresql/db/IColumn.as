@@ -1,6 +1,6 @@
 package org.postgresql.db {
     /**
-     * Class describing a field of data in an IResultSet.
+     * Describes a field of data in a query result.
      */
     public interface IColumn {
         /**
@@ -11,12 +11,12 @@ package org.postgresql.db {
         function get name():String;
         /**
          * The client-side data type of the column. This is determined by the
-         * OID of the column's (server-side) data type and the decoder registered
+         * oid of the column's (server-side) data type and the decoder registered
          * for that data type in the current configuration.
          */
         function get type():Class;
         /**
-         * The OID of the column's actual, server-side data type.
+         * The oid of the column's actual, server-side data type.
          */
         function get typeOid():int;
     }

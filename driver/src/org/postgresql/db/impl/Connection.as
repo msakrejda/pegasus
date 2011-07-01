@@ -19,7 +19,10 @@ package org.postgresql.db.impl {
     import org.postgresql.log.ILogger;
     import org.postgresql.log.Log;
 
-
+    /**
+     * Default implementation of <code>IConnection</code>. Provides a facade to FEBEConnection
+     * through its implementation of the <code>IConnectionHandler</code> interface.
+     */
     public class Connection extends EventDispatcher implements IConnection, IConnectionHandler {
 
         private static const LOGGER:ILogger = Log.getLogger(Connection);
@@ -31,6 +34,12 @@ package org.postgresql.db.impl {
         private var _currentHandler:IQueryHandler;
         private var _currentToken:QueryToken;
 
+        /**
+         * Create a new <code>Connection</code>.
+         *
+         * @param baseConn the underlying FEBEConnection to be used
+         * @param queryHandlerFactory factory to use for generating query handlers
+         */
         public function Connection(baseConn:FEBEConnection, queryHandlerFactory:QueryHandlerFactory) {
             _baseConn = baseConn;
             _queryHandlerFactory = queryHandlerFactory;
@@ -38,28 +47,45 @@ package org.postgresql.db.impl {
             // TODO: copy, function call
 
             _pendingExecution = [];
+
+            // TODO: this is a little ugly to have in the constructor
             _baseConn.connect(this);
         }
 
+        /**
+         * @private
+         */
         public function handleConnected():void {
             dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECTED));
         }
 
+        /**
+         * @private
+         */
         public function handleStreamError(error:Error):void {
             LOGGER.error("Stream error: " + error.message);
             dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CONNECTIVITY_ERROR, error));
         }
 
+        /**
+         * @private
+         */
         public function handleProtocolError(error:ProtocolError):void {
             LOGGER.error("Protocol error: " + error.message);
             dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.PROTOCOL_ERROR, error));
         }
 
+        /**
+         * @private
+         */
         public function handleCodecError(error:CodecError):void {
             LOGGER.warn("Codec error: " + error.message);
             dispatchEvent(new ConnectionErrorEvent(ConnectionErrorEvent.CODEC_ERROR, error));
         }
 
+        /**
+         * @private
+         */
         public function handleSQLError(fields:Object):void {
             LOGGER.warn("Error:");
             for (var key:String in fields) {
@@ -68,6 +94,9 @@ package org.postgresql.db.impl {
             dispatchEvent(new NoticeEvent(NoticeEvent.ERROR, fields));
         }
 
+        /**
+         * @private
+         */
         public function handleNotice(fields:Object):void {
             LOGGER.info("Notice:");
             for (var key:String in fields) {
@@ -76,14 +105,23 @@ package org.postgresql.db.impl {
             dispatchEvent(new NoticeEvent(NoticeEvent.NOTICE, fields));
         }
 
+        /**
+         * @private
+         */
         public function handleNotification(condition:String, notifierPid:int):void {
             dispatchEvent(new NotificationEvent(condition, notifierPid));
         }
 
+        /**
+         * @private
+         */
         public function handleParameterChange(name:String, newValue:String):void {
             dispatchEvent(new ParameterChangeEvent(name, newValue));
         }
 
+        /**
+         * @private
+         */
         public function handleReady(status:String):void {
             if (_pendingExecution.length > 0) {
                 var nextQuery:PendingQueryExecution = _pendingExecution.shift();
@@ -91,6 +129,9 @@ package org.postgresql.db.impl {
             }
         }
 
+        /**
+         * @inheritDoc
+         */
         private function executeNext(handler:IResultHandler, token:QueryToken, sql:String, args:Array):void {
             _currentToken = token;
             if (args) {
@@ -100,6 +141,9 @@ package org.postgresql.db.impl {
             }
         }
 
+        /**
+         * @inheritDoc
+         */
         public function cancel(token:QueryToken):Boolean {
             var found:Boolean = false;
             if (_currentToken == token) {
@@ -119,12 +163,18 @@ package org.postgresql.db.impl {
             return found;
         }
 
+        /**
+         * @private
+         */
         private function doExecute(handler:IResultHandler, sql:String):void {
             var queryHandler:IQueryHandler = _queryHandlerFactory.createSimpleHandler(handler);
             _currentHandler = queryHandler;
             _baseConn.executeSimpleQuery(sql, queryHandler);
         }
 
+        /**
+         * @private
+         */
         private function doParameterizedExecute(handler:IResultHandler, sql:String, argValues:Array):void {
             var queryHandler:IExtendedQueryHandler = _queryHandlerFactory.createExtendedHandler(handler);
             // the queryHandler can give us parameter info, encoded parameter values, and desired input types
@@ -145,10 +195,16 @@ package org.postgresql.db.impl {
             _baseConn.sync();
         }
 
+        /**
+         * @inheritDoc
+         */
         public function close():void {
             _baseConn.close();
         }
 
+        /**
+         * @inheritDoc
+         */
         public function execute(handler:IResultHandler, sql:String, args:Array=null):QueryToken {
             var token:QueryToken = new QueryToken(sql);
             if (_baseConn.rfq) {

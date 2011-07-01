@@ -18,12 +18,15 @@ package org.postgresql.db {
     import org.postgresql.io.SocketDataStreamFactory;
     import org.postgresql.util.DateFormatter;
 
-    // N.B.: The other pegasus classes are designed with reusability and flexibility in mind; ConnectionFactory provides
-    // a facade to all that which is primarily concerned with simplicity.
+    // N.B.: The other pegasus classes are designed with reusability and flexibility in mind; ConnectionFactory
+    // provides a facade to all that which is primarily concerned with simplicity.
+
+    // TODO: allow some CodecFactory configuration here. Most people won't want to mess with the other
+    // stuff, but registering new codecs (or rejiggering existing ones), may be pretty common
 
     /**
      * The standard way to create a connection in pegasus.
-     *
+     * <br/>
      * This configures a default set of options for pegasus, including all the default available
      * codecs, and allows usage of a connection URL.
      */

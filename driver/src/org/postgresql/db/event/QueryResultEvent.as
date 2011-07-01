@@ -45,7 +45,7 @@ package org.postgresql.db.event {
         /**
          * Query results.
          *
-         * @see org.postgresql.db.ResultHandlerBase#columns
+         * @see org.postgresql.db.ResultHandlerBase#data
          */
         public function get data():Array {
             return _data;

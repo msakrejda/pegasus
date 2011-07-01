@@ -9,7 +9,7 @@ package org.postgresql.event {
     public class NotificationEvent extends Event {
 
         /**
-         * A notification.
+         * A notification through the PostgreSQL LISTEN / NOTIFY protocol.
          *
          * @eventType notification
          */

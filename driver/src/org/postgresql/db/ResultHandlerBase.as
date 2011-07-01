@@ -85,7 +85,8 @@ package org.postgresql.db {
 
 
         /**
-         * This method is abstract and must be overridden by subsclasses
+         * This method is abstract and must be overridden by subsclasses. It is invoked
+         * at query completion and should make data available to users in some fashion.
          */
         public /* abstract */ function doHandleCompletion(command:String, rows:int, oid:int):void {
             throw new AbstractMethodError();
