@@ -17,6 +17,12 @@
   <property name="pegasus.swc" value="dist/pegasus-${pegasus.version}.swc"/>
   <property name="pegasus.doc" value="dist/pegasus-${pegasus.version}-api.zip"/>
 
+  <property name="pgconsole.src" value="pgconsole/src"/>
+  <property name="pgconsole.lib" value="pgconsole/lib"/>
+  <property name="pgconsole.app" value="pgconsole/src/PGConsole.mxml"/>
+  <property name="pgconsole.app-descriptor" value="pgconsole/src/PGConsole-app.xml"/>
+  <property name="pgconsole.swf" value="dist/pgconsole/PGConsole-${pegasus.version}.swf"/>
+
   <target name="clean" description="Removes artifacts from previous build">
     <delete failonerror="false" includeEmptyDirs="true">
       <fileset dir="build"/>
@@ -117,5 +123,22 @@
   </target>
 
   <target name="dist" depends="swc,doc" description="Build all pegasus artifacts"/>
+
+  <target name="pgconsole" depends="flex-setup,swc" description="Build pgconsole demo application">
+    <mxmlc file="${pgconsole.app}" output="${pgconsole.swf}" configname="air"
+	   debug="${debug}" fork="true" maxmemory="512m">
+      <arg value="-headless-server=true"/>
+      <source-path>pgconsole/src</source-path>
+      <include-libraries dir="${pgconsole.lib}" append="true">
+	<include name="**/*.swc"/>
+      </include-libraries>
+      <include-libraries file="${pegasus.swc}" append="true"/>
+    </mxmlc>
+    <copy todir="dist/pgconsole" file="${pgconsole.app-descriptor}">
+      <filterset>
+	<filter token="VERSION" value="${pegasus.version}"/>
+      </filterset>
+    </copy>
+  </target>
 
 </project>

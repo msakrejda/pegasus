@@ -4,13 +4,13 @@
   <id>org.postgresql.pgconsole.PGConsole</id>
   <name>PGConsole</name>
   <version>1.0</version>
-  <filename>PGConsole</filename>
+  <filename>PGConsole-@VERSION@</filename>
   <description>
     <text xml:lang="en">This is a demo application for Pegasus, an ActionScript driver for PostgreSQL.</text>
   </description>
   <copyright>Copyright 2009-2011, PostgreSQL Global Development Group</copyright>
   <initialWindow>
-    <content>PGConsole.swf</content>
+    <content>PGConsole-@VERSION@.swf</content>
     <title>PGConsole: A Pegasus Demo</title>
     <systemChrome>standard</systemChrome>
     <transparent>false</transparent>
@@ -18,7 +18,7 @@
     <minimizable>true</minimizable>
     <maximizable>true</maximizable>
     <resizable>true</resizable>
-    <width>800</width>
+    <width>1100</width>
     <height>500</height>
     <x>150</x>
     <y>150</y>
