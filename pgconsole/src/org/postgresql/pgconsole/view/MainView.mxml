@@ -33,7 +33,7 @@
                 <s:TextInput id="database" text="postgres"/>
             </mx:FormItem>
             <mx:FormItem label="username" required="true">
-                <s:TextInput id="username" text="maciek"/>
+                <s:TextInput id="username" text="postgres"/>
             </mx:FormItem>
             <mx:FormItem label="password" required="true">
                 <s:TextInput id="password" displayAsPassword="true"/>
