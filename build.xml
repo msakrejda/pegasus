@@ -13,15 +13,20 @@
 
   <property name="debug" value="true"/>
 
+  <!-- pegasus library properties -->
   <property name="pegasus.src" value="driver/src"/>
   <property name="pegasus.swc" value="dist/pegasus-${pegasus.version}.swc"/>
   <property name="pegasus.doc" value="dist/pegasus-${pegasus.version}-api.zip"/>
 
+  <!-- pgconsole demo app properties -->
   <property name="pgconsole.src" value="pgconsole/src"/>
   <property name="pgconsole.lib" value="pgconsole/lib"/>
   <property name="pgconsole.app" value="pgconsole/src/PGConsole.mxml"/>
-  <property name="pgconsole.app-descriptor" value="pgconsole/src/PGConsole-app.xml"/>
-  <property name="pgconsole.swf" value="dist/pgconsole/PGConsole-${pegasus.version}.swf"/>
+  <property name="pgconsole.app-descriptor" value="PGConsole-app.xml"/>
+
+  <property name="pgconsole.build" value="build/pgconsole"/>
+  <property name="pgconsole.swf" value="PGConsole-${pegasus.version}.swf"/>
+  <property name="pgconsole.air" value="dist/pgconsole-${pegasus.version}.air"/>
 
   <target name="clean" description="Removes artifacts from previous build">
     <delete failonerror="false" includeEmptyDirs="true">
@@ -60,6 +65,8 @@
         </fileset>
       </classpath>
     </taskdef>
+    <!-- N.B.: no task for adt; we just call the java task with the jar directly -->
+    <property name="flex.adt.jar" value="${FLEX_HOME}/lib/adt.jar"/>
   </target>
 
   <target name="swc" depends="flex-setup">
@@ -122,10 +129,10 @@
     </zip>
   </target>
 
-  <target name="dist" depends="swc,doc" description="Build all pegasus artifacts"/>
+  <target name="pegasus" depends="swc,doc" description="Build all pegasus artifacts"/>
 
   <target name="pgconsole" depends="flex-setup,swc" description="Build pgconsole demo application">
-    <mxmlc file="${pgconsole.app}" output="${pgconsole.swf}" configname="air"
+    <mxmlc file="${pgconsole.app}" output="${pgconsole.build}/${pgconsole.swf}" configname="air"
 	   debug="${debug}" fork="true" maxmemory="512m">
       <arg value="-headless-server=true"/>
       <source-path>pgconsole/src</source-path>
@@ -134,11 +141,62 @@
       </include-libraries>
       <include-libraries file="${pegasus.swc}" append="true"/>
     </mxmlc>
-    <copy todir="dist/pgconsole" file="${pgconsole.app-descriptor}">
+    <copy todir="${pgconsole.build}" file="${pgconsole.src}/${pgconsole.app-descriptor}">
       <filterset>
 	<filter token="VERSION" value="${pegasus.version}"/>
       </filterset>
     </copy>
   </target>
+
+  <target name="check-cert">
+    <condition property="pgconsole.cert.exists">
+      <available file="${pgconsole.cert.keystore}"/>
+    </condition>
+  </target>
+
+  <target name="gen-cert" depends="check-cert,flex-setup" unless="pgconsole.cert.exists"
+	  description="Generate certificate for pgconsole demo application">
+    <!-- pgconsole packaged AIR app properties -->
+    <echo>Generating certificate ${pgconsole.cert.name} in file ${pgconsole.cert.keystore}</echo>
+    <fail unless="pgconsole.cert.password">Certificate password property (pgconsole.cert.password)
+must be set to generate certificate</fail>
+    <java jar="${flex.adt.jar}" fork="true" failonerror="true">
+      <arg value="-certificate"/>
+      <arg value="-cn"/>
+      <arg value="${pgconsole.cert.name}"/>
+      <arg value="-ou"/>
+      <arg value="${pgconsole.cert.org-unit}"/>
+      <arg value="-o"/>
+      <arg value="${pgconsole.cert.org-name}"/>
+      <arg value="-c"/>
+      <arg value="${pgconsole.cert.country}"/>
+      <arg value="${pgconsole.cert.key-type}"/>
+      <arg value="${pgconsole.cert.keystore}"/>
+      <arg value="${pgconsole.cert.password}"/>
+    </java>
+  </target>
+
+  <target name="pgconsole-package" depends="pgconsole,gen-cert,flex-setup"
+	  description="Packages the pgconsole SWF file into an AIR installation package">
+    <echo>Packaging pgconsole demo application</echo>
+    <fail unless="pgconsole.cert.password">Certificate password property (pgconsole.cert.password)
+must be set to build AIR installation package</fail>
+    <java jar="${flex.adt.jar}" fork="true" failonerror="true" maxmemory="512m">
+      <arg value="-package"/>
+      <arg value="-storetype"/>
+      <arg value="${pgconsole.cert.storetype}"/>
+      <arg value="-keystore"/>
+      <arg value="${pgconsole.cert.keystore}"/>
+      <arg value="-storepass"/>
+      <arg value="${pgconsole.cert.password}"/>
+      <arg value="${pgconsole.air}"/>
+      <arg value="${pgconsole.build}/${pgconsole.app-descriptor}"/>
+      <arg value="-C"/>
+      <arg value="${pgconsole.build}"/>
+      <arg value="${pgconsole.swf}"/>
+    </java>
+  </target>
+
+  <target name="dist" depends="pegasus,pgconsole-package"/>
 
 </project>
