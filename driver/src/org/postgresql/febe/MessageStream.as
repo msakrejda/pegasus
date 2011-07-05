@@ -96,7 +96,6 @@ package org.postgresql.febe {
                     // to the number of bytes this particular message can read.
                     var messageBytes:ByteDataStream = new ByteDataStream();
                     if (_nextMessageLen > 0) {
-                        // N.B.: If
                         _dataStream.readBytes(messageBytes, 0, _nextMessageLen);
                     }
                     assert("Unexpected amount of data was read off the stream", messageBytes.length == _nextMessageLen);
