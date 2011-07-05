@@ -1,5 +1,7 @@
 package org.postgresql.febe {
 
+    import flash.utils.ByteArray;
+    import com.adobe.crypto.MD5;
     import org.postgresql.febe.message.Flush;
     import org.postgresql.febe.message.Sync;
     import org.postgresql.febe.message.Execute;
@@ -172,6 +174,29 @@ package org.postgresql.febe {
                 _authenticated = true;
             } else if (msg.subtype == AuthenticationRequest.CLEARTEXT_PASSWORD) {
                 send(new PasswordMessage(_password));
+            } else if (msg.subtype == AuthenticationRequest.MD5_PASSWORD) {
+                if (msg.auxdata.bytesAvailable != 4) {
+                    onProtocolError(new ProtocolError("Expected four bytes of salt data for md5 password authentication, got " +
+                        msg.auxdata.bytesAvailable));
+                }
+
+                var step1:ByteArray = new ByteArray();
+                step1.writeUTFBytes(_password);
+                // TODO: it's a little ugly to reference user here
+                step1.writeUTFBytes(_params.user);
+                step1.position = 0;
+
+                var step1digest:String = MD5.hashBinary(step1);
+
+                var step2:ByteArray = new ByteArray();
+                step2.writeUTFBytes(step1digest);
+                // the auxdata contains the salt
+                step2.writeBytes(msg.auxdata, 0, 4);
+                step2.position = 0;
+
+                var finalDigest:String = MD5.hashBinary(step2);
+
+                send(new PasswordMessage("md5" + finalDigest));
             } else {
                 onProtocolError(new UnsupportedProtocolFeatureError(
                     "Unsupported authentication type requested: " + msg.subtype));

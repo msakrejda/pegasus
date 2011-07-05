@@ -53,7 +53,8 @@ package org.postgresql.febe.message {
                 throw new MessageError("Unexpected AuthenticationRequest type: " + subtype, this);
             }
             if (subtype == MD5_PASSWORD || subtype == GSS_CONTINUE) {
-                input.readBytes(auxdata, input.bytesAvailable);
+                input.readBytes(auxdata, 0, input.bytesAvailable);
+                auxdata.position = 0;
             }
         }
 
