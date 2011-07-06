@@ -78,4 +78,5 @@ This is a sample result handler::
 	}
     }
 
-A more extensive example is available in `pgconsole`.
+A more extensive example is available in `pgconsole`. Asdoc API
+documentation is also available.
