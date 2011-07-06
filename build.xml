@@ -5,8 +5,8 @@
   <property file="build.properties"/>
 
   <!-- These can be overridden from the command line when building -->
-  <property name="pegasus.version" value="SNAPSHOT"/>
-  <property name="pegasus.branch" value="trunk"/>
+  <property name="pegasus.version" value="0.4"/>
+  <property name="pegasus.branch" value="master"/>
   <property name="pegasus.revision" value="non-release"/>
 
   <property environment="env"/>
