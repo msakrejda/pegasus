@@ -60,7 +60,9 @@ Here is an example of pegasus usage::
     var handler:IResultHandler = new EventResultHandler();
     // Add a handler for query results; you can often ignore completion
     IEventDispatcher(handler).addEventListener(QueryResultEvent.RESULT, handleResult);
-    // Parameter markers use standard PostgreSQL syntax
+    // Parameter markers use standard PostgreSQL syntax. Parameter input
+    // mappings (from ActionScript data types to PostgreSQL types) are
+    // configurable, but defaults are sensible for simple use cases.
     conn.execute(handler, "select 'hello ' || $1", [ 'world' ]);
 
 This is a sample result handler::
@@ -71,6 +73,9 @@ This is a sample result handler::
 	    trace('Column', col.name, col.type);
 	}
 	trace("Data is:");
+	// PostgreSQL data types are automatically mapped to corresponding
+	// ActionScript data types (the mappings can be reconfigured, but
+	// again, the defaults are sensible for simple uses)
 	for (var row:Object in event.data) {
 	    for (var col:IColumn in event.columns) {
 	    	trace("Value for column", col.name, "is", row[col.name]);
