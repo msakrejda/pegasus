@@ -35,7 +35,7 @@ package org.postgresql {
             var urlParts:Array = url.split('?');
             var root:String = urlParts[0];
             var args:String = urlParts.length > 1 ? urlParts[1] : null;
-            var rootElems:Array = new RegExp("asdbc:postgresql://([\\w\\.]+)(?::(\\d+))?/(\\w+)").exec(root);
+            var rootElems:Array = new RegExp("asdbc:postgresql://([\\w\\.]+)(?::(\\d+))?/([\\w\\-]+)").exec(root);
             var argElems:Array = args ? args.split("&") : [];
             if (!rootElems) {
                 throw new ArgumentError("Invalid url: " + url);
