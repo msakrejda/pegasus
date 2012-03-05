@@ -1,62 +1,76 @@
 package org.postgresql.db.event {
 
-    import flash.events.Event;
+import flash.events.Event;
 
-    /**
-     * Indicates the completion of a query.
-     */
-    public class QueryCompletionEvent extends Event {
+import org.postgresql.db.QueryToken;
 
-        /**
-         * A query completion.
-         *
-         * @eventType queryComplete
-         */
-        public static const COMPLETE:String = 'queryComplete';
+/**
+ * Indicates the completion of a query.
+ */
+public class QueryCompletionEvent extends Event {
 
-        private var _tag:String;
-        private var _rows:int;
-        private var _oid:int;
+   /**
+    * A query completion.
+    *
+    * @eventType queryComplete
+    */
+   public static const COMPLETE:String = 'queryComplete';
 
-        /**
-         * Create a query completion event.
-         *
-         * @param type type of event
-         * @param tag query completion tag
-         * @param rows number of rows affected by this query, if applicable
-         * @param oid oid of inserted row, if applicable
-         *
-         * @private
-         */
-        public function QueryCompletionEvent(type:String, tag:String, rows:int, oid:int) {
-            super(type, false, false);
-            _tag = tag;
-            _rows = rows;
-            _oid = oid;
-        }
+   private var _tag:String;
+   private var _rows:int;
+   private var _oid:int;
+   private var _token:QueryToken;
 
-        /**
-         * Number of rows affected by query. Note that this is <em>not</em> the number of rows returned
-         * by a <code>SELECT</code>; it corresponds to changes by <code>INSERT</code>, <code>UPDATE</code>,
-         * and <code>DELETE</code> queries.
-         */
-        public function get rows():int {
-            return _rows;
-        }
+   /**
+    * Create a query completion event.
+    *
+    * @param type type of event
+    * @param tag query completion tag
+    * @param rows number of rows affected by this query, if applicable
+    * @param oid oid of inserted row, if applicable
+    *
+    * @private
+    */
+   public function QueryCompletionEvent(type:String, tag:String, rows:int, oid:int, token:QueryToken) {
+      super(type, false, false);
+      _tag = tag;
+      _rows = rows;
+      _oid = oid;
+      _token = token;
+   }
 
-        /**
-         * If the query was an <code>INSERT</code> of a single row, and if the target table has oids,
-         * this contains the oid of the newly-inserted row. Otherwise, it is zero.
-         */
-        public function get oid():int {
-            return _oid;
-        }
+   /**
+    * Number of rows affected by query. Note that this is <em>not</em> the number of rows returned
+    * by a <code>SELECT</code>; it corresponds to changes by <code>INSERT</code>, <code>UPDATE</code>,
+    * and <code>DELETE</code> queries.
+    */
+   public function get rows():int {
+      return _rows;
+   }
 
-        /**
-         * The query completion tag (e.g., <code>SELECT</code> or <code>CREATE TABLE</code>)
-         */
-        public function get tag():String {
-            return _tag;
-        }
-    }
+   /**
+    * If the query was an <code>INSERT</code> of a single row, and if the target table has oids,
+    * this contains the oid of the newly-inserted row. Otherwise, it is zero.
+    */
+   public function get oid():int {
+      return _oid;
+   }
+
+   /**
+    * The query completion tag (e.g., <code>SELECT</code> or <code>CREATE TABLE</code>)
+    */
+   public function get tag():String {
+      return _tag;
+   }
+
+
+   /**
+    * Query token.
+    *
+    * @see org.postgresql.db.QueryToken
+    */
+   public function get token():QueryToken {
+      return _token;
+   }
+}
 }
